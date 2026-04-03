@@ -4,12 +4,16 @@
   --background: #FBFAFF;
   --foreground: #171717;
   --primary: #7850CD;
+  --card:  #FFFFFF;
+  --secondary: #D5C9F0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-white-100: var(--card);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
