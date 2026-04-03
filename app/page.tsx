@@ -1,8 +1,8 @@
 
 const Home = () => {
   return (
-    <div className="text-">
-      
+    <div className="text-purple-500">
+       TaskLoom 
     </div>
   )
 }
