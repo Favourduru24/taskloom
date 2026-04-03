@@ -4,12 +4,14 @@ import React from 'react'
   
   const DashboardLayout = ({children}: {children: React.ReactNode}) => {
     return (
-      <div className='m-auto max-w-7xl w-full h-screen'>
-        <div className='w-full flex flex-col'>
-            <Header />
-            <div className='flex'>
+      <div className='w-full h-screen'>
+        <div className='w-full flex flex-col h-full'>
+            <div className='flex w-full h-full'>
              <Sidebar />
+             <div className='flex flex-col w-full'>
+            <Header />
             {children}
+             </div>
             </div>
         </div>
       </div>

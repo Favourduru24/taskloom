@@ -1,10 +1,89 @@
+import Image from 'next/image'
 import React from 'react'
+import { LayoutDashboard, LucideIcon, CheckSquare, SendIcon, Image as Images, History, Plus} from "lucide-react";
+import Link from 'next/link';
 
 const Sidebar = () => {
+
+    interface SidebarProp {
+      id: number
+      label: string,
+      href: string,
+      icons: LucideIcon
+    }
+   
+   const SidebarContent: SidebarProp[] = [
+    {
+      id: 1,
+      label: "Dashboard",
+      href: "/dashboard",
+      icons: LayoutDashboard
+    },
+    {
+      id: 2,
+      label: "Task",
+      href: "/dashboard",
+      icons: CheckSquare
+    },
+    {
+      id: 3,
+      label: "Messages",
+      href: "/dashboard",
+      icons: SendIcon 
+    },
+    {
+      id: 4,
+      label: "Files",
+      href: "/files",
+       icons: Images
+    },
+    {
+      id: 5,
+      label: "Timeline",
+      href: "/timeline",
+      icons: History
+    },
+   ]
+
+   
+       
   return (
-    <div>
-      
-    </div>
+    <aside className='w-64 bg-white-100 px-2 py-2 h-full border-r-2 border-gray-200'>
+       <div className='flex flex-col h-full gap-4 py-2'>
+          <div className='flex justify-center items-center w-full h-13 overflow-visible'>
+          <Image
+            src="/images/logo1.png"
+            width={500}
+            height={500}
+            alt="logo"
+            className="object-cover"
+          />
+        </div>
+         
+         <div className='flex flex-col h-full justify-between'>
+
+          <ul className='h-full flex flex-col gap-3 p-2'>
+             {SidebarContent.map((item: SidebarProp) => {
+                 const Icons = item.icons
+                 
+                 return (
+                  <Link href={item.href} key={item.id}>
+                   <li className={`flex px-2 py-4 items-center justify-start gap-2 rounded-md ${item.id === 1 ? 'bg-primary text-white cursor-pointer leading-tight' : 'text-gray-600 leading-tight hover:bg-secondary cursor-pointer'}`} >
+                      <Icons className="size-5"/>
+                      <p className='text-[1rem] font-semibold'>{item.label}</p>
+                  </li> 
+                  </Link>
+                )
+             })}
+          </ul>
+
+          <li className="flex px-2 py-2 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer">
+                      <Plus className='text-white size-5'/>
+                      <p className='text-[1rem] leading-tight font-semibold'>New Task</p>
+                  </li> 
+        </div>
+       </div>
+    </aside>
   )
 }
 
