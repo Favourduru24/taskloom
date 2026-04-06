@@ -1,7 +1,8 @@
+'use client'
 import Image from 'next/image'
-import React from 'react'
 import { LayoutDashboard, LucideIcon, CheckSquare, SendIcon, Image as Images, History, Plus} from "lucide-react";
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Sidebar = () => {
 
@@ -22,13 +23,13 @@ const Sidebar = () => {
     {
       id: 2,
       label: "Task",
-      href: "/dashboard",
+      href: "/task",
       icons: CheckSquare
     },
     {
       id: 3,
       label: "Messages",
-      href: "/dashboard",
+      href: "/message",
       icons: SendIcon 
     },
     {
@@ -45,10 +46,10 @@ const Sidebar = () => {
     },
    ]
 
-   
+   const pathname = usePathname()
        
   return (
-    <aside className='w-64 h-full bg-white px-2 py-2 border-r-2 border-gray-200 sticky top-0 hidden md:block'>
+    <aside className='w-64  bg-white px-2 py-2 border-r-2 border-gray-200  sticky top-0 h-screen'>
        <div className='flex flex-col h-full gap-4 py-2'>
           <div className='flex justify-center items-center w-full h-13 overflow-visible'>
           <Image
@@ -68,7 +69,7 @@ const Sidebar = () => {
                  
                  return (
                   <Link href={item.href} key={item.id}>
-                   <li className={`flex px-2 py-4 items-center justify-start gap-2 rounded-md ${item.id === 1 ? 'bg-primary text-white cursor-pointer leading-tight' : 'text-gray-600 leading-tight hover:bg-secondary cursor-pointer'}`} >
+                   <li className={`flex px-2 py-4 items-center justify-start gap-2 rounded-md ${pathname === item.href ? 'bg-primary text-white cursor-pointer leading-tight' : 'text-gray-600 leading-tight hover:bg-secondary cursor-pointer'}`} >
                       <Icons className="size-5"/>
                       <p className='text-[1rem] font-semibold'>{item.label}</p>
                   </li> 
@@ -76,11 +77,13 @@ const Sidebar = () => {
                 )
              })}
           </ul>
-
+           
+           <Link href="/task/create">
           <li className="flex px-2 py-2 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer">
                       <Plus className='text-white size-5'/>
                       <p className='text-[1rem] leading-tight font-semibold'>New Task</p>
                   </li> 
+           </Link>
         </div>
        </div>
     </aside>
