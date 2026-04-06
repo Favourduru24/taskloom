@@ -1,3 +1,4 @@
+import {ChartLineMultiple} from "@/components/shared/ChartLineMultiple"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -5,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { cn, getAvatar } from "@/lib/utils"
 
 import { Calendar, Clock, EllipsisVertical, FilePlus, Layers, Link, LucideIcon, Menu, MessageCircleMore, Play, Plus, Star, TrendingDown, TrendingUp, UserPlus } from "lucide-react"
 import Image from "next/image"
@@ -21,16 +22,11 @@ const Home = () => {
     trendType: string
    }
 
-   interface taskChartProps {
-     id: number
-     timeline: string
-     isOn: boolean
-   }
-
    interface myTeamProps {
      id: number
      profilePics: string
-     name: string
+     name: string;
+     email: string,
      lastMessage: string
    }
 
@@ -70,53 +66,42 @@ const Home = () => {
     },
   ]
 
-  const taskChartItem: taskChartProps[] = [
-    {
-      id: 1,
-      timeline: 'Daily',
-      isOn: true
-    },
-    {
-      id: 2,
-      timeline: 'Weekly',
-      isOn: false
-    },
-    {
-      id: 3,
-      timeline: 'Monthly',
-      isOn: false
-    }
-  ]
+  
 
    const myTeam: myTeamProps[] = [
     {
       id: 1,
      profilePics: '/images/user1.png',
      name: 'Christ Moris',
+     email: 'durupristine@gmail.com',
      lastMessage: 'Hi Pristine, How are you'
     },
     {
      id: 2,
      profilePics: '/images/user1.png',
      name: 'Joseph Mandola',
+     email: 'joseph@gmail.com',
      lastMessage: 'Do you need that design'
     },
     {
      id: 3,
      profilePics: '/images/user1.png',
      name: 'Charlie Chu',
+     email: 'charliechu@gmail.com',
      lastMessage: 'Good Morning, what is our progess'
     },
     {
       id: 4,
      profilePics: '/images/user1.png',
      name: 'Micheal Jordan',
+     email: 'michealjordan@gmail.com',
      lastMessage: 'Have you gotten the design'
     },
     {
       id: 5,
      profilePics: '/images/user1.png',
      name: 'Micheal Jordan',
+     email: 'durupristine@gmail.com',
      lastMessage: 'Have you gotten the design'
     },
 
@@ -135,7 +120,7 @@ const Home = () => {
     id: 3,
     startTime: '1:45 pm',
     task: 'Create high-fidelity wireframes',
-    link: '://figma.com',
+    link: 'https://figma.com',
     commentCount: 12,
     progress: 10,
   },
@@ -158,8 +143,8 @@ const Home = () => {
   ]
 
   return (
-    <div className="w-full flex gap-4 flex-1 min-h-0">
-       <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4 overflow-y-auto custom-scrollbar">
+    <div className="w-full flex gap-4 flex-1 relative">
+       <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4">
            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
             {
                 chartItems.map((item: chartItemProps) => {
@@ -196,30 +181,8 @@ const Home = () => {
               }
               </div>
 
-              <div className="bg-white-100 w-full h-64 rounded-lg">
-                 <Card className="shadow-sm border-none ring-0 h-64">
-                    <CardHeader className="border-b border-gray-200">
-                       <div className="flex items-center justify-between">
-                      <CardTitle className="text-[1rem] leading-tight font-medium">Task Done</CardTitle>
-                          
+                         <ChartLineMultiple />
 
-                          <ul className="flex items-center gap-4">
-                              {taskChartItem.map((task) => (
-                                <li key={task.id} className={cn(task.isOn ? 'border-b-2 border-primary' : '', "text-[1rem] leading-tight font-semibold")}>
-                                   {task.timeline}
-                                </li>
-                              ))}
-                          </ul>
-                       </div>
-                      {/* <CardDescription>Card Description</CardDescription>
-                      <CardAction>Card Action</CardAction> */}
-                    </CardHeader>
-                    <CardContent className="flex gap-x-2 items-center justify-between w-full h-ful leading-none">
-                    
-                    </CardContent>
-                     
-                  </Card>
-              </div>
                       <div className="flex flex-col gap-4">
                  <p className="text-xl leading-tight font-bold">Tasks</p>
                     
@@ -267,7 +230,8 @@ const Home = () => {
             </div>
        </div>
 
-        <div className="max-w-72 h-full bg-white-100 flex flex-col px-2 py-4 gap-2 sticky border-l-2 border-gray-200">
+        <div className="max-w-72 top-16 h-[calc(100vh-4rem)] bg-white-100 flex flex-col px-2 pt-4 pb-2 gap-2 sticky  border-l-2 border-gray-200">
+          {/* w-72 h-screen bg-white flex flex-col px-2 py-4 gap-2 sticky top-0 border-l border-gray-200 */}
               <div className="flex items-center justify-between">
                 <p className="text-[1.2rem] leading-tight font-semibold">Today Schedule's</p>
                 <Calendar className="size-5 text-gray-500" strokeWidth={1.5}/>
@@ -288,7 +252,7 @@ const Home = () => {
                   <div key={team.id} className="relative">
                     <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm"> 
                       <Image
-                        src={team.profilePics}
+                        src={getAvatar(null, team.email)}
                         width={32}
                         height={32}
                         alt={team.name}
@@ -317,7 +281,7 @@ const Home = () => {
                         <div className="flex gap-3 items-center hover:bg-background rounded-md px-2 py-1" key={team.id}>
                           <div className="w-12 h-12 overflow-hidden rounded-full">
                               <Image
-                              src={team.profilePics}
+                              src={getAvatar(null, team.email)}
                               width={62}
                               height={62}
                               alt={team.name}

@@ -3,9 +3,9 @@ import Image from 'next/image'
 
 const Header = () => {
   return (
-    <header className='px-4 py-4 bg-white-100 border-b-2 border-gray-200'>
-         <div className='flex justify-between items-center'>
-            <form 
+    <header className='px-4 h-16 z-50 flex items-center justify-between bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
+         <div className='flex justify-between items-center w-full'>
+            <form  
              className='flex-1 max-w-72 px-2'
             >
               <div className='w-full flex h-9 ring-2 ring-gray-200 focus-within:border-primary items-center rounded-sm shadow-sm'>
