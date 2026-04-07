@@ -166,7 +166,7 @@ const Task = () => {
 
                  <div className="flex items-center -space-x-2"> 
                                 {myTeam.slice(0, 3).map((team: myTeamProps) => (
-                                  <div key={team.id} className="relative">
+                                  <div key={team.id} className="relative z-10">
                                     <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm"> 
                                       <Image
                                         src={getAvatar(null, team.email)}
@@ -179,8 +179,8 @@ const Task = () => {
                                   </div>
                                 ))}
                 
-                                <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm flex items-center justify-center bg-primary">
-                                  <UserPlus className="size-5 text-white-100 cursor-pointer z-20"/>
+                                <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm flex items-center justify-center bg-primary z-20">
+                                  <UserPlus className="size-5 text-white-100 cursor-pointer"/>
                                 </div>
                               </div>
                   </div>
@@ -191,7 +191,7 @@ const Task = () => {
                 TaskStatus.map((task: taskStatusProps) => (
                   <Card className="shadow-sm border-none ring-0 rounded-sm leading-none h-12 flex justify-center" key={task.id}>
                    <div className="flex flex-ro items-center justify-between px-2">
-                   <p className="text-lg leading-tight font-semibold text-gray-400">{task.status}</p>
+                   <p className="text-lg leading-tight font-semibold text-black/60">{task.status}</p>
                    <Button className='bg-primary/70 w-8 rounded-sm flex items-center justify-center h-8 cursor-pointer'>
                     <Plus className="size-5 text-white"/>
                 </Button>
