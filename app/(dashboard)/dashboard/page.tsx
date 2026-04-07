@@ -154,7 +154,9 @@ const Home = () => {
                     <Card className="shadow-sm border-none ring-0 " key={item.id}>
                     <CardHeader className="border-b border-gray-200">
                        <div className="flex items-center justify-between">
+                        <div className="w-10 h-10 bg-gray-50 flex items-center justify-center rounded-sm">
                         <Icons className="size-5 text-primary"/>
+                        </div>
                       <CardTitle className="text-[1rem] leading-tight font-medium">{item.chartLabel}</CardTitle>
                           <p className="text-[0.9rem] leading-tight font-medium">{item.chartScore}</p>
                        </div>
@@ -190,7 +192,7 @@ const Home = () => {
                          <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" key={task.id}>
                     <div className="flex gap-3 items-center">
                           <div className="w-12 h-12 overflow-hidden rounded-full bg-primary flex items-center justify-center">
-                              <Play className="text-5 text-white"/>
+                              <Play className="text-4 text-white"/>
                            </div>
                           
                           <div className="flex flex-col gap-y-2">

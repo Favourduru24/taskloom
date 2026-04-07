@@ -68,7 +68,7 @@ export const ChartLineMultiple = () =>  {
   ]
 
   return (
-     <Card className="shadow-sm border-none ring-0 min-h-120 ">
+     <Card className="shadow-sm border-none ring-0 max-h-72 ">
                         <CardHeader className="border-b border-gray-200">
                            <div className="flex items-center justify-between">
                           <CardTitle className="text-[1rem] leading-tight font-medium">Task Done</CardTitle>
@@ -84,7 +84,7 @@ export const ChartLineMultiple = () =>  {
                             </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className=" w-full h-48">
           <LineChart
             accessibilityLayer
             data={chartData}
