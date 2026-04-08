@@ -93,7 +93,7 @@ export const ChartLineMultiple = () =>  {
               right: 12,
             }}
           >
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false}  className="first:fill-primary last:fill-primary" xlinkType="circle"/>
             <XAxis
               dataKey="month"
               tickLine={false}

@@ -58,7 +58,7 @@ export const ChartRadialText = () => {
               gridType="circle"
               radialLines={false}
               stroke="none"
-              className="first:fill-muted last:fill-background "
+              className="first:fill-muted last:fill-background"
               polarRadius={[60, 50]}
             />
             <RadialBar dataKey="visitors" background cornerRadius={10} />
