@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card"
 import { getAvatar } from "@/lib/utils"
 import { Clock, EllipsisVertical, Plus, UserPlus } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 const Task = () => {
 
@@ -203,7 +204,8 @@ const Task = () => {
 
            <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
             {Tasks.map((task: TaskProps) => (
-              <Card className="shadow-sm border-none ring-0 rounded-xl leading-none h-fit flex flex-col" key={task.id}>
+              <Link href={`/task/${task.id}`} key={task.id}>              
+              <Card className="shadow-sm border-none ring-0 rounded-xl leading-none h-fit flex flex-col" >
                   <div className="flex flex-row items-center justify-between px-2">
                      <Button className='bg-primary w-24 p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
                     <p className='text-white-100 leading-tight'>{task.status}</p>
@@ -261,6 +263,7 @@ const Task = () => {
                         </div>
                         </div>
                   </Card>
+                </Link>
                   ))}
            </div>
 
