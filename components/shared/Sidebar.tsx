@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { LayoutDashboard, LucideIcon, CheckSquare, SendIcon, Image as Images, History, Plus} from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button } from '../ui/button';
 
 const Sidebar = () => {
 
@@ -69,7 +70,7 @@ const Sidebar = () => {
                  
                  return (
                   <Link href={item.href} key={item.id}>
-                   <li className={`flex px-2 py-4 items-center justify-start gap-2 rounded-md ${pathname === item.href ? 'bg-primary text-white cursor-pointer leading-tight' : 'text-gray-600 leading-tight hover:bg-secondary cursor-pointer'}`} >
+                   <li className={`flex px-2 py-4 items-center hover:text-black justify-start gap-2 rounded-md ${pathname === item.href ? 'bg-primary text-white cursor-pointer leading-tight' : 'text-gray-600 leading-tight hover:bg-secondary cursor-pointer'}`} >
                       <Icons className="size-5"/>
                       <p className='text-[1rem] font-semibold'>{item.label}</p>
                   </li> 
@@ -79,7 +80,7 @@ const Sidebar = () => {
           </ul>
            
            <Link href="/task/create">
-          <li className="flex px-2 py-2 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer">
+          <li className="flex px-2 py-3 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer">
                       <Plus className='text-white size-5'/>
                       <p className='text-[1rem] leading-tight font-semibold'>New Task</p>
                   </li> 

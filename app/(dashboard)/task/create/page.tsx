@@ -8,7 +8,7 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/c
 import { Input } from '@/components/ui/input'
 import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from '@/components/ui/input-group'
 import { getAvatar } from '@/lib/utils'
-import { ArrowDown, Edit, Image as Media, Link2Icon, X } from 'lucide-react'
+import { ArrowDown, Edit, Image as Media, Link2Icon, X, Plus, Rocket } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 
@@ -17,13 +17,12 @@ const CreateTask = () => {
   const [position, setPosition] = useState("bottom")
 
   return (
-    <div className="w-full flex gap-4 flex-1 min-h-0 flex-col">
-       <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4">
-       <p className="text-2xl leading-tight font-bold">New Task</p>
+   <div className="w-full flex flex-co gap-4 min-h-0 max-w-3xl py-4">
 
-    <div className="max-w-md w-full h-full flex flex-col gap-4">
-    
-              <Card className="w-full sm:max-w-md">
+  <div className="w-full px-8  flex flex-col gap-4">
+    <p className="text-2xl leading-tight font-bold">New Task</p>
+    <div className="w-full flex flex-col gap-4">
+      <Card className="w-full flex-1">
          
       <CardContent>
         <form id="form-rhf-demo">
@@ -31,41 +30,19 @@ const CreateTask = () => {
             <div>
                 <Field>
                   <FieldLabel htmlFor="form-rhf-demo-title" className='text-xl'>
-                    Bug Title
+                    Task Title
                   </FieldLabel>
                   <Input
                     id="form-rhf-demo-title"
-                    placeholder="Login button not working on mobile"
+                    placeholder="Type your awesome task..."
                     autoComplete="off"
+                    className='h-10 px-2 outline-none focus:ring-0'
                   />
                   
                 </Field>
             </div>
-            
-                  <div>
-                <Field>
-                  <FieldLabel htmlFor="form-rhf-demo-description" className='text-xl'>
-                    Description
-                  </FieldLabel>
-                  <InputGroup>
-                     <InputGroupTextarea
-                      id="form-rhf-demo-description"
-                      placeholder="I'm having an issue with the login button on mobile."
-                      rows={6}
-                      className="min-h-24 resize-none"
-                    />
-                  </InputGroup>
-                  <FieldDescription>
-                    Include steps to reproduce, expected behavior, and what
-                    actually happened.
-                  </FieldDescription>
-                  {/* {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )} */}
-                </Field>
-                      </div>
 
-                  <div>
+            <div>
                     <Field>
                   <FieldLabel htmlFor="form-rhf-demo-title" className='text-xl'>
                     Category
@@ -74,7 +51,7 @@ const CreateTask = () => {
                   <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   {/* <Button variant="outline">Open</Button> */}
-                  <div className="flex items-center justify-between shadow border p-2 rounded-sm">
+                  <div className="flex items-center justify-between border h-10 px-2 rounded-sm">
                     <p className="text-[1rem] text-gray-500 leading-tight">Select Status</p>
                     <ArrowDown className="size-5 text-gray-500"/>
                    </div>
@@ -94,6 +71,28 @@ const CreateTask = () => {
                   
                 </Field>
                   </div>
+            
+                  <div>
+                <Field>
+                  <FieldLabel htmlFor="form-rhf-demo-description" className='text-xl'>
+                    Description
+                  </FieldLabel>
+                  <InputGroup>
+                     <InputGroupTextarea
+                      id="form-rhf-demo-description"
+                      placeholder="Describe what needs to be done..."
+                      rows={6}
+                      className="min-h-40 resize-none outline-none focus:ring-0"
+                    />
+                  </InputGroup>
+                  <FieldDescription>
+                    Provide all details needed for someone to understand and act on this task.
+                  </FieldDescription>
+                  {/* {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )} */}
+                </Field>
+                      </div>
 
                 <div className='flex items-center gap-2'>
                     <Field>
@@ -102,8 +101,9 @@ const CreateTask = () => {
                   </FieldLabel>
                   <Input
                     id="form-rhf-demo-title"
-                    placeholder="03/6/2026"
+                    placeholder="03/06/2026"
                     autoComplete="off"
+                    className='h-10 px-2 outline-none focus:ring-0 rounded'
                   />
                   
                 </Field>
@@ -112,10 +112,10 @@ const CreateTask = () => {
                   <FieldLabel htmlFor="form-rhf-demo-title" className='text-lg'>
                     Attachment
                   </FieldLabel>
-                    <div className='flex items-center gap-2 border rounded-sm px-2'>
+                    <div className='flex items-center gap-2 border rounded-md px-2'>
 
-                     <div className='w-full h-8'>
-
+                     <div className='w-full h-10 flex items-center justify-center'>
+                        <p className='text-muted-foreground text-sm'>Upload</p>
                      </div>
                     <Link2Icon className='size-5'/>
                     <Media className='size-5'/>
@@ -212,20 +212,18 @@ const CreateTask = () => {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline">
-            Reset
-          </Button>
-          <Button type="submit" form="form-rhf-demo">
-            Submit
-          </Button>
-        </Field>
-      </CardFooter>
+      
     </Card>
 
     </div>
     </div>
+
+         <div className='w-56 flex items-end'>
+            <Button className="flex px-4 py-5 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer w-full">
+            <Rocket className='text-white size-5'/>
+              <p className='text-[1rem] leading-tight font-semibold'>Launch Task</p>
+            </Button>
+         </div>
     </div>
   )
 }
