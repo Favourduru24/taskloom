@@ -144,7 +144,7 @@ const Home = () => {
 
   return (
     <div className="w-full flex gap-4 flex-1 relative">
-       <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4">
+       <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-8">
            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
             {
                 chartItems.map((item: chartItemProps) => {
@@ -158,7 +158,7 @@ const Home = () => {
                         <Icons className="size-5 text-primary"/>
                         </div>
                       <CardTitle className="text-[1rem] leading-tight font-medium">{item.chartLabel}</CardTitle>
-                          <p className="text-[0.9rem] leading-tight font-medium">{item.chartScore}</p>
+                          <p className="text-[1.2rem] leading-tight font-medium">{item.chartScore}</p>
                        </div>
                       {/* <CardDescription>Card Description</CardDescription>
                       <CardAction>Card Action</CardAction> */}
@@ -191,30 +191,30 @@ const Home = () => {
                     {myTasks.map((task: myTaskProps) => (
                          <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" key={task.id}>
                     <div className="flex gap-3 items-center">
-                          <div className="w-12 h-12 overflow-hidden rounded-full bg-primary flex items-center justify-center">
-                              <Play className="text-4 text-white"/>
+                          <div className="w-11 h-11 overflow-hidden rounded-full bg-primary flex items-center justify-center">
+                              <Play className="text-4 text-white" strokeWidth={1.5}/>
                            </div>
                           
                           <div className="flex flex-col gap-y-2">
-                          <p className="text-[1.1rem] leading-tight font-semibold">Start from</p>
+                          <p className="text-[1rem] leading-tight font-semibold">Start from</p>
                           <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
-                          <Clock className="size-5"/> <p>{task.startTime} am</p></span>
+                          <Clock className="size-4"/> <p>{task.startTime} am</p></span>
                           </div>
                         </div>
 
-                        <div className="flex flex-col gap-y-2 ">
-                        <p className="text-[1.1rem] leading-tight font-semibold">{task.task}</p>
+                        <div className="flex flex-col gap-y-1">
+                        <p className="text-[1rem] leading-tight font-semibold">{task.task}</p>
                         <div className="flex items-center gap-3">
-                       <span className="flex flex-row items-center gap-2 text-sm leading-tight font-medium text-gray-400 truncate">
-                          <Link className="size-5"/> <p className="text-primary">{task.link}</p></span>
+                       <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
+                          <Link className="size-4 text-primary"/> <p className="text-blue-500">{task.link}</p></span>
 
-                          <span className="flex flex-row items-center gap-2 text-sm leading-tight font-medium text-gray-400 truncate">
-                          <MessageCircleMore className="size-5"/> <p >{task.commentCount} comments</p></span>
+                          <span className="flex flex-row items-center gap-1 text-xs leading-tight font-medium text-muted-foreground truncate">
+                          <MessageCircleMore className="size-5 text-primary"/> <p >{task.commentCount} comments</p></span>
                         </div>
                         </div>
 
-                        <div className="flex flex-col gap-y-4 ">
-                        <p className="text-[1.1rem] leading-tight font-semibold">{task.commentCount} Completed</p>
+                        <div className="flex flex-col gap-y-3 ">
+                        <p className="text-[1rem] leading-tight font-semibold">{task.commentCount} Completed</p>
 
                         <div className="flex items-center">
                        <span className="h-1 w-14 bg-primary rounded-l-full"></span>
@@ -222,9 +222,9 @@ const Home = () => {
                         </div>
                         </div>
 
-                  <Button className='bg-primary/70 w-28 p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
-                      <Clock className="size-5 text-white"/>
-                     <p className='text-white-100 leading-tight'>Reminder</p>
+                  <Button className='bg-primary w-24 py-2 px-1 rounded-md flex items-center justify-center h-9 cursor-pointer '>
+                      <Clock className="size-4 text-white"/>
+                     <p className='text-white-100 leading-tight text-[0.8rem]'>Reminder</p>
                    </Button>
                 </Card>
                     ))}
@@ -232,7 +232,7 @@ const Home = () => {
             </div>
        </div>
 
-        <div className="max-w-72 top-16 h-[calc(100vh-4rem)] bg-white-100 flex flex-col px-2 pt-4 pb-2 gap-2 sticky  border-l-2 border-gray-200">
+        <div className="max-w-72 top-16 h-[calc(100vh-4rem)] bg-white-100 flex flex-col px-2 pt-4 pb-2 gap-4 sticky  border-l-2 border-gray-200">
           {/* w-72 h-screen bg-white flex flex-col px-2 py-4 gap-2 sticky top-0 border-l border-gray-200 */}
               <div className="flex items-center justify-between">
                 <p className="text-[1.2rem] leading-tight font-semibold">Today Schedule's</p>
@@ -249,10 +249,10 @@ const Home = () => {
                 <p className="text-[1.2rem] leading-tight font-medium">Project Discovery</p>
                  
                 <div className="w-full mt-2 bg-primary h-11 rounded-md flex justify-between items-center p-2 shadow-sm">
-                     <div className="flex items-center -space-x-2"> 
+                     <div className="flex items-center -space-x-2 z-10"> 
                 {myTeam.slice(0, 3).map((team: myTeamProps) => (
                   <div key={team.id} className="relative">
-                    <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm"> 
+                    <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm"> 
                       <Image
                         src={getAvatar(null, team.email)}
                         width={32}
@@ -264,7 +264,7 @@ const Home = () => {
                   </div>
                 ))}
 
-                <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm flex items-center justify-center">
+                <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm flex items-center justify-center z-20 ring ring-white-100 cursor-pointer bg-primary">
                   <UserPlus className="size-5 text-white-100"/>
                 </div>
               </div>
@@ -307,13 +307,3 @@ const Home = () => {
 }
 
 export default Home
-
-{/* <div className="w-8 h-8 overflow-hidden rounded-full">
-                                           <Image
-                                             src="/images/user1.png"
-                                             width={32}
-                                             height={32}
-                                             alt="user1"
-                                             className="object-contain ring-2 ring-gray-400 shadow-sm rounded-full"
-                                           />
-                                         </div> */}

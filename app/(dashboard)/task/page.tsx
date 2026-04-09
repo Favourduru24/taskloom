@@ -236,7 +236,7 @@ const Task = () => {
                     <p className="text-[0.9rem] leading-6 break-all font-medium text-gray-400 text-base">{task.description}</p>
 
                     <Button className='w-24 p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer border border-gray-200' variant={'ghost'}>
-                    <p className='text-destructive leading-tight text-[0.9rem]'>{task.date}</p>
+                    <p className='text-destructive leading-tight font-medium text-xs'>{task.date}</p>
                    </Button>
 
                    <div className="flex justify-between items-center mt-2">
@@ -258,7 +258,7 @@ const Task = () => {
 
                        <div className="flex items-center gap-x-2">
                           <Clock className="size-5 text-gray-500"/>
-                          <p className="text-[0.9rem] leading-6 break-all font-medium text-gray-400 text-base">{task.timeline}/5</p>
+                          <p className="text-xs leading-6 break-all font-medium text-muted-foreground text-base">{task.timeline}/5</p>
                        </div>
                         </div>
                         </div>

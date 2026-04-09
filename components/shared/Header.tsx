@@ -1,40 +1,50 @@
-import { ArrowDown, Bell, Search } from 'lucide-react'
+import { ArrowDown, Bell, Moon, Plus, Search } from 'lucide-react'
 import Image from 'next/image'
+import { Button } from '../ui/button'
 
 const Header = () => {
   return (
-    <header className='px-4 h-16 z-50 flex items-center justify-between bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
-         <div className='flex justify-between items-center w-full'>
+    <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
+         <div className='flex items-center w-full justify-between'>
+             
+             <div className='max-w-2xl w-full flex items-center justify-center'>
+
             <form  
-             className='flex-1 max-w-72 px-2'
+             className='flex-1 px-2 flex justify-center items-center max-w-96'
             >
-              <div className='w-full flex h-9 ring-2 ring-gray-200 focus-within:border-primary items-center rounded-sm shadow-sm'>
+              <div className='w-full flex h-10 ring-2 ring-gray-300 items-center rounded-md shadow-sm px-2'>
               <input className='w-full outline-none p-2 placeholder:leading-tight text-[0.9rem] font-medium' placeholder='Search Tasks...'/>
               <Search className='text-gray-400 size-5'/>
               </div>
             </form>
+             </div>
 
             <div className='flex gap-4 items-center'>
-                 <div>
+                 <div className='h-10 w-10 rounded-full flex items-center justify-center bg-muted-foreground/10'>
                   <Bell className="text-primary size-5"/>
                 </div>
 
+                <div className='h-10 w-10 rounded-full flex items-center justify-center bg-muted-foreground/10'>
+                  <Moon className="text-muted-foreground size-5"/>
+                </div>
+
                    <div className='flex items-end justify-center gap-1'>
-                      <div className="w-8 h-8 overflow-hidden rounded-full">
-                      <Image
-                        src="/images/user1.png"
-                        width={32}
-                        height={32}
-                        alt="user1"
-                        className="object-contain ring-2 ring-gray-400 shadow-sm rounded-full"
-                      />
-                    </div>
+                    <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                          <Image
+                                            src="/images/user1.png"
+                                            width={32}
+                                            height={32}
+                                            alt="user1"
+                                            className="object-cover w-full" 
+                                          />
+                                        </div>
                       <ArrowDown className='text-gray-400 size-5'/>
                    </div>
 
-                   <button className='bg-primary w-20 p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
-                     <p className='text-white-100 leading-tight'>Share</p>
-                   </button>
+                   <Button className='bg-primary px-4 py-5 rounded-sm flex items-center justify-center h-10 cursor-pointer w-fit'>
+                     <Plus className='size-5 text-white-100'/>
+                     <p className='text-white-100 leading-tight text-sm'>Create Task</p>
+                   </Button>
             </div>
          </div>
     </header>
