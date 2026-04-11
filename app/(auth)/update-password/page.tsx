@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { ArrowDown, Edit, Image as Media, Link2Icon, X, Plus, Rocket, Check } from 'lucide-react'
+import {ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 
- const SignIn = () => {
+ const UpdatePassword = () => {
   // ring-0 border-none
     return (
         <div className="w-full max-w-6xl mx-auto px-8 py-4 flex flex-1 gap-8 items-center">
@@ -23,32 +23,16 @@ import Link from 'next/link'
                                     className="object-cover"
                                   />
                                 </div>
-                    <p className='text-xl font-semibold leading-6'>Welcome Back! Let's Get Things Done.</p>
-
-                    <p className='text-sm text-muted-foreground'>Don't have an account? <Link href='/sign-up'><span className='text-primary font-semibold cursor-pointer'>Register Now</span></Link> </p>
+                    <p className='text-lg leading-7 text-center text-muted-foreground'>Easily update your password Just enter and confirm your password</p>
                   </div>
 
                  <CardContent>
                    <form id="form-rhf-demo">
                      <FieldGroup>
-                       <div>
+                        <div>
                            <Field>
                              <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
-                               Email
-                             </FieldLabel>
-                             <Input
-                               id="form-rhf-demo-title"
-                               placeholder="Enter Your Email"
-                               autoComplete="off"
-                               className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
-                             />
-                           </Field>
-                       </div>
-
-                       <div>
-                           <Field>
-                             <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
-                               Password
+                               New Password
                              </FieldLabel>
                              <Input
                                id="form-rhf-demo-title"
@@ -59,40 +43,31 @@ import Link from 'next/link'
                            </Field>
                        </div>
 
-                        <div className='flex items-center w-full justify-between'>
-                          <div className='flex items-center gap-2'>
-                             <Checkbox className='size-5'/>
-                           <p className='text-sm text-muted-foreground leading-tight'>Remember Me</p>
-                          </div>
-
-                          <Link href='/forget-password'>
-                           <p className='text-[1rem] leading-tight font-semibold text-primary cursor-pointer'>Forgot Password?</p>
-                          </Link>
-                        </div>
+                          <div>
+                           <Field>
+                             <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
+                               Confirm New Password
+                             </FieldLabel>
+                             <Input
+                               id="form-rhf-demo-title"
+                               placeholder="Enter your confirm password"
+                               autoComplete="off"
+                               className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
+                             />
+                           </Field>
+                       </div>
                         
                         <Button className='h-10 rounded-sm mt-2'>
-                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>Sign In</p>
+                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>Save Changes</p>
                         </Button>
-
-                        <div className='flex items-center gap-2'>
-                           <div className='w-full h-[0.5px] bg-gray-200'/>
-                           <p className='whitespace-nowrap text-muted-foreground'>Or login with</p>
-                           <div className='w-full h-[0.5px] bg-gray-200'/>
-                        </div>
 
                         <div className='flex items-center gap-2 w-full'>
-                           <Button className='h-10 rounded-sm mt-2 flex-1 bg-white-100 shadow border border-muted-foreground/25 cursor-pointer flex items-center'>
-                            <div className="w-6 h-6 overflow-hidden rounded-full"> 
-                                                                      <Image
-                                                                        src="/images/google.png"
-                                                                        width={32}
-                                                                        height={32}
-                                                                        alt="user1"
-                                                                        className="object-cover w-full" 
-                                                                      />
-                                                          </div>
-                           <p className='text-[1rem] leading-tight font-semibold text-muted-foreground'>Google</p>
+                            <Link href='/sign-in' className='flex-1 w-full flex'>
+                           <Button className='h-10 rounded-sm flex-1 bg-white-100 shadow border border-muted-foreground/25 cursor-pointer flex items-center'>
+                            <ArrowLeft className='size-5 text-muted-foreground' strokeWidth={1.5}/>
+                           <p className='text-[1rem] leading-tight font-semibold text-muted-foreground'>Back In Login</p>
                         </Button>
+                            </Link>
                         </div>
                      </FieldGroup>
                    </form>
@@ -102,10 +77,10 @@ import Link from 'next/link'
                <div className="relative">
                       <div className="w-full h-screen overflow-hidden shadow-sm"> 
                                      <Image
-                                       src='/images/image3.jpg'
+                                       src='/images/forget-password.jpg'
                                        width={700}
                                        height={700}
-                                       alt='signIn-image'
+                                       alt='updatePassword-image'
                                        className="object-cover" 
                                      />
                                    </div>
@@ -114,4 +89,4 @@ import Link from 'next/link'
     )
  }
  
- export default SignIn
+ export default UpdatePassword
