@@ -1,15 +1,62 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { ArrowDown, Edit, Image as Media, Link2Icon, X, Plus, Rocket, Check } from 'lucide-react'
+import { signUpApi } from '@/utility/api/auth'
+import { signUpSchema, signUpSchemaType } from '@/utility/validation/auth'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 
  const SignUp = () => {
-  // ring-0 border-none
+
+   const [loading, setLoading] = useState(false)
+
+   const form = useForm<signUpSchemaType>({
+           resolver: zodResolver(signUpSchema),
+           defaultValues: {
+            fullName: '',
+            email: '',
+            password: ''
+           }
+        })
+  
+        async function onSubmit(data: signUpSchemaType) {
+      toast("You submitted the following values:", {
+        description: (
+          <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
+            <code>{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+        position: "bottom-right",
+        classNames: {
+          content: "flex flex-col gap-2",
+        },
+        style: {
+          "--border-radius": "calc(var(--radius)  + 4px)",
+        } as React.CSSProperties,
+      })  
+
+        if (loading) return;
+        setLoading(true);
+
+        try {
+          await signUpApi(data);
+
+          toast.success("Account created!");
+        } catch (error: any) {
+          toast.error(error.message || "Signup failed");
+        } finally {
+          setLoading(false);
+        }
+
+    }
+
     return (
         <div className="w-full max-w-6xl mx-auto px-8 py-4 flex flex-1 gap-8 items-center">
            <Card className="w-full max-w-sm"> 
@@ -33,49 +80,77 @@ import Link from 'next/link'
                   </div>
 
                  <CardContent>
-                   <form id="form-rhf-demo">
+                   <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
                      <FieldGroup>
-                        <div>
-                           <Field>
+                        <Controller
+                         name='fullName'
+                         control={form.control}
+                         render={({field, fieldState}) => (
+                           <Field data-invalid={fieldState.invalid}>
                              <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
                                Full Name
                              </FieldLabel>
                              <Input
+                              {...field}
+                               aria-invalid={fieldState.invalid}
                                id="form-rhf-demo-title"
                                placeholder="Enter your full name"
                                autoComplete="off"
                                className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
                              />
+                             {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                          )}
                            </Field>
-                       </div>
+                         )}
+                       />
                        
-                       <div>
-                           <Field>
+                       <Controller
+                         name='email'
+                         control={form.control}
+                         render={({field, fieldState}) => (
+                        <Field data-invalid={fieldState.invalid}>
                              <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
                                Email
                              </FieldLabel>
                              <Input
+                               {...field}
+                               aria-invalid={fieldState.invalid}
                                id="form-rhf-demo-title"
                                placeholder="Enter your email"
                                autoComplete="off"
                                className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
                              />
+                              {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                          )}
                            </Field>
-                       </div>
+                         )}
+                       />
 
-                       <div>
-                           <Field>
+                       <Controller
+                         name='email'
+                         control={form.control}
+                         render={({field, fieldState}) => (
+                           <Field data-invalid={fieldState.invalid}>
                              <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
                                Password
                              </FieldLabel>
                              <Input
+                               {...field}
+                               aria-invalid={fieldState.invalid}
                                id="form-rhf-demo-title"
                                placeholder="Enter your password"
                                autoComplete="off"
                                className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
                              />
-                           </Field>
-                       </div>
+
+                                {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                           </Field> 
+                           )}
+                       />
 
                         <div className='flex items-center w-full justify-between'>
                           <div className='flex items-center gap-2'>
