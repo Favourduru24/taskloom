@@ -1,15 +1,45 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent} from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { ArrowDown, Edit, Image as Media, Link2Icon, X, Plus, Rocket, Check } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { signInSchema, signInSchemaType } from '@/utility/validation/auth'
 
  const SignIn = () => {
-  // ring-0 border-none
+
+      const form = useForm<signInSchemaType>({
+         resolver: zodResolver(signInSchema),
+         defaultValues: {
+          email: '',
+          password: ''
+         }
+      })
+
+      function onSubmit(data: signInSchemaType) {
+    toast("You submitted the following values:", {
+      description: (
+        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
+          <code>{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+      position: "bottom-right",
+      classNames: {
+        content: "flex flex-col gap-2",
+      },
+      style: {
+        "--border-radius": "calc(var(--radius)  + 4px)",
+      } as React.CSSProperties,
+    })  
+  }
+
+   
     return (
         <div className="w-full max-w-6xl mx-auto px-8 py-4 flex flex-1 gap-8 items-center">
            <Card className="w-full max-w-sm"> 
@@ -29,35 +59,50 @@ import Link from 'next/link'
                   </div>
 
                  <CardContent>
-                   <form id="form-rhf-demo">
+                   <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
                      <FieldGroup>
-                       <div>
-                           <Field>
+                       <Controller
+                       name='email'
+                       control={form.control}
+                       render={({field, fieldState}) => (
+                         <Field data-invalid={fieldState.invalid}>
                              <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
                                Email
                              </FieldLabel>
                              <Input
+                              {...field}
+                               aria-invalid={fieldState.invalid}
                                id="form-rhf-demo-title"
                                placeholder="Enter Your Email"
                                autoComplete="off"
                                className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
                              />
+                             {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                          )}
                            </Field>
-                       </div>
+                       )}
+                       />
 
-                       <div>
-                           <Field>
+                       <Controller
+                          name='password'
+                          control={form.control}
+                          render={({field, fieldState}) => (
+                            <Field data-invalid={fieldState.invalid}>
                              <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
                                Password
                              </FieldLabel>
                              <Input
+                              {...field}
+                              aria-invalid={fieldState.invalid}
                                id="form-rhf-demo-title"
                                placeholder="Enter Your Password"
                                autoComplete="off"
                                className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
                              />
                            </Field>
-                       </div>
+                          )}
+                       />
 
                         <div className='flex items-center w-full justify-between'>
                           <div className='flex items-center gap-2'>
