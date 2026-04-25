@@ -7,11 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { cn, getAvatar } from "@/lib/utils"
+import { getWorkspaceApi } from "@/utility/api/workspace"
 
 import { Calendar, Clock, EllipsisVertical, FilePlus, Layers, Link, LucideIcon, Menu, MessageCircleMore, Play, Plus, Star, TrendingDown, TrendingUp, UserPlus } from "lucide-react"
 import Image from "next/image"
 
-const Home = () => {
+const Home = async () => {
 
    interface chartItemProps {
      id: number
@@ -141,6 +142,10 @@ const Home = () => {
     progress: 45,
   }
   ]
+
+  const data = await getWorkspaceApi()
+
+  console.log({data})
 
   return (
     <div className="w-full flex gap-4 flex-1 relative">
