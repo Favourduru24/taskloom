@@ -23,9 +23,9 @@ import Link from 'next/link'
                                     className="object-cover"
                                   />
                                 </div>
-                    <p className='text-xl font-semibold leading-6'>Forget Your Password? Don't Worry!</p>
+                    <p className='text-xl font-semibold leading-3'>Create Your Workspace!</p>
 
-                    <p className='text-sm text-muted-foreground'>Remember Your Password? <Link href='/sign-up'><span className='text-primary font-semibold cursor-pointer'>Sign In here</span></Link> </p>
+                    <p className='text-sm text-muted-foreground text-center leading-6'>Set up your workspace and <br/><span className='text-primary font-semibold cursor-pointer'>start collaborating with your team.</span></p>
                   </div>
 
                  <CardContent>
@@ -34,11 +34,11 @@ import Link from 'next/link'
                        <div>
                            <Field>
                              <FieldLabel htmlFor="form-rhf-demo-title" className='text-md'>
-                               Email
+                             Workspace Name
                              </FieldLabel>
                              <Input
                                id="form-rhf-demo-title"
-                               placeholder="Enter Your Email"
+                               placeholder="Enter Your Workspace Name"
                                autoComplete="off"
                                className='h-10 px-2 outline-none focus:ring-0 rounded-sm'
                              />
@@ -48,7 +48,7 @@ import Link from 'next/link'
 
                         
                         <Button className='h-10 rounded-sm mt-2'>
-                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>Reset Password</p>
+                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>Create Workspace</p>
                         </Button>
 
                         <div className='flex items-center gap-2 w-full'>

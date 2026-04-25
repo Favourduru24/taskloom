@@ -11,8 +11,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { signInSchema, signInSchemaType } from '@/utility/validation/auth'
+import { useState } from 'react'
+import { signInApi } from '@/utility/api/auth'
+import {useRouter} from 'next/navigation'
 
  const SignIn = () => {
+
+      const [loading, setLoading] = useState(false)
+      const router = useRouter()
 
       const form = useForm<signInSchemaType>({
          resolver: zodResolver(signInSchema),
@@ -22,22 +28,21 @@ import { signInSchema, signInSchemaType } from '@/utility/validation/auth'
          }
       })
 
-      function onSubmit(data: signInSchemaType) {
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius)  + 4px)",
-      } as React.CSSProperties,
-    })  
-  }
+      async function onSubmit(data: signInSchemaType) {
+          if (loading) return;
+                  setLoading(true);
+          
+                  try {
+                    await signInApi(data);
+          
+                    toast.success("Login Successfully!");
+                    router.push('/create-workspace')
+                  } catch (error: any) {
+                    toast.error(error.message || "SignIn failed");
+                  } finally {
+                    setLoading(false);
+                  }
+      }
 
    
     return (
@@ -116,7 +121,7 @@ import { signInSchema, signInSchemaType } from '@/utility/validation/auth'
                         </div>
                         
                         <Button className='h-10 rounded-sm mt-2'>
-                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>Sign In</p>
+                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>{loading ? 'Loading...' : 'Sign In'}</p>
                         </Button>
 
                         <div className='flex items-center gap-2'>

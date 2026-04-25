@@ -1,3 +1,4 @@
+'use client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -11,11 +12,13 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import {useRouter} from 'next/navigation'
 
 
  const SignUp = () => {
 
    const [loading, setLoading] = useState(false)
+   const router = useRouter()
 
    const form = useForm<signUpSchemaType>({
            resolver: zodResolver(signUpSchema),
@@ -27,21 +30,6 @@ import { toast } from 'sonner'
         })
   
         async function onSubmit(data: signUpSchemaType) {
-      toast("You submitted the following values:", {
-        description: (
-          <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-            <code>{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-        position: "bottom-right",
-        classNames: {
-          content: "flex flex-col gap-2",
-        },
-        style: {
-          "--border-radius": "calc(var(--radius)  + 4px)",
-        } as React.CSSProperties,
-      })  
-
         if (loading) return;
         setLoading(true);
 
@@ -49,6 +37,7 @@ import { toast } from 'sonner'
           await signUpApi(data);
 
           toast.success("Account created!");
+          router.push('/sign-in')
         } catch (error: any) {
           toast.error(error.message || "Signup failed");
         } finally {
@@ -129,7 +118,7 @@ import { toast } from 'sonner'
                        />
 
                        <Controller
-                         name='email'
+                         name='password'
                          control={form.control}
                          render={({field, fieldState}) => (
                            <Field data-invalid={fieldState.invalid}>
@@ -160,8 +149,8 @@ import { toast } from 'sonner'
                            
                         </div>
                         
-                        <Button className='h-10 rounded-sm mt-2'>
-                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>Sign In</p>
+                        <Button className='h-10 rounded-sm mt-2 cursor-pointer'>
+                           <p className='text-[1rem] leading-tight font-semibold text-white-100'>{loading ? 'Loading...' : 'Sign In'}</p>
                         </Button>
 
                         <div className='flex items-center gap-2'>
