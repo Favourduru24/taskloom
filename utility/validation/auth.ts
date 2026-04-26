@@ -20,5 +20,6 @@ export const signUpSchema = z.object({
             
   })
 
+
   export type signUpSchemaType = z.infer<typeof signUpSchema>
   export type signInSchemaType = z.infer<typeof signInSchema>
