@@ -90,8 +90,12 @@ const CreateTask = () => {
             />
                 
 
-            <div>
-                    <Field>
+            <Controller
+            name='category'
+            control={form.control}
+            render={({field, fieldState}) => (
+
+              <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="form-rhf-demo-title" className='text-xl'>
                     Category
                   </FieldLabel>
@@ -116,9 +120,12 @@ const CreateTask = () => {
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
-                  
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+                    )}
                 </Field>
-                  </div>
+            )}
+                  />
             
                   <Controller
                   name='description'

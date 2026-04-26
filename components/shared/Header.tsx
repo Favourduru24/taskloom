@@ -22,7 +22,7 @@ interface WorkspaceList {
 
 const Header = async () => {
 
-    const data = await getWorkspaceApi()
+    // const data = await getWorkspaceApi()
     
   return (
     <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
@@ -42,7 +42,7 @@ const Header = async () => {
                                          />
                                        </div>
                           <div className='flex flex-col justify-center'>
-                                <p className='text-foreground-muted text-sm font-medium'>{data[0].name}</p>
+                                {/* <p className='text-foreground-muted text-sm font-medium'>{data[0].name}</p> */}
                                 <p className='text-gray-500 text-xs'>Trial Plan</p>
                           </div>
 
@@ -51,13 +51,13 @@ const Header = async () => {
                         
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className='mt-1 cursor-pointer'>
-                      {
+                      {/* {
                         data.map((item: WorkspaceList) => (
                          <DropdownMenuItem key={item.id}>
                         {item.name}
                       </DropdownMenuItem>
                         ))
-                      }
+                      } */}
                       
 
                       <DropdownMenuSeparator />
