@@ -145,8 +145,6 @@ const Home = async () => {
 
   const data = await getWorkspaceApi()
 
-  console.log({data})
-
   return (
     <div className="w-full flex gap-4 flex-1 relative">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-8">

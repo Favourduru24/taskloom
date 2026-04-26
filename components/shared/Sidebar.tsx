@@ -4,8 +4,16 @@ import { LayoutDashboard, LucideIcon, CheckSquare, SendIcon, Image as Images, Hi
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
+import { useParams } from 'next/navigation'
 
 const Sidebar = () => {
+
+  const params = useParams()
+
+  const {workspaceId} = params
+
+  const pathname = usePathname()
+   const createTaskLink = `/workspace/${workspaceId}/task/create`
 
     interface SidebarProp {
       id: number
@@ -18,36 +26,34 @@ const Sidebar = () => {
     {
       id: 1,
       label: "Dashboard",
-      href: "/dashboard",
+      href: `/workspace/${workspaceId}/dashboard`,
       icons: LayoutDashboard
     },
     {
       id: 2,
       label: "Task",
-      href: "/task",
+      href: `/workspace/${workspaceId}/task`,
       icons: CheckSquare
     },
     {
       id: 3,
       label: "Messages",
-      href: "/message",
+      href: `/workspace/${workspaceId}/message`,
       icons: SendIcon 
     },
     {
       id: 4,
       label: "Files",
-      href: "/files",
+      href: `/workspace/${workspaceId}/files`,
        icons: Images
     },
     {
       id: 5,
       label: "Timeline",
-      href: "/timeline",
+      href: `/workspace/${workspaceId}/timeline`,
       icons: History
     },
    ]
-
-   const pathname = usePathname()
        
   return (
     <aside className='w-64  bg-white px-2 py-2 border-r-2 border-gray-200  sticky top-0 h-screen'>
@@ -79,7 +85,7 @@ const Sidebar = () => {
              })}
           </ul>
            
-           <Link href="/task/create">
+           <Link href={createTaskLink}>
           <li className="flex px-2 py-3 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer">
                       <Plus className='text-white size-5'/>
                       <p className='text-[1rem] leading-tight font-semibold'>New Task</p>

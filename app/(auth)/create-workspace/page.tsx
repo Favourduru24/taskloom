@@ -33,10 +33,12 @@ import { toast } from 'sonner'
                       setLoading(true);
               
                       try {
-                        await createWorspaceApi(data);
+                       const workpsace =  await createWorspaceApi(data);
+
+                       console.log()
               
                         toast.success(`Workspace ${data.name} Successfully!`);
-                        router.push('/dashboard')
+                        router.push(`/workspace/${workpsace.workspace[0]?.id}/dashboard`)
                       } catch (error: any) {
                         toast.error(error.message || "SignIn failed");
                       } finally {
