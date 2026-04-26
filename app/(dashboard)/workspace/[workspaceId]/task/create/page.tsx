@@ -19,7 +19,20 @@ import { toast } from 'sonner'
 
 const CreateTask = () => {
 
-  const [position, setPosition] = useState("bottom")
+  interface CategoryType {
+   value: string;
+   label: string;
+  }
+
+  const Category: CategoryType[] = [
+    { value: "DESIGN", label: "Design" },
+    { value: "DEVELOPMENT", label: "Development" },
+    { value: "MARKETING", label: "Marketing" },
+    { value: "PRODUCT", label: "Product" },
+    { value: "SALES", label: "Sales" },
+    { value: "SUPPORT", label: "Support" },
+  ];
+
   const [loading, setLoading] = useState(false)
   const [priority, setPriority] = useState<string>("");
   const router = useRouter()
@@ -39,21 +52,21 @@ const CreateTask = () => {
   })
 
   async function onSubmit(data: createTaskSchemaType) {
-    if (loading) return;
-            setLoading(true);
+    // if (loading) return;
+    //         setLoading(true);
     
-            try {
+            // try {
             //  const task =  await createWorspaceApi(data);
 
             console.log('data', data)
     
-              toast.success(`Workspace ${data.title} Successfully!`);
-              router.push(`/workspace/${data.workspaceId}/dashboard`)
-            } catch (error: any) {
-              toast.error(error.message || "SignIn failed");
-            } finally {
-              setLoading(false);
-            }
+            //   toast.success(`Workspace ${data.title} Successfully!`);
+            //   router.push(`/workspace/${data.workspaceId}/dashboard`)
+            // } catch (error: any) {
+            //   toast.error(error.message || "SignIn failed");
+            // } finally {
+            //   setLoading(false);
+            // }
 }
 
   return (
@@ -104,18 +117,21 @@ const CreateTask = () => {
                 <DropdownMenuTrigger asChild>
                   {/* <Button variant="outline">Open</Button> */}
                   <div className="flex items-center justify-between border h-10 px-2 rounded-sm">
-                    <p className="text-[1rem] text-gray-500 leading-tight">Select Status</p>
+                    <p className="text-[1rem] text-gray-500 leading-tight">{field.value || "Select Category"}</p>
                     <ArrowDown className="size-5 text-gray-500"/>
                    </div>
                    
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="mt-4">
                   <DropdownMenuGroup>
-                    {/* <DropdownMenuLabel>Panel Position</DropdownMenuLabel> */}
-                    <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                      <DropdownMenuRadioItem value="top">To Do</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="bottom">Completed</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="right">In Progress</DropdownMenuRadioItem>
+
+                    <DropdownMenuRadioGroup  value={field.value}
+                                      onValueChange={field.onChange}>
+                                        {Category.map((item: CategoryType) => (
+                                            <DropdownMenuRadioItem value={item.value} key={item.value}>
+                                            {item.label}
+                                          </DropdownMenuRadioItem>
+                                        ))}
                     </DropdownMenuRadioGroup>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
