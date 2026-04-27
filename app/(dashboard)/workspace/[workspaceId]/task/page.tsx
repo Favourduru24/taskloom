@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Field, FieldGroup } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
 import { formatDate, getAvatar } from "@/lib/utils"
 import { getWorkspaceTasksApi } from "@/utility/api/task"
 import { getWorkspaceMemberApi } from "@/utility/api/workspace"
-import { Clock, EllipsisVertical, Plus, UserPlus } from "lucide-react"
+import { Clock, Copy, EllipsisVertical, Plus, UserPlus } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -132,11 +138,79 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
          <div className="flex items-center justify-between w-full">
             <p className="text-2xl leading-tight font-bold">Tasks</p>
 
-            <div className="flex items-center gap-x-2">
-               <Button className='bg-primary/70 w-24 p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
+            <div className="flex items-center gap-x-4">
+            <Dialog>
+  <DialogTrigger asChild>
+  <Button className='bg-primary w-24 p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
                     <Plus className="size-5 text-white"/>
                     <p className='text-white-100 leading-tight'>Invite</p>
-                </Button>
+                </Button></DialogTrigger>
+            <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Add Team Member</DialogTitle>
+             <Separator/>
+          </DialogHeader>
+          <FieldGroup>
+            <Field>
+              <Label htmlFor="name-1" className='text-muted-foreground text-xs font-semibold'>Member email</Label>
+              <div className='flex items-center justify-between gap-3 w-full h-9'>
+
+              <Input id="name-1" name="name" defaultValue="mail@gmail.com" className='h-full rounded-sm'/>
+              <Button className='bg-primary h-full rounded-sm'>
+                <p className='text-[0.7rem] font-medium'>Send Invite</p>
+              </Button>
+              </div>
+            </Field>
+          </FieldGroup>
+
+          <div className='flex flex-col w-full'>
+                <p className='leading-tight text-xs mt-2 mb-4 text-muted-foreground font-semibold'>Existing Member</p>
+
+                <div className='flex flex-col gap-2 w-full'>
+                   {member.map((m: WorkspaceMember) => (
+                     <div className='flex w-full justify-between items-center bg-muted p-1 rounded-md' key={m.userId}>
+                     <div className='flex gap-2 items-center'>
+                     <div className="w-10 h-10 rounded-full shadow-sm "> 
+                        <Image
+                        src={getAvatar(m.user.avatarUrl, m.user.email)}
+                        width={42}
+                        height={42}
+                        alt={m.user.fullName ?? 'collaborators'}
+                        className="object-cover rounded-full" 
+                        />
+                         </div>
+                         <div className='flex flex-col gap-1'>
+                             <p className='leading-tight text-sm text-gray-800 font-semibold'>{m.user.fullName}</p>
+                             <p className='leading-tight text-xs text-muted-foreground'>{m.role}</p>
+                         </div>
+                     </div>
+
+                     {/* <div className='flex items-center gap-2 rounded-sm cursor-pointer bg-muted border h-7 px-2' >
+                          <p className='leading-tight text-xs text-muted-foreground'>{collaboratorIds.includes(m.user.id) ? "Selected" : "Select"}</p>
+                          <Checkbox className='text-green-500 size-3 border border-muted-foreground accent-muted-foreground  data-[state=checked]:bg-muted-foreground
+    data-[state=checked]:border-muted-foreground cursor-pointer' checked={collaboratorIds.includes(member.user.id)} onCheckedChange={() => toggleUserId(member.user.id)} onClick={(e) => e.stopPropagation()}/>    
+                     </div> */}
+                 </div>
+                   ))}
+                </div>
+          </div>
+
+          
+              <Separator/>
+              <p className='leading-tight text-xs text-muted-foreground'>Copy the link below</p>
+
+              <div className='bg-muted w-full flex items-center py-2 px-2 border rounded-lg justify-between'>
+                 <p className='leading-tight text-xs mt-2 mb-2 text-muted-foreground'>aklkfncsz84385ht34eih3gvnwa\sgn</p>
+                 <Button className='flex items-center gap-2 rounded-sm cursor-pointer bg-green-200'>
+                             <Copy className='text-green-400 size-3'/>    
+                             <p className='leading-tight text-xs text-green-400 font-medium'>copy</p>
+                        </Button>
+              </div>
+        </DialogContent>
+</Dialog>
+               
+
+                
 
                  <div className="flex items-center -space-x-2"> 
                                 {member?.slice(0, 3).map((wsMember: WorkspaceMember) => (
@@ -163,12 +237,12 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
             <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
                {
                 TaskStatus.map((task: taskStatusProps) => (
-                  <Card className="shadow-sm border-none ring-0 rounded-sm leading-none h-12 flex justify-center" key={task.id}>
-                   <div className="flex flex-ro items-center justify-between px-2">
-                   <p className="text-lg leading-tight font-semibold text-black/60">{task.status}</p>
-                   <Button className='bg-primary/70 w-8 rounded-sm flex items-center justify-center h-8 cursor-pointer'>
-                    <Plus className="size-5 text-white"/>
-                </Button>
+                  <Card className="shadow-sm border ring-0 rounded-sm leading-none h-10 flex justify-center" key={task.id}>
+                   <div className="flex flex-row items-center justify-between px-2 ">
+                   <p className="text-sm leading-tight font-semibold text-black/60">{task.status}</p>
+                   <div className='bg-primary w-7 rounded-sm flex items-center justify-center h-7 cursor-pointer'>
+                    <Checkbox/>
+                </div>
                    </div>
                </Card>
                 ))

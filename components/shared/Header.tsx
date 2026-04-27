@@ -1,3 +1,4 @@
+'use client'
 import { ArrowDown, Bell, Moon, Plus, Search } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '../ui/button'
@@ -10,6 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useEffect, useState } from 'react'
+import { useRouter, usePathname} from 'next/navigation'
 
 interface WorkspaceList {
   id: string
@@ -20,10 +23,32 @@ interface WorkspaceList {
   updatedAt?: Date
 }
 
-const Header = async () => {
+const Header = () => {
+  
+  const [workspace, setWorkspace] = useState<WorkspaceList[]>([])
+  const router = useRouter();
+  const pathname = usePathname();
 
-    const data = await getWorkspaceApi()
-    
+    useEffect(() => {
+        async function fetchWorkspace() {
+          const data = await getWorkspaceApi()
+          setWorkspace(data);
+        }
+      
+        fetchWorkspace();
+      }, []);
+
+
+
+      const handleSwitchWorkspace = (workspaceId: string) => {
+        const newPath = pathname.replace(
+          /\/workspace\/[^/]+/,
+          `/workspace/${workspaceId}`
+        );
+      
+        router.push(newPath);
+      };
+
   return (
     <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
          <div className='flex items-center w-full justify-between'>
@@ -42,7 +67,7 @@ const Header = async () => {
                                          />
                                        </div>
                           <div className='flex flex-col justify-center'>
-                                <p className='text-foreground-muted text-sm font-medium'>{data[0].name}</p>
+                                <p className='text-foreground-muted text-sm font-medium'>{workspace[0]?.name}</p>
                                 <p className='text-gray-500 text-xs'>Trial Plan</p>
                           </div>
 
@@ -52,9 +77,9 @@ const Header = async () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className='mt-1 cursor-pointer'>
                       {
-                        data.map((item: WorkspaceList) => (
-                         <DropdownMenuItem key={item.id}>
-                        {item.name}
+                        workspace.map((ws: WorkspaceList) => (
+                         <DropdownMenuItem key={ws.id} onClick={() => handleSwitchWorkspace(ws.id)}>
+                        {ws.name}
                       </DropdownMenuItem>
                         ))
                       }
