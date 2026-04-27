@@ -7,27 +7,6 @@ import { Clock, EllipsisVertical, Plus, UserPlus } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-const Task = async ({params}: {params: Promise<{ workspaceId: string }>
-}) => {
-
-  const { workspaceId } = await params
-
-  
-
-  const [data, member] = await Promise.all([
-    getWorkspaceTasksApi(workspaceId),
-    getWorkspaceMemberApi(workspaceId)]
-  )
-   
-  interface myTeamProps {
-     id: number
-     profilePics: string
-     name: string;
-     email: string,
-     lastMessage: string
-   }
-
-
 type WorkspaceRole = 'MEMBER' | 'ADMIN' | 'OWNER'; 
 type WorkspaceMemberStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING';
 
@@ -41,13 +20,31 @@ type User = {
   updatedAt: string;
 };
 
-type WorkspaceMember = {
+export type WorkspaceMember = {
   userId: string;
   workspaceId: string;
   role: WorkspaceRole;
   status: WorkspaceMemberStatus;
   user: User;
 };
+
+const Task = async ({params}: {params: Promise<{ workspaceId: string }>
+}) => {
+
+  const { workspaceId } = await params
+
+  const [data, member] = await Promise.all([
+    getWorkspaceTasksApi(workspaceId),
+    getWorkspaceMemberApi(workspaceId)]
+  )
+   
+  interface myTeamProps {
+     id: number
+     profilePics: string
+     name: string;
+     email: string,
+     lastMessage: string
+   }
 
   interface taskStatusProps {
     id: number;
@@ -181,10 +178,10 @@ type WorkspaceMember = {
            <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
             {data.map((task: TaskProps) => (
               <Link href={`/task/${task.id}`} key={task.id}>              
-              <Card className="shadow-sm border-none ring-0 rounded-xl leading-none h-fit flex flex-col" >
+              <Card className="shadow-sm border ring-0 rounded-xl leading-none h-fit flex flex-col" >
                   <div className="flex flex-row items-center justify-between px-2">
-                     <Button className='bg-primary w-24 p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
-                    <p className='text-white-100 leading-tight'>{task.category}</p>
+                     <Button className='bg-primary w-fit p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
+                    <p className='text-white-100 leading-tight text-sm'>{task.category}</p>
                    </Button>
                    <EllipsisVertical className="size-5"/>
                   </div>
@@ -207,12 +204,12 @@ type WorkspaceMember = {
                           />
                       </div> }
 
-                  <div className="px-2 flex flex-col gap-2">
-                    <p className="text-xl leading-tight font-semibold">{task.title}</p>
-                    <p className="text-[0.9rem] leading-6 break-all font-medium text-gray-400 text-base">{task.description}</p>
+                  <div className="px-3 flex flex-col gap-1">
+                    <p className="text-lg leading-8 font-semibold capitalize">{task.title}</p>
+                    <p className="text-[0.8rem] leading-6 break-all font-medium text-muted-foreground">{task.description}</p>
 
-                    <Button className='w-24 p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer border border-gray-200' variant={'ghost'}>
-                    <p className='text-destructive leading-tight font-medium text-xs'>{formatDate(task.endDate)
+                    <Button className='w-24 p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer border border-gray-200 mt-1' variant={'ghost'}>
+                    <p className='text-destructive leading-tight font-medium text-[0.7rem]'>{formatDate(task.endDate)
                     }</p>
                    </Button>
 
@@ -235,7 +232,7 @@ type WorkspaceMember = {
 
                        <div className="flex items-center gap-x-2">
                           <Clock className="size-5 text-gray-500"/>
-                          <p className="text-xs leading-6 break-all font-medium text-muted-foreground text-base">5/5</p>
+                          <p className="leading-6 break-all font-medium text-muted-foreground text-base">5/5</p>
                        </div>
                         </div>
                         </div>

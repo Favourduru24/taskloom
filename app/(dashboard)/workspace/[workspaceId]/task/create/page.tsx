@@ -1,41 +1,74 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from '@/components/ui/input-group'
+import { InputGroup, InputGroupTextarea } from '@/components/ui/input-group'
 import { getAvatar } from '@/lib/utils'
 import { createTaskSchema, createTaskSchemaType } from '@/utility/validation/task'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowDown, Edit, Image as Media, Link2Icon, X, Plus, Rocket } from 'lucide-react'
+import { ArrowDown, Image as Media, Link2Icon, X, Plus, Rocket, Trash, Copy } from 'lucide-react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { Category, CategoryType } from '@/constants'
+import { getWorkspaceMemberApi } from '@/utility/api/workspace'
+import { WorkspaceMember } from '../page'
+import { createTaskApi, getWorkspaceTasksApi } from '@/utility/api/task'
+
+
+
 
 const CreateTask = () => {
 
-  interface CategoryType {
-   value: string;
-   label: string;
-  }
-
-  const Category: CategoryType[] = [
-    { value: "DESIGN", label: "Design" },
-    { value: "DEVELOPMENT", label: "Development" },
-    { value: "MARKETING", label: "Marketing" },
-    { value: "PRODUCT", label: "Product" },
-    { value: "SALES", label: "Sales" },
-    { value: "SUPPORT", label: "Support" },
-  ];
+   const params = useParams<{workspaceId: string}>()
+  
+   const {workspaceId} = params
 
   const [loading, setLoading] = useState(false)
   const [priority, setPriority] = useState<string>("");
   const router = useRouter()
+  const [members, setMembers] = useState<WorkspaceMember[]>([])
+  const [collaboratorIds, setCollaboratorIds] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!workspaceId) return;
+  
+    async function fetchMember() {
+      const data = await getWorkspaceMemberApi(workspaceId);
+      setMembers(data);
+    }
+  
+    fetchMember();
+  }, [workspaceId]);
+
+  function toggleUserId(userId: string) {
+    setCollaboratorIds((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId) 
+        : [...prev, userId] 
+    );
+  }
+
+  const selectedMembers = members.filter((mem) =>
+    collaboratorIds.includes(mem.userId)
+  );
+
+  console.log({selectedMembers})
 
   const form = useForm<createTaskSchemaType>({
     resolver: zodResolver(createTaskSchema),
@@ -43,31 +76,32 @@ const CreateTask = () => {
       title: "",
       category: "",
       description: "",
-      imageUrl: "",
       endDate: "",
-      priority: "LOW",
-      collaboratorIds: [],
-      workspaceId: "",
     }
   })
 
   async function onSubmit(data: createTaskSchemaType) {
-    // if (loading) return;
-    //         setLoading(true);
+    if (loading) return;
+    setLoading(true);
+  
+    try {
+        await createTaskApi(
+        data,
+        priority,
+        workspaceId,
+        collaboratorIds
+      );
+  
+      toast.success(`Task "${data.title}" created successfully!`);
+  
+      router.push(`/workspace/${workspaceId}/task`);
     
-            // try {
-            //  const task =  await createWorspaceApi(data);
-
-            console.log('data', data)
-    
-            //   toast.success(`Workspace ${data.title} Successfully!`);
-            //   router.push(`/workspace/${data.workspaceId}/dashboard`)
-            // } catch (error: any) {
-            //   toast.error(error.message || "SignIn failed");
-            // } finally {
-            //   setLoading(false);
-            // }
-}
+    } catch (error: any) {
+      toast.error(error.message || "Task creation failed");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
    <div className="w-full flex flex-co gap-4 min-h-0 max-w-3xl py-4">
@@ -115,7 +149,6 @@ const CreateTask = () => {
 
                   <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  {/* <Button variant="outline">Open</Button> */}
                   <div className="flex items-center justify-between border h-10 px-2 rounded-sm">
                     <p className="text-[1rem] text-gray-500 leading-tight">{field.value || "Select Category"}</p>
                     <ArrowDown className="size-5 text-gray-500"/>
@@ -184,7 +217,7 @@ const CreateTask = () => {
                     id="form-rhf-demo-title"
                     placeholder="03/06/2026"
                     autoComplete="off"
-                    className='h-10 px-2 outline-none focus:ring-0 rounded'
+                    className='h-10 px-2 outline-none focus:ring-0 rounded border'
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -212,37 +245,97 @@ const CreateTask = () => {
                   <FieldLabel htmlFor="form-rhf-demo-title" className='text-lg'>
                     Add Collaboration
                   </FieldLabel>
-                   
-                 <div className='flex items-center gap-2'>
-                      <div className='border border-gray-400 flex rounded-full items-center gap-x-2 p-1'>
-                         <div className="w-5 h-5 rounded-full shadow-sm "> 
-                           <Image
-                           src={getAvatar(null, 'durupristine')}
-                            width={42}
-                            height={42}
-                            alt='colaborator'
-                            className="object-cover rounded-full" 
-                            />
-                            </div>
+                    
+                    <div className='flex items-center justify-between w-full'>
 
-                          <p className='text-muted-foreground text-sm'>Angela</p>
-                          <X className='size-4 cursor-pointer'/>
+                 <div className='flex items-center gap-2 '>
+                  {selectedMembers.map((member: WorkspaceMember) => (
+                       <div className='border border-gray-400 flex rounded-full items-center gap-x-2 p-1' key={member.userId}>
+                       <div className="w-5 h-5 rounded-full shadow-sm "> 
+                         <Image
+                         src={getAvatar(member.user.avatarUrl, member.user.email)}
+                          width={42}
+                          height={42}
+                          alt='colaborator'
+                          className="object-cover rounded-full" 
+                          />
+                          </div>
+
+                        <p className='text-muted-foreground text-sm'>{member.user.fullName}</p>
+                        <X className='size-4 cursor-pointer' onClick={() => toggleUserId(member.user.id)}/>
+                    </div>
+                  ))}
+                     
                       </div>
+                      <Dialog>
+  <DialogTrigger asChild>
+    <div className='border border-gray-400 flex rounded-full items-center gap-x-2 p-1 cursor-pointer'>
+            <Plus className='SIZE-5'/>
+            </div></DialogTrigger>
+            <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Add Team Member</DialogTitle>
+             <Separator/>
+          </DialogHeader>
+          <FieldGroup>
+            <Field>
+              <Label htmlFor="name-1" className='text-muted-foreground text-xs font-semibold'>Member email</Label>
+              <div className='flex items-center justify-between gap-3 w-full h-9'>
 
-                       <div className='border border-gray-400 flex rounded-full items-center gap-x-2 p-1'>
-                         <div className="w-5 h-5 rounded-full shadow-sm "> 
-                           <Image
-                           src={getAvatar(null, 'durupristine')}
-                            width={42}
-                            height={42}
-                            alt='colaborator'
-                            className="object-cover rounded-full" 
-                            />
-                            </div>
+              <Input id="name-1" name="name" defaultValue="mail@gmail.com" className='h-full rounded-sm'/>
+              <Button className='bg-primary h-full rounded-sm'>
+                <p className='text-[0.7rem] font-medium'>Send Invite</p>
+              </Button>
+              </div>
+            </Field>
+          </FieldGroup>
 
-                          <p className='text-muted-foreground text-sm'>Chris</p>
-                          <X className='size-4 cursor-pointer'/>
-                      </div>
+          <div className='flex flex-col w-full'>
+                <p className='leading-tight text-xs mt-2 mb-4 text-muted-foreground font-semibold'>Existing Member</p>
+
+                <div className='flex flex-col gap-2 w-full'>
+                   {members.map((member: WorkspaceMember) => (
+                     <div className='flex w-full justify-between items-center' key={member.userId}>
+                     <div className='flex gap-2 items-center'>
+                     <div className="w-10 h-10 rounded-full shadow-sm "> 
+                        <Image
+                        src={getAvatar(member.user.avatarUrl, member.user.email)}
+                        width={42}
+                        height={42}
+                        alt={member.user.fullName ?? 'collaborators'}
+                        className="object-cover rounded-full" 
+                        />
+                         </div>
+                         <div className='flex flex-col gap-1'>
+                             <p className='leading-tight text-sm text-gray-800 font-semibold'>{member.user.fullName}</p>
+                             <p className='leading-tight text-xs text-muted-foreground'>{member.role}</p>
+                         </div>
+                     </div>
+
+                     <div className='flex items-center gap-2 rounded-sm cursor-pointer bg-muted border h-7 px-2' >
+                          <p className='leading-tight text-xs text-muted-foreground'>{collaboratorIds.includes(member.user.id) ? "Selected" : "Select"}</p>
+                          <Checkbox className='text-green-500 size-3 border border-muted-foreground accent-muted-foreground  data-[state=checked]:bg-muted-foreground
+    data-[state=checked]:border-muted-foreground cursor-pointer' checked={collaboratorIds.includes(member.user.id)} onCheckedChange={() => toggleUserId(member.user.id)} onClick={(e) => e.stopPropagation()}/>    
+                     </div>
+                 </div>
+                   ))}
+                </div>
+          </div>
+
+          
+              <Separator/>
+              <p className='leading-tight text-xs text-muted-foreground'>Copy the link below</p>
+
+              <div className='bg-muted w-full flex items-center py-2 px-2 border rounded-lg justify-between'>
+                 <p className='leading-tight text-xs mt-2 mb-2 text-muted-foreground'>aklkfncsz84385ht34eih3gvnwa\sgn</p>
+                 <Button className='flex items-center gap-2 rounded-sm cursor-pointer bg-green-200'>
+                             <Copy className='text-green-400 size-3'/>    
+                             <p className='leading-tight text-xs text-green-400 font-medium'>copy</p>
+                        </Button>
+              </div>
+        </DialogContent>
+</Dialog>
+
                   </div>                  
                 </Field>
                 </div>
@@ -323,9 +416,11 @@ const CreateTask = () => {
          <div className='w-56 flex items-end'>
             <Button className="flex px-4 py-5 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer w-full" type="submit" onClick={form.handleSubmit(onSubmit)}>
             <Rocket className='text-white size-5'/>
-              <p className='text-[1rem] leading-tight font-semibold'>Launch Task</p>
+              <p className='text-[1rem] leading-tight font-semibold'>{loading ? 'Loading...' : 'Launch Task'}</p>
             </Button>
          </div>
+
+        
     </div>
   )
 }

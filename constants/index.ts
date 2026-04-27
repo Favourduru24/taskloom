@@ -5,6 +5,11 @@
      email: string,
      lastMessage: string
    }
+
+   export interface CategoryType {
+    value: string;
+    label: string;
+   }
  
  export const myTeam: myTeamProps[] = [
     {
@@ -44,3 +49,12 @@
     },
 
   ]
+
+  export const Category: CategoryType[] = [
+      { value: "DESIGN", label: "Design" },
+      { value: "DEVELOPMENT", label: "Development" },
+      { value: "MARKETING", label: "Marketing" },
+      { value: "PRODUCT", label: "Product" },
+      { value: "SALES", label: "Sales" },
+      { value: "SUPPORT", label: "Support" },
+    ];
