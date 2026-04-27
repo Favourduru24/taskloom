@@ -10,10 +10,10 @@ import { InputGroup, InputGroupTextarea } from '@/components/ui/input-group'
 import { getAvatar } from '@/lib/utils'
 import { createTaskSchema, createTaskSchemaType } from '@/utility/validation/task'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowDown, Image as Media, Link2Icon, X, Plus, Rocket, Trash, Copy } from 'lucide-react'
+import { ArrowDown, Image as Media, Link2Icon, X, Plus, Rocket, Trash, Copy} from 'lucide-react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import {
@@ -44,6 +44,8 @@ const CreateTask = () => {
   const router = useRouter()
   const [members, setMembers] = useState<WorkspaceMember[]>([])
   const [collaboratorIds, setCollaboratorIds] = useState<string[]>([])
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
 
   useEffect(() => {
     if (!workspaceId) return;
@@ -64,11 +66,55 @@ const CreateTask = () => {
     );
   }
 
+  const handleFileUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const newFiles: File[] = [];
+      const newPreviews: string[] = [];
+
+      Array.from(files).forEach((file) => {
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+
+        if(!isImage || isVideo) toast('only image or video can be uploaded')
+        
+        const maxFiles = 5
+
+        if (uploadedFiles.length + newFiles.length >= maxFiles) {
+          toast(`File limit reached Maximum ${maxFiles}`);
+          return;
+        }
+
+        newFiles.push(file);
+        newPreviews.push(URL.createObjectURL(file));
+      });
+
+      setUploadedFiles((prev) => [...prev, ...newFiles]);
+      setFilePreviews((prev) => [...prev, ...newPreviews]);
+    },
+    [toast, uploadedFiles]
+  );
+
+  const handleRemoveFile = useCallback(
+    (index: number) => {
+      const newFiles = uploadedFiles.filter((_, i) => i !== index);
+      const newPreviews = filePreviews.filter((_, i) => i !== index);
+
+      if (filePreviews[index]) {
+        URL.revokeObjectURL(filePreviews[index]);
+      }
+
+      setUploadedFiles(newFiles);
+      setFilePreviews(newPreviews);
+    },
+    [uploadedFiles, filePreviews]
+  );
+
   const selectedMembers = members.filter((mem) =>
     collaboratorIds.includes(mem.userId)
   );
-
-  console.log({selectedMembers})
 
   const form = useForm<createTaskSchemaType>({
     resolver: zodResolver(createTaskSchema),
@@ -79,6 +125,7 @@ const CreateTask = () => {
       endDate: "",
     }
   })
+
 
   async function onSubmit(data: createTaskSchemaType) {
     if (loading) return;
@@ -229,8 +276,15 @@ const CreateTask = () => {
                   <FieldLabel htmlFor="form-rhf-demo-title" className='text-lg'>
                     Attachment
                   </FieldLabel>
-                    <div className='flex items-center gap-2 border rounded-md px-2'>
-
+                    <div className='flex items-center gap-2 border rounded-md px-2 relative'>
+                      <input 
+                      type='file'
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      onChange={handleFileUpload}
+                      maxLength={5} 
+                      accept='image/*' 
+                      // disabled={uploadedFiles.length >= maxFiles}
+                      />
                      <div className='w-full h-10 flex items-center justify-center'>
                         <p className='text-muted-foreground text-sm'>Upload</p>
                      </div>
@@ -239,6 +293,39 @@ const CreateTask = () => {
                     </div>
                 </Field>
                 </div>
+                {filePreviews.length > 0 && (
+                    <div className="grid grid-cols-4 gap-2">
+                      {filePreviews.map((preview, index) => {
+                        const file = uploadedFiles[index];
+                        const isVideo = file?.type.startsWith('video/');
+                        return (
+                          <div key={preview} className="relative group">
+                            {isVideo ? (
+                              <video
+                                src={preview}
+                                className="w-full h-24 object-cover rounded border"
+                                controls
+                                // muted
+                              />
+                            ) : (
+                              <img
+                                src={preview}
+                                alt={`Preview ${index + 1}`}
+                                className="w-full h-24 object-cover rounded border"
+                              />
+                            )}
+                            <button
+                              type="button"
+                              className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                            >
+                              <X name="X" className="h-3 w-3 text-white cursor-pointer" onClick={() => handleRemoveFile(index)}/>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
 
                  <div className='flex items-center gap-2'>
                     <Field>
@@ -418,6 +505,8 @@ const CreateTask = () => {
             <Rocket className='text-white size-5'/>
               <p className='text-[1rem] leading-tight font-semibold'>{loading ? 'Loading...' : 'Launch Task'}</p>
             </Button>
+
+           
          </div>
 
         
