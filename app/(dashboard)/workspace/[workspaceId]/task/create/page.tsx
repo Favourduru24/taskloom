@@ -29,6 +29,7 @@ import { Category, CategoryType } from '@/constants'
 import { getWorkspaceMemberApi } from '@/utility/api/workspace'
 import { WorkspaceMember } from '../page'
 import { createTaskApi, getWorkspaceTasksApi } from '@/utility/api/task'
+import { uploadAsset } from '@/utility/api/library'
 
 
 
@@ -46,6 +47,7 @@ const CreateTask = () => {
   const [collaboratorIds, setCollaboratorIds] = useState<string[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
+  const [uploadingMedia, setIsUploadingMedia] = useState(false)
 
   useEffect(() => {
     if (!workspaceId) return;
@@ -126,30 +128,61 @@ const CreateTask = () => {
     }
   })
 
+  console.log({members})
+
 
   async function onSubmit(data: createTaskSchemaType) {
     if (loading) return;
+  
     setLoading(true);
+    setIsUploadingMedia(false);
   
     try {
-        await createTaskApi(
+      let imageUrl: string[] = [];
+  
+      if (uploadedFiles.length > 0) {
+        setIsUploadingMedia(true);
+  
+        const uploadPromises = uploadedFiles.map(async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+  
+          if (file.name) {
+            formData.append('filename', file.name);
+          }
+  
+          const res = await uploadAsset(formData, workspaceId);
+          return res?.url;
+        });
+  
+        const uploadedUrls = await Promise.all(uploadPromises);
+  
+        imageUrl = uploadedUrls.filter(Boolean);
+        setIsUploadingMedia(false);
+      }
+  
+      await createTaskApi(
         data,
         priority,
         workspaceId,
-        collaboratorIds
+        collaboratorIds,
+        imageUrl[0] ?? null
       );
   
       toast.success(`Task "${data.title}" created successfully!`);
   
       router.push(`/workspace/${workspaceId}/task`);
-    
     } catch (error: any) {
-      toast.error(error.message || "Task creation failed");
+      console.error(error);
+  
+      toast.error(
+        error?.message || "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
+      setIsUploadingMedia(false);
     }
   }
-
   return (
    <div className="w-full flex flex-co gap-4 min-h-0 max-w-3xl py-4">
 

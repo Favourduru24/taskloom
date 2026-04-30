@@ -6,6 +6,7 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { priorityColors } from "@/constants"
 import { formatDate, getAvatar } from "@/lib/utils"
 import { getWorkspaceTasksApi } from "@/utility/api/task"
 import { getWorkspaceMemberApi } from "@/utility/api/workspace"
@@ -43,14 +44,52 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
     getWorkspaceTasksApi(workspaceId),
     getWorkspaceMemberApi(workspaceId)]
   )
-   
-  interface myTeamProps {
-     id: number
-     profilePics: string
-     name: string;
-     email: string,
-     lastMessage: string
-   }
+
+  function getPriorityColor(priority: string) {
+    switch (priority) {
+      case "URGENT":
+        return {
+          bg: "bg-red-100",
+          text: "text-red-600",
+        };
+  
+      case "INPROGRESS":
+        return {
+          bg: "bg-orange-100",
+          text: "text-orange-600",
+        };
+  
+      case "LOW":
+        return {
+          bg: "bg-yellow-100",
+          text: "text-yellow-600",
+        };
+  
+      case "TODO":
+        return {
+          bg: "bg-gray-100",
+          text: "text-gray-600",
+        };
+  
+      case "NORMAL":
+        return {
+          bg: "bg-blue-100",
+          text: "text-blue-600",
+        };
+  
+      case "COMPLETED":
+        return {
+          bg: "bg-green-100",
+          text: "text-green-600",
+        };
+  
+      default:
+        return {
+          bg: "bg-gray-100",
+          text: "text-gray-600",
+        };
+    }
+  }
 
   interface taskStatusProps {
     id: number;
@@ -67,6 +106,7 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
     id: number;
     title: string;
     description: string;
+    priority: string;
     imageUrl?: string;
     category: string;
     endDate: string;
@@ -74,44 +114,6 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
     collaborators: Collaborator[]
    }
    
-  const myTeam: myTeamProps[] = [
-    {
-      id: 1,
-     profilePics: '/images/user1.png',
-     name: 'Christ Moris',
-     email: 'durupristine@gmail.com',
-     lastMessage: 'Hi Pristine, How are you'
-    },
-    {
-     id: 2,
-     profilePics: '/images/user1.png',
-     name: 'Joseph Mandola',
-     email: 'joseph@gmail.com',
-     lastMessage: 'Do you need that design'
-    },
-    {
-     id: 3,
-     profilePics: '/images/user1.png',
-     name: 'Charlie Chu',
-     email: 'charliechu@gmail.com',
-     lastMessage: 'Good Morning, what is our progess'
-    },
-    {
-      id: 4,
-     profilePics: '/images/user1.png',
-     name: 'Micheal Jordan',
-     email: 'michealjordan@gmail.com',
-     lastMessage: 'Have you gotten the design'
-    },
-    {
-      id: 5,
-     profilePics: '/images/user1.png',
-     name: 'Micheal Jordan',
-     email: 'durupristine@gmail.com',
-     lastMessage: 'Have you gotten the design'
-    },
-
-  ]
 
   const TaskStatus: taskStatusProps[] = [
     {
@@ -185,11 +187,6 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
                          </div>
                      </div>
 
-                     {/* <div className='flex items-center gap-2 rounded-sm cursor-pointer bg-muted border h-7 px-2' >
-                          <p className='leading-tight text-xs text-muted-foreground'>{collaboratorIds.includes(m.user.id) ? "Selected" : "Select"}</p>
-                          <Checkbox className='text-green-500 size-3 border border-muted-foreground accent-muted-foreground  data-[state=checked]:bg-muted-foreground
-    data-[state=checked]:border-muted-foreground cursor-pointer' checked={collaboratorIds.includes(member.user.id)} onCheckedChange={() => toggleUserId(member.user.id)} onClick={(e) => e.stopPropagation()}/>    
-                     </div> */}
                  </div>
                    ))}
                 </div>
@@ -250,43 +247,52 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
            </div>
 
            <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
-            {data.map((task: TaskProps) => (
+            {data.map((task: TaskProps) => {
+            const color = getPriorityColor(task.priority);
+
+              return (
               <Link href={`/task/${task.id}`} key={task.id}>              
               <Card className="shadow-sm border ring-0 rounded-xl leading-none h-fit flex flex-col" >
                   <div className="flex flex-row items-center justify-between px-2">
-                     <Button className='bg-primary w-fit p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
-                    <p className='text-white-100 leading-tight text-sm'>{task.category}</p>
+                     <Button className='bg-primary w-fit p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer '>
+                    <p className='text-white-100 leading-tight text-[0.7rem]'>{task.category}</p>
                    </Button>
                    <EllipsisVertical className="size-5"/>
                   </div>
 
-                 {task.imageUrl ?  <div className="w-full h-24 overflow-hidden rounded- ring-2 ring-white shadow-sm px-2 rounded-md"> 
-                        <Image
-                         src={task.imageUrl}
-                         width={500}
-                         height={500}
-                         alt='task-img'
-                         className="object-cover rounded-md" 
-                          />
-                      </div> : <div className="w-full h-24 overflow-hidden rounded- ring-2 ring-white shadow-sm px-2 rounded-md"> 
+                 {task.imageUrl ?  <div className="w-full h-24 px-2">
+                <div className="relative w-full h-full overflow-hidden rounded-t-md">
+                  <Image
+                    src={task.imageUrl}
+                    alt="task-img"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </div> : <div className="w-full h-24 overflow-hidden ring-2 ring-white shadow-sm px-2 rounded-md"> 
                         <Image
                          src={getAvatar(null, task.title)}
                          width={500}
                          height={500}
                          alt='task-img'
-                         className="object-cover rounded-md" 
+                         className="object-cover rounded-t-md" 
                           />
                       </div> }
 
                   <div className="px-3 flex flex-col gap-1">
-                    <p className="text-lg leading-8 font-semibold capitalize">{task.title}</p>
-                    <p className="text-[0.8rem] leading-6 break-all font-medium text-muted-foreground">{task.description}</p>
-
+                    <p className="text-lg leading-8 font-semibold capitalize">{task.title.slice(0, 20)}</p>
+                    <p className="text-[0.8rem] leading-6 break-all font-medium text-muted-foreground"> {task.description.slice(0, 30)}...</p>
+                       <div className="flex items-center justify-between w-full">
                     <Button className='w-24 p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer border border-gray-200 mt-1' variant={'ghost'}>
-                    <p className='text-destructive leading-tight font-medium text-[0.7rem]'>{formatDate(task.endDate)
+                    <p className='text-muted-foreground leading-tight font-medium text-[0.65rem]'>{formatDate(task.endDate)
                     }</p>
                    </Button>
 
+                    <Button className={`${color.bg} ${color.text} w-24 p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer border border-gray-200 mt-1`} variant={'ghost'}>
+                    <p className=' leading-tight font-medium text-[0.7rem]'>{task.priority
+                    }</p>
+                   </Button>
+                    </div>
                    <div className="flex justify-between items-center mt-2">
                      <div className="flex items-center -space-x-2"> 
                                 {task.collaborators?.slice(0, 3).map((collab: Collaborator, index) => (
@@ -306,13 +312,15 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
 
                        <div className="flex items-center gap-x-2">
                           <Clock className="size-5 text-gray-500"/>
-                          <p className="leading-6 break-all font-medium text-muted-foreground text-base">5/5</p>
+                          <p className="leading-6 break-all font-medium text-muted-foreground text-base">{Math.floor(Math.random() * 5)}/5</p>
                        </div>
                         </div>
                         </div>
                   </Card>
                 </Link>
-                  ))}
+                 )
+                }
+                  )}
            </div>
 
        </div>

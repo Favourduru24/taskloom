@@ -2,7 +2,7 @@
 import { ArrowDown, Bell, Moon, Plus, Search } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '../ui/button'
-import { getAvatar } from '@/lib/utils'
+import { cn, getAvatar } from '@/lib/utils'
 import { getWorkspaceApi } from '@/utility/api/workspace'
 import {
   DropdownMenu,
@@ -12,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useEffect, useState } from 'react'
-import { useRouter, usePathname} from 'next/navigation'
+import { useRouter, usePathname, useParams} from 'next/navigation'
+import Link from 'next/link'
 
 interface WorkspaceList {
   id: string
@@ -28,19 +29,47 @@ const Header = () => {
   const [workspace, setWorkspace] = useState<WorkspaceList[]>([])
   const router = useRouter();
   const pathname = usePathname();
+   const params = useParams()
+   const {workspaceId} = params
 
-    useEffect(() => {
-        async function fetchWorkspace() {
-          const data = await getWorkspaceApi()
-          setWorkspace(data);
-        }
-      
-        fetchWorkspace();
-      }, []);
+  const [loading, setLoading] = useState(false)
+
+  const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceList | null>(workspace[0] || null);
+
+
+
+  useEffect(() => {
+    const saved = localStorage.getItem("selectedWorkspace");
+  
+    if (saved) {
+      setSelectedWorkspace(JSON.parse(saved));
+    }
+  
+    async function fetchWorkspace() {
+      setLoading(true);
+  
+      try {
+        const data = await getWorkspaceApi();
+        setWorkspace(data);
+      } catch (error) {
+        console.log(error, "Workspace error");
+      } finally {
+        setLoading(false);
+      }
+    }
+  
+    fetchWorkspace();
+  }, []);
 
 
 
       const handleSwitchWorkspace = (workspaceId: string) => {
+        const ws = workspace.find(w => w.id === workspaceId);
+          if (ws) {
+            setSelectedWorkspace(ws);
+            localStorage.setItem('selectedWorkspace', JSON.stringify(ws))
+          }
+
         const newPath = pathname.replace(
           /\/workspace\/[^/]+/,
           `/workspace/${workspaceId}`
@@ -51,15 +80,15 @@ const Header = () => {
 
   return (
     <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
-         <div className='flex items-center w-full justify-between'>
+         <div className='flex items-center w-full justify-between gap-2'>
 
             <DropdownMenu>
       <DropdownMenuTrigger asChild>
              
-                          <div className='flex items-center gap-x-2 justify-center cursor-pointer' >
-                             <div className="w-8 h-8 overflow-hidden rounded-md shadow-sm"> 
+                          <div className={cn('flex items-center gap-x-2 justify-center cursor-pointer w-full max-w-36',)} >
+                             <div className="w-8 h-8 overflow-hidden rounded-md shadow-sm shrink-0"> 
                                          <Image
-                                           src={getAvatar(null, 'logo')}
+                                           src={getAvatar(null, selectedWorkspace?.name as string)}
                                            width={32}
                                            height={32}
                                            alt={'logo'}
@@ -67,11 +96,11 @@ const Header = () => {
                                          />
                                        </div>
                           <div className='flex flex-col justify-center'>
-                                <p className='text-foreground-muted text-sm font-medium'>{workspace[0]?.name}</p>
+                                <p className='text-foreground-muted text-sm font-medium  break-all'>{loading ? 'Loading..' : selectedWorkspace? `${selectedWorkspace?.name}`.slice(0, 15) : 'No WS'}</p>
                                 <p className='text-gray-500 text-xs'>Trial Plan</p>
                           </div>
 
-                        <ArrowDown className='size-4' strokeWidth={1}/>
+                        <ArrowDown className='size-4 shrink-0' strokeWidth={1}/>
                     </div>
                         
                     </DropdownMenuTrigger>
@@ -87,9 +116,11 @@ const Header = () => {
 
                       <DropdownMenuSeparator />
 
-                      <DropdownMenuItem className='text-primary flex items-center justify-center cursor-pointer'>
+                      <DropdownMenuItem>
+                        <Link href={`/create-workspace`} className='text-primary flex items-center justify-center gap-1 cursor-pointer'>
                         <Plus/>
                         Create WS
+                        </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

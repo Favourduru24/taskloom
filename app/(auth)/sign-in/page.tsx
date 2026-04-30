@@ -120,7 +120,7 @@ import {useRouter} from 'next/navigation'
                           </Link>
                         </div>
                         
-                        <Button className='h-10 rounded-sm mt-2'>
+                        <Button className='h-10 rounded-sm mt-2 cursor-pointer'>
                            <p className='text-[1rem] leading-tight font-semibold text-white-100'>{loading ? 'Loading...' : 'Sign In'}</p>
                         </Button>
 

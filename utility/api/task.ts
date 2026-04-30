@@ -2,7 +2,7 @@
 import { cookies } from "next/headers"
 import { createTaskSchemaType } from "../validation/task"
 
-export async function createTaskApi(formData: createTaskSchemaType, priority: string, workspaceId: string, collaboratorIds: string[]) {
+export async function createTaskApi(formData: createTaskSchemaType, priority: string, workspaceId: string, collaboratorIds: string[], imageUrl: string) {
    const cookieStore = await cookies()
    
    const accessToken = cookieStore.get('accessToken')?.value
@@ -21,7 +21,7 @@ export async function createTaskApi(formData: createTaskSchemaType, priority: st
         "Content-Type": "application/json",
         "Authorization": `Bearer ${accessToken}`
        },
-       body: JSON.stringify({title, description, endDate, category, workspaceId, priority, collaboratorIds}),
+       body: JSON.stringify({title, description, endDate, category, workspaceId, priority, collaboratorIds, imageUrl}),
       }) 
       
       const data = await res.json()

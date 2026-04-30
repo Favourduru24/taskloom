@@ -11,45 +11,39 @@
     label: string;
    }
  
- export const myTeam: myTeamProps[] = [
-    {
-      id: 1,
-     profilePics: '/images/user1.png',
-     name: 'Christ Moris',
-     email: 'durupristine@gmail.com',
-     lastMessage: 'Hi Pristine, How are you'
+   export const priorityColors = {
+    Urgent: {
+      text: "text-red-600",
+      bg: "bg-red-100",
+      hex: "#ef4444",
     },
-    {
-     id: 2,
-     profilePics: '/images/user1.png',
-     name: 'Joseph Mandola',
-     email: 'joseph@gmail.com',
-     lastMessage: 'Do you need that design'
+    Normal: {
+      text: "text-orange-600",
+      bg: "bg-orange-100",
+      hex: "#f97316",
     },
-    {
-     id: 3,
-     profilePics: '/images/user1.png',
-     name: 'Charlie Chu',
-     email: 'charliechu@gmail.com',
-     lastMessage: 'Good Morning, what is our progess'
+    Low: {
+      text: "text-yellow-600",
+      bg: "bg-yellow-100",
+      hex: "#eab308",
     },
-    {
-      id: 4,
-     profilePics: '/images/user1.png',
-     name: 'Micheal Jordan',
-     email: 'michealjordan@gmail.com',
-     lastMessage: 'Have you gotten the design'
+    ToDo: {
+      text: "text-gray-600",
+      bg: "bg-gray-100",
+      hex: "#6b7280",
     },
-    {
-      id: 5,
-     profilePics: '/images/user1.png',
-     name: 'Micheal Jordan',
-     email: 'durupristine@gmail.com',
-     lastMessage: 'Have you gotten the design'
+    InProgress: {
+      text: "text-blue-600",
+      bg: "bg-blue-100",
+      hex: "#3b82f6",
     },
-
-  ]
-
+    Completed: {
+      text: "text-green-600",
+      bg: "bg-green-100",
+      hex: "#22c55e",
+    },
+  };
+  
   export const Category: CategoryType[] = [
       { value: "DESIGN", label: "Design" },
       { value: "DEVELOPMENT", label: "Development" },
