@@ -27,7 +27,7 @@ export async function createTaskApi(formData: createTaskSchemaType, priority: st
       const data = await res.json()
 
       if(!res.ok) {
-        throw new Error(data?.message || 'Failed to fetch workspace')
+        // throw new Error(data?.message || 'Failed to fetch workspace')
       }
 
       return data
@@ -59,8 +59,10 @@ export async function getWorkspaceTasksApi(workspaceId: string) {
       }
 
       return data
-    } catch (error) {
-        console.error("Create Workspace error:", error);
-        throw error;
+    } catch (error: any) {
+      return {
+        data: null,
+        error: error?.message || "Network error",
+      };
     }
 }

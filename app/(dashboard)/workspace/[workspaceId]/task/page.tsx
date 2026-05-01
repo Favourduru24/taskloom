@@ -1,3 +1,4 @@
+import { EmptyOutline } from "@/components/shared/NotFound"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -247,7 +248,7 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
            </div>
 
            <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
-            {data.map((task: TaskProps) => {
+            {data?.length > 0 ? data.map((task: TaskProps) => {
             const color = getPriorityColor(task.priority);
 
               return (
@@ -320,7 +321,13 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
                 </Link>
                  )
                 }
-                  )}
+                  ) : <div className="col-span-full flex justify-center w-full">
+                     <EmptyOutline
+                      title="No tasks found"
+                      description="You don’t have any tasks yet. Create your first task to get started."
+                      buttonText="Create Task"
+                    />
+                    </div>}
            </div>
 
        </div>
