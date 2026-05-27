@@ -35,24 +35,24 @@ const Sidebar = () => {
       href: `/workspace/${workspaceId}/task`,
       icons: CheckSquare
     },
-    {
-      id: 3,
-      label: "Messages",
-      href: `/workspace/${workspaceId}/message`,
-      icons: SendIcon 
-    },
+    // {
+    //   id: 3,
+    //   label: "Messages",
+    //   href: `/workspace/${workspaceId}/message`,
+    //   icons: SendIcon 
+    // },
     {
       id: 4,
       label: "Files",
       href: `/workspace/${workspaceId}/files`,
        icons: Images
     },
-    {
-      id: 5,
-      label: "Timeline",
-      href: `/workspace/${workspaceId}/timeline`,
-      icons: History
-    },
+    // {
+    //   id: 5,
+    //   label: "Timeline",
+    //   href: `/workspace/${workspaceId}/timeline`,
+    //   icons: History
+    // },
    ]
        
   return (
@@ -76,9 +76,9 @@ const Sidebar = () => {
                  
                  return (
                   <Link href={item.href} key={item.id}>
-                   <li className={`flex px-2 py-4 items-center hover:text-black justify-start gap-2 rounded-md ${pathname === item.href ? 'bg-primary text-white cursor-pointer leading-tight' : 'text-gray-600 leading-tight hover:bg-secondary cursor-pointer'}`} >
+                   <li className={`flex px-2 py-4 items-center text-black justify-start gap-2 rounded-md ${pathname === item.href ? 'bg-primary  cursor-pointer text-white leading-tight' : 'text-black leading-tight hover:bg-secondary cursor-pointer'}`} >
                       <Icons className="size-5"/>
-                      <p className='text-[1rem] font-semibold'>{item.label}</p>
+                      <p className='text-[1rem] font-medium '>{item.label}</p>
                   </li> 
                   </Link>
                 )

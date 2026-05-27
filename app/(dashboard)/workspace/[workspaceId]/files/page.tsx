@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button"
-import {ArrowDown, Download, EllipsisVertical, Eye, Folder, Link, Plus, Image as Media, Music, FilesIcon, FileStackIcon} from "lucide-react"
-import { myTeam, myTeamProps } from "@/constants"
-import { getAvatar } from "@/lib/utils"
-import { Card } from "@/components/ui/card"
+import {ArrowDown, Download, Folder, Plus, Image as Media, Music, FileStackIcon} from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { ChartRadialText } from "@/components/shared/ChartRadialText"
 import { ChartBarDefault } from "@/components/shared/ChartBarDefault"
+import { getLibaryAssetApi } from "@/utility/api/library"
 
-const Files = () => {
+const Files = async ({params}: {params: Promise<{ workspaceId: string }>
+}) => {
 
    const LibaryItem = [
     {
@@ -35,34 +35,23 @@ const Files = () => {
       name: 'PDF',
       size: '6'
     },
+    {
+      id: 6,
+      name: 'PDF',
+      size: '6'
+    },
+    {
+      id: 7,
+      name: 'PDF',
+      size: '6'
+    },
    ]
 
-   const recentFile = [
-    {
-      id: 1,
-      name: 'Proposal.docs',
-      size: '6',
-      date: 'Feb 21 2026'
-    },
-    {
-      id: 2,
-      name: 'Background.jpg',
-      size: '6',
-      date: 'Feb 21 2026'
-    },
-    {
-      id: 3,
-      name: 'Appex.md',
-      size: '6',
-      date: 'Feb 21 2026'
-    },
-    {
-      id: 4,
-      name: 'Illustration.pdf',
-      size: '6',
-      date: 'Feb 21 2026'
-    }
-   ]
+   const {workspaceId} = await params
+
+   const assets = await getLibaryAssetApi(workspaceId)
+
+   console.log({assets})
 
   return (
     <div className="w-full flex gap-4 flex-1 min-h-0 ">
@@ -74,7 +63,7 @@ const Files = () => {
               <div className="flex gap-4 items-center">
 
                    <div className="flex items-center -space-x-2"> 
-                {myTeam.slice(0, 3).map((team: myTeamProps) => (
+                {/* {myTeam.slice(0, 3).map((team: myTeamProps) => (
                   <div key={team.id} className="relative">
                     <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm"> 
                       <Image
@@ -86,7 +75,7 @@ const Files = () => {
                       />
                     </div>
                   </div>
-                ))}
+                ))} */}
 
                 <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm flex items-center justify-center bg-primary">
                   <Plus className="size-5 text-white-100"/>
@@ -94,7 +83,7 @@ const Files = () => {
               </div>
 
               <Button variant="ghost" className="ring ring-gray-400 rounded-full">
-                       <Link className="size-5 text-gray-500"/>
+                       <Download className="size-5 text-gray-500"/>
                        <p className="text-[1rem] leading-tight font-semibold text-primary">Upload</p>
                    </Button>
               </div>
@@ -104,7 +93,7 @@ const Files = () => {
 
             <div className="flex w-full h-fit flex-row gap-6 max-w-6xl">
 
-           <Card className="rounded-lg border mt-8 p-5 flex flex-col max-w-3xl w-full ">
+           <Card className="rounded-lg mt-8 p-5 flex flex-col max-w-3xl w-full ">
                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
 
@@ -121,27 +110,39 @@ const Files = () => {
                   </div>
                </div>
 
-               <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(180px,1fr))] mt-5">
-                {LibaryItem.map((item) => (
-                  <Card className="shadow ring-0 p-2 flex flex-col rounded-sm border" key={item.id}>
-                     <div className="flex items-center justify-between">
-                    <Folder className="size-5 text-primary"/>
+               <div className="grid gap-y-6 gap-x-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] mt-5">
+                {assets.data.map((item: any) => (
+                  <Card className=" ring-0 border rounded-md p-0" key={item.id}>
+                    <div className="w-full h-full flex flex-col ">
+                      <div className="w-full h-20">
+                      <Image
+                       src={item.url}
+                       alt="image"
+                       width={800}
+                       height={800}
+                       className="h-full"
+                       />
+                       </div>
+                     <CardContent className="flex-1 my-3 px-1.5">
+                     <div className="flex flex-col gap-3 ">
+                             <p className=" text-sm font-semibold truncate">{item.originalName}</p>
+                             <div className="flex items-center gap-2
+                             z">
+                               <Media className="size-4" strokeWidth={1}/>
+                               <p className="text-muted-foreground text-xs">{item.type}</p>
+                             </div>
+                               <div className="flex w-full justify-between items-center">
+                             <div className="bg-primary px-1 py-0.5 rounded-full w-fit">
+                                  <p className="text-white text-xs font-medium">10mb</p>  
+                             </div>
 
-                  <div className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-                       <Eye className="size-4 text-white-100 "/>
-                      </div>
-
-                      <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-                       <Download className="size-4 text-white-100"/>
-                      </div>
-                  </div>
-                  </div>
-
-                    <div className="flex flex-col gap-4 mt-5">
-                          <p className="text-[1rem] font-semibold leading-tight text-gray-500">{item.name}</p>
-                          <p className="text-xs font-semibold leading-tight text-gray-500">{item.size}mb</p>
-                    </div>
+                             <div className="border w-8 h-8 rounded-full flex items-center justify-center">
+                              <Download className="size-4 text-muted-foreground cursor-pointer"/>
+                             </div>
+                               </div>
+                           </div>
+                    </CardContent>
+                       </div>
                 </Card>
                 ))}
                </div>
@@ -232,99 +233,16 @@ const Files = () => {
 
                </div>
                {/* Media & Mb End */}
-
+               <Card className="max-w-xs w-full flex flex-col justify-center gap-4 mt-5 p-0 border">
+                <ChartBarDefault />
+           </Card>
             </Card>
            </div>
 
-            <div className="flex w-full h-fit flex-row gap-6 max-w-6xl ">
-
-           <Card className="rounded-lg mt-5 p-5 flex flex-col max-w-3xl w-full border">
-               <div className="flex items-center justify-between">
-                  <p className="text-xl leading-tight text-primary font-semibold">Recent Files</p>
-
-                  <div className="flex items-center gap-2 p-1 rounded-sm">
-                    <p className="text-sm leading-tight text-primary font-semibold">View All</p>
-                    <ArrowDown className="size-4 text-gray-500"/>
-                  </div>
-               </div>
-
-                  <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(110px,1fr))] mt-5 px-1">
-                    <div className="flex items-center justify-start">
-                    <p className="text-sm leading-tight font-medium text-gray-500">Name</p>
-                    <ArrowDown className="size-4 text-gray-500"/>
                   </div>
 
-                    <div className="flex items-center justify-center">
-                    <p className="text-sm leading-tight font-medium text-gray-500">Size</p>
-                    <ArrowDown className="size-4 text-gray-500"/>
-                  </div>
 
-                    <div className="flex items-center justify-end">
-                    <p className="text-sm leading-tight font-medium text-gray-500">Last Modified</p>
-                    <ArrowDown className="size-4 text-gray-500"/>
-                  </div>
-                    <div className="flex items-center justify-end">
-                    <p className="text-sm leading-tight font-medium text-gray-500">Modifier</p>
-                    <ArrowDown className="size-4 text-gray-500"/>
-                  </div>
-                  </div>
-
-                 <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(110px,1fr))] mt-2">
-
-                  {recentFile.map((recent) => (
-                    <>
-                     <div className="flex items-center justify-between p-1" key={recent.id}>
-                      <div className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-                       <Eye className="size-4 text-white-100"/>
-                      </div>
-                    <p className="text-sm leading-tight text-primary font-semibold">{recent.name}</p>
-                      </div>
-                  </div>
-
-                  <div className="flex items-center justify-center p-1">
-                    <p className="text-sm leading-tight font-medium text-gray-500">{recent.size}mb</p>
-                  </div>
-
-                  <div className="flex items-center font-medium p-1">
-                    <p className="text-sm leading-tight font-semibold text-gray-500">{recent.date}</p>
-                  </div>
-
-                   <div className="flex items-center justify-end -space-x-2 "> 
-                {myTeam.slice(0, 3).map((team: myTeamProps) => (
-                  <div key={team.id} className="relative">
-                    <div className="w-7 h-7 overflow-hidden rounded-full ring-2 ring-white shadow-sm z-10"> 
-                      <Image
-                        src={getAvatar(null, team.email)}
-                        width={32}
-                        height={32}
-                        alt={team.name}
-                        className="object-cover" 
-                        />
-                    </div>
-                  </div>
-                ))}
-
-                <div className="w-7 h-7 overflow-hidden rounded-full ring-2 ring-white shadow-sm flex items-center justify-center bg-primary text-white-100 z-40">
-                  <Plus className="size-4 text-white-100 "/> <p className="text-xs">3</p>
-                </div>
-              </div>
-               
-               <div className="flex items-center justify-end">
-              <EllipsisVertical className="size-4 text-gray-500"/>
-               </div>
-                    </>
-                  ))}
-
-                 </div>
-           </Card>
-
-           <Card className="max-w-xs w-full flex flex-col justify-center gap-4 mt-5 p-0 border">
-                <ChartBarDefault />
-           </Card>
-                  </div>
-                  </div>
-
+          
                   </div>
               </div>
             )

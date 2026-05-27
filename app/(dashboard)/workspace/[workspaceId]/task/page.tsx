@@ -7,7 +7,6 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { priorityColors } from "@/constants"
 import { formatDate, getAvatar } from "@/lib/utils"
 import { getWorkspaceTasksApi } from "@/utility/api/task"
 import { getWorkspaceMemberApi } from "@/utility/api/workspace"
@@ -41,11 +40,12 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
 
   const { workspaceId } = await params
 
-  const [data, member] = await Promise.all([
+  const [{data, error}, member] = await Promise.all([
     getWorkspaceTasksApi(workspaceId),
     getWorkspaceMemberApi(workspaceId)]
   )
 
+  
   function getPriorityColor(priority: string) {
     switch (priority) {
       case "URGENT":
@@ -252,7 +252,7 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
             const color = getPriorityColor(task.priority);
 
               return (
-              <Link href={`/task/${task.id}`} key={task.id}>              
+              <Link href={`/workspace/${workspaceId}/task/${task.id}`} key={task.id}>              
               <Card className="shadow-sm border ring-0 rounded-xl leading-none h-fit flex flex-col" >
                   <div className="flex flex-row items-center justify-between px-2">
                      <Button className='bg-primary w-fit p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer '>
@@ -324,7 +324,7 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
                   ) : <div className="col-span-full flex justify-center w-full">
                      <EmptyOutline
                       title="No tasks found"
-                      description="You don’t have any tasks yet. Create your first task to get started."
+                      description={error ? error : "You don’t have any tasks yet. Create your first task to get started."}
                       buttonText="Create Task"
                     />
                     </div>}
