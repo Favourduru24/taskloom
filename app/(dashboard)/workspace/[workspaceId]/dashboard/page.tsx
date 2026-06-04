@@ -153,6 +153,8 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
 
   const {weekEndNewTaskCount, weekEndTaskCompletedCount, weekEndTaskCount} = dashboardStats
 
+  console.log({data})
+
   return (
     <div className="w-full flex gap-4 flex-1 relative">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-8">
@@ -211,33 +213,38 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                       <div className="flex flex-col gap-4">
                  <p className="text-xl leading-tight font-bold">Tasks</p>
                     
-                    {myTasks.map((task: myTaskProps) => (
-                         <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" key={task.id}>
+                    {data?.map((ws: any) => (
+                         <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" >
                     <div className="flex gap-3 items-center">
                           <div className="w-11 h-11 overflow-hidden rounded-full bg-primary flex items-center justify-center">
-                              <Play className="text-4 text-white" strokeWidth={1.5}/>
+                              <Play className="text-4 text-white" strokeWidth={1.3}/>
                            </div>
                           
                           <div className="flex flex-col gap-y-2">
                           <p className="text-[1rem] leading-tight font-semibold">Start from</p>
                           <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
-                          <Clock className="size-4"/> <p>{task.startTime} am</p></span>
+                          <Clock className="size-4"/> <p>1:45 pm</p>
+                          </span>
                           </div>
                         </div>
 
                         <div className="flex flex-col gap-y-1">
-                        <p className="text-[1rem] leading-tight font-semibold">{task.task}</p>
+                        <p className="text-[1rem] leading-tight font-semibold">{ws.name}</p>
                         <div className="flex items-center gap-3">
                        <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
-                          <Link className="size-4 text-primary"/> <p className="text-blue-500">{task.link}</p></span>
+                          <Link className="size-4 text-primary"/> 
+                          <p className="text-blue-500">https://figma.com</p>
+                          </span>
 
                           <span className="flex flex-row items-center gap-1 text-xs leading-tight font-medium text-muted-foreground truncate">
-                          <MessageCircleMore className="size-5 text-primary"/> <p >{task.commentCount} comments</p></span>
+                          <MessageCircleMore className="size-5 text-primary"/> 
+                          <p >12 comments</p>
+                          </span>
                         </div>
                         </div>
 
                         <div className="flex flex-col gap-y-3 ">
-                        <p className="text-[1rem] leading-tight font-semibold">{task.commentCount} Completed</p>
+                        <p className="text-[1rem] leading-tight font-semibold">12 Completed</p>
 
                         <div className="flex items-center">
                        <span className="h-1 w-14 bg-primary rounded-l-full"></span>

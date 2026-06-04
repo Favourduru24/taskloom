@@ -85,7 +85,7 @@ const Header = () => {
             <DropdownMenu>
       <DropdownMenuTrigger asChild>
              
-                          <div className={cn('flex items-center gap-x-2 justify-center cursor-pointer w-full max-w-36',)} >
+                          <div className='flex items-start gap-x-2 justify-center cursor-pointer w-full max-w-36'>
                              <div className="w-8 h-8 overflow-hidden rounded-md shadow-sm shrink-0"> 
                                          <Image
                                            src={getAvatar(null, selectedWorkspace?.name as string)}
@@ -100,7 +100,19 @@ const Header = () => {
                                 <p className='text-gray-500 text-xs'>Trial Plan</p>
                           </div>
 
-                        <ArrowDown className='size-4 shrink-0' strokeWidth={1}/>
+                          <svg
+                      className={`w-5 h-5 transition-transform duration-200 mt-1`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
                     </div>
                         
                     </DropdownMenuTrigger>
@@ -155,7 +167,20 @@ const Header = () => {
                                             className="object-cover w-full" 
                                           />
                                         </div>
-                      <ArrowDown className='text-gray-400 size-5'/>
+
+                                        <svg
+                      className={`w-5 h-5 transition-transform duration-200 cursor-pointer text-muted-foreground`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
                    </div>
 
                    <Button className='bg-primary px-4 py-5 rounded-sm flex items-center justify-center h-10 cursor-pointer w-fit'>
