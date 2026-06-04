@@ -1,4 +1,5 @@
 import {ChartLineMultiple} from "@/components/shared/ChartLineMultiple"
+import DashboardStats from "@/components/shared/DashboardStats"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -7,12 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { cn, getAvatar } from "@/lib/utils"
+import { getDashboardStatApi } from "@/utility/api/dashboard"
 import { getWorkspaceApi } from "@/utility/api/workspace"
 
 import { Calendar, Clock, EllipsisVertical, FilePlus, Layers, Link, LucideIcon, Menu, MessageCircleMore, Play, Plus, Star, TrendingDown, TrendingUp, UserPlus } from "lucide-react"
 import Image from "next/image"
 
-const Home = async () => {
+const Home = async ({params}: {params: Promise<{ workspaceId: string }>
+}) => {
 
    interface chartItemProps {
      id: number
@@ -143,47 +146,66 @@ const Home = async () => {
   }
   ]
 
+   const {workspaceId} = await params
+
   const data = await getWorkspaceApi()
+  const dashboardStats = await getDashboardStatApi(workspaceId)
+
+  const {weekEndNewTaskCount, weekEndTaskCompletedCount, weekEndTaskCount} = dashboardStats
+
+  console.log({data})
 
   return (
     <div className="w-full flex gap-4 flex-1 relative">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-8">
            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
-            {
-                chartItems.map((item: chartItemProps) => {
-                  const Icons = item.chartIcon
-                  
-                  return (
-                    <Card className="shadow-sm border-none ring-0 " key={item.id}>
-                    <CardHeader className="border-b border-gray-200">
-                       <div className="flex items-center justify-between">
-                        <div className="w-10 h-10 bg-gray-50 flex items-center justify-center rounded-sm">
-                        <Icons className="size-5 text-primary"/>
-                        </div>
-                      <CardTitle className="text-[1rem] leading-tight font-medium">{item.chartLabel}</CardTitle>
-                          <p className="text-[1.2rem] leading-tight font-medium">{item.chartScore}</p>
-                       </div>
-                      {/* <CardDescription>Card Description</CardDescription>
-                      <CardAction>Card Action</CardAction> */}
-                    </CardHeader>
-                    <CardContent className="flex gap-x-2 items-center justify-between w-full leading-none">
-                    <div>
-                    {item.trendType === 'up' ? (
-                      <TrendingUp size={100} strokeWidth={1} className="text-primary"/>
-                    ) : (
-                      <TrendingDown size={100} strokeWidth={1} className="text-red-500" />
-                    )}
-                  </div>
+           {/* {
+      id: 1,
+      chartLabel: "Task Completed",
+      chartScore: 10,
+      chartDescription: "10+",
+      chartIcon: Star,
+      trendType: 'up'
+    },
+    {
+      id: 2,
+      chartLabel: "New Task",
+      chartScore: 10,
+      chartDescription: "10+",
+      chartIcon: FilePlus,
+      trendType: 'down'
+    },
+    {
+      id: 3,
+      chartLabel: "Project Done",
+      chartScore: 10,
+      chartDescription: "08+",
+      chartIcon: Layers,
+      trendType: 'up'
+    }, */}
+               <DashboardStats 
+                statsLabel="Task Completed"
+                statsScore={weekEndTaskCompletedCount}
+                statsDescription={`${weekEndTaskCompletedCount}+`}
+                statsIcon={<Star className="size-5 text-primary"/>}
+                trendType='up'
+               />
 
-                     <div>
-                        <p className="text-[1rem] leading-7 font-semibold text-gray-500"><span className={cn(item.trendType === 'up' ? 'text-green-500' : 'text-red-500')}>{item.chartDescription}</span> More <br/> from last week</p>
-                     </div>
-                    </CardContent>
-                     
-                  </Card>
-                  )
-                })
-              }
+               <DashboardStats 
+                statsLabel="New Task"
+                statsScore={weekEndNewTaskCount}
+                statsDescription={`${weekEndNewTaskCount}+`}
+                statsIcon={<FilePlus className="size-5 text-primary"/>}
+                trendType='down'
+               />
+
+               <DashboardStats 
+                statsLabel="Projects"
+                statsScore={weekEndTaskCount}
+                statsDescription={`${weekEndTaskCount}+`}
+                statsIcon={<Layers className="size-5 text-primary"/>}
+                trendType='up'
+               />
               </div>
 
                          <ChartLineMultiple />
@@ -191,33 +213,38 @@ const Home = async () => {
                       <div className="flex flex-col gap-4">
                  <p className="text-xl leading-tight font-bold">Tasks</p>
                     
-                    {myTasks.map((task: myTaskProps) => (
-                         <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" key={task.id}>
+                    {data?.map((ws: any) => (
+                         <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" >
                     <div className="flex gap-3 items-center">
                           <div className="w-11 h-11 overflow-hidden rounded-full bg-primary flex items-center justify-center">
-                              <Play className="text-4 text-white" strokeWidth={1.5}/>
+                              <Play className="text-4 text-white" strokeWidth={1.3}/>
                            </div>
                           
                           <div className="flex flex-col gap-y-2">
                           <p className="text-[1rem] leading-tight font-semibold">Start from</p>
                           <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
-                          <Clock className="size-4"/> <p>{task.startTime} am</p></span>
+                          <Clock className="size-4"/> <p>1:45 pm</p>
+                          </span>
                           </div>
                         </div>
 
                         <div className="flex flex-col gap-y-1">
-                        <p className="text-[1rem] leading-tight font-semibold">{task.task}</p>
+                        <p className="text-[1rem] leading-tight font-semibold">{ws.name}</p>
                         <div className="flex items-center gap-3">
                        <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
-                          <Link className="size-4 text-primary"/> <p className="text-blue-500">{task.link}</p></span>
+                          <Link className="size-4 text-primary"/> 
+                          <p className="text-blue-500">https://figma.com</p>
+                          </span>
 
                           <span className="flex flex-row items-center gap-1 text-xs leading-tight font-medium text-muted-foreground truncate">
-                          <MessageCircleMore className="size-5 text-primary"/> <p >{task.commentCount} comments</p></span>
+                          <MessageCircleMore className="size-5 text-primary"/> 
+                          <p >12 comments</p>
+                          </span>
                         </div>
                         </div>
 
                         <div className="flex flex-col gap-y-3 ">
-                        <p className="text-[1rem] leading-tight font-semibold">{task.commentCount} Completed</p>
+                        <p className="text-[1rem] leading-tight font-semibold">12 Completed</p>
 
                         <div className="flex items-center">
                        <span className="h-1 w-14 bg-primary rounded-l-full"></span>

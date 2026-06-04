@@ -76,7 +76,7 @@ export const ChartLineMultiple = () =>  {
     
                               <ul className="flex items-center gap-4">
                                   {taskChartItem.map((task) => (
-                                    <li key={task.id} className={cn(task.isOn ? 'border-b-2 border-primary' : '', "text-[1rem] leading-tight font-semibold")}>
+                                    <li key={task.id} className={cn(task.isOn ? 'border-b-2 border-primary text-primary font-semibold' : '', "text-[1rem] leading-tight font-semibold")}>
                                        {task.timeline}
                                     </li>
                                   ))}

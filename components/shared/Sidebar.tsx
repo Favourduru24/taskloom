@@ -35,24 +35,24 @@ const Sidebar = () => {
       href: `/workspace/${workspaceId}/task`,
       icons: CheckSquare
     },
-    // {
-    //   id: 3,
-    //   label: "Messages",
-    //   href: `/workspace/${workspaceId}/message`,
-    //   icons: SendIcon 
-    // },
+    {
+      id: 3,
+      label: "Messages",
+      href: `/workspace/${workspaceId}/message`,
+      icons: SendIcon 
+    },
     {
       id: 4,
       label: "Files",
       href: `/workspace/${workspaceId}/files`,
        icons: Images
     },
-    // {
-    //   id: 5,
-    //   label: "Timeline",
-    //   href: `/workspace/${workspaceId}/timeline`,
-    //   icons: History
-    // },
+    {
+      id: 5,
+      label: "Timeline",
+      href: `/workspace/${workspaceId}/timeline`,
+      icons: History
+    },
    ]
        
   return (
