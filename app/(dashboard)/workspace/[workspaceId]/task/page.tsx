@@ -1,7 +1,7 @@
+import Category from "@/components/shared/Category"
 import { EmptyOutline } from "@/components/shared/NotFound"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -92,11 +92,6 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
     }
   }
 
-  interface taskStatusProps {
-    id: number;
-    status: string;
-   }
-
   type Collaborator = {
     taskId: string;
     userId: string;
@@ -114,27 +109,7 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
     timeline: number;
     collaborators: Collaborator[]
    }
-   
-
-  const TaskStatus: taskStatusProps[] = [
-    {
-     id: 1,
-     status: 'To Do-List'
-    },
-    {
-     id: 2,
-     status: 'In Progress'
-    },
-    {
-     id: 3,
-     status: 'In Review'
-    },
-    {
-     id: 4,
-     status: 'Done'
-    },
-    ]
-
+     
   return (
     <div className="w-full flex gap-4 flex-1 min-h-0">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4">
@@ -231,21 +206,7 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
                               </div>
                   </div>
               </div>
-
-            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
-               {
-                TaskStatus.map((task: taskStatusProps) => (
-                  <Card className="shadow-sm border ring-0 rounded-sm leading-none h-10 flex justify-center" key={task.id}>
-                   <div className="flex flex-row items-center justify-between px-2 ">
-                   <p className="text-sm leading-tight font-semibold text-black/60">{task.status}</p>
-                   <div className='bg-primary w-7 rounded-sm flex items-center justify-center h-7 cursor-pointer'>
-                    <Checkbox/>
-                </div>
-                   </div>
-               </Card>
-                ))
-               }
-           </div>
+                <Category/>
 
            <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
             {data?.length > 0 ? data.map((task: TaskProps) => {

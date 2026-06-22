@@ -1,8 +1,8 @@
 'use client'
-import { ArrowDown, Bell, Moon, Plus, Search } from 'lucide-react'
+import {Bell, Moon, Plus, Search, Clock} from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '../ui/button'
-import { cn, getAvatar } from '@/lib/utils'
+import { getAvatar } from '@/lib/utils'
 import { getWorkspaceApi } from '@/utility/api/workspace'
 import {
   DropdownMenu,
@@ -148,17 +148,21 @@ const Header = () => {
             </form>
              </div>
 
-            <div className='flex gap-4 items-center'>
-                 <div className='h-10 w-10 rounded-full flex items-center justify-center bg-muted-foreground/10'>
+            <div className='flex gap-3 items-center'>
+               <div className='h-9 w-9 rounded-md flex items-center justify-center border'>
+                  <Clock className="text-black size-5"/>
+                </div>
+
+                 <div className='h-9 w-9 rounded-full flex items-center justify-center bg-muted-foreground/10'>
                   <Bell className="text-primary size-5"/>
                 </div>
 
-                <div className='h-10 w-10 rounded-full flex items-center justify-center bg-muted-foreground/10'>
-                  <Moon className="text-muted-foreground size-5"/>
+                <div className='h-9 w-9 rounded-full flex items-center justify-center border'>
+                  <Moon className="text-black size-5"/>
                 </div>
 
                    <div className='flex items-end justify-center gap-1'>
-                    <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                    <div className="h-9 w-9 overflow-hidden rounded-full shadow-sm"> 
                                           <Image
                                             src="/images/user1.png"
                                             width={32}

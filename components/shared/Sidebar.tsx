@@ -35,12 +35,12 @@ const Sidebar = () => {
       href: `/workspace/${workspaceId}/task`,
       icons: CheckSquare
     },
-    {
-      id: 3,
-      label: "Messages",
-      href: `/workspace/${workspaceId}/message`,
-      icons: SendIcon 
-    },
+    // {
+    //   id: 3,
+    //   label: "Messages",
+    //   href: `/workspace/${workspaceId}/message`,
+    //   icons: SendIcon 
+    // },
     {
       id: 4,
       label: "Files",
