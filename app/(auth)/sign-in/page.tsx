@@ -14,6 +14,7 @@ import { signInSchema, signInSchemaType } from '@/utility/validation/auth'
 import { useState } from 'react'
 import { signInApi } from '@/utility/api/auth'
 import {useRouter} from 'next/navigation'
+import { useSocket } from '@/hooks/use-socket'
 
  const SignIn = () => {
 
@@ -29,19 +30,23 @@ import {useRouter} from 'next/navigation'
       })
 
       async function onSubmit(data: signInSchemaType) {
-          if (loading) return;
-                  setLoading(true);
-          
-                  try {
-                    await signInApi(data);
-          
-                    toast.success("Login Successfully!");
-                    router.push('/create-workspace')
-                  } catch (error: any) {
-                    toast.error(error.message || "SignIn failed");
-                  } finally {
-                    setLoading(false);
-                  }
+        if (loading) return;
+        setLoading(true);
+      
+        try {
+          const res = await signInApi(data);
+      
+          const token = res.accessToken; // IMPORTANT FIX
+      
+          useSocket.getState().connectSocket(token);
+      
+          toast.success("Login Successfully!");
+          router.push("/create-workspace");
+        } catch (error: any) {
+          toast.error(error.message || "SignIn failed");
+        } finally {
+          setLoading(false);
+        }
       }
 
    
