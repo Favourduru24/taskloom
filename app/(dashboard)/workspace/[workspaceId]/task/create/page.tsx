@@ -30,6 +30,7 @@ import { getWorkspaceMemberApi } from '@/utility/api/workspace'
 import { WorkspaceMember } from '../page'
 import { createTaskApi, getWorkspaceTasksApi } from '@/utility/api/task'
 import { uploadAsset } from '@/utility/api/library'
+import { useSocket } from '@/hooks/use-socket'
 
 
 
@@ -41,6 +42,11 @@ const CreateTask = () => {
    const {workspaceId} = params
 
   const [loading, setLoading] = useState(false)
+  const {socket} = useSocket()
+
+  const onlineUsers = useSocket(
+    state => state.onlineUsers
+  );
   const [priority, setPriority] = useState<string>("");
   const router = useRouter()
   const [members, setMembers] = useState<WorkspaceMember[]>([])
@@ -48,6 +54,20 @@ const CreateTask = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [uploadingMedia, setIsUploadingMedia] = useState(false)
+
+  useEffect(() => {
+    if (!socket?.connected || !workspaceId) return;
+  
+    socket.emit("workspace:join", {
+      workspaceId,
+    });
+  
+    return () => {
+      socket.emit("workspace:leave", {
+        workspaceId,
+      });
+    };
+  }, [socket?.connected, workspaceId]);
 
   useEffect(() => {
     if (!workspaceId) return;
@@ -128,7 +148,7 @@ const CreateTask = () => {
     }
   })
 
-  console.log({members})
+  console.log({members, onlineUsers})
 
 
   async function onSubmit(data: createTaskSchemaType) {
