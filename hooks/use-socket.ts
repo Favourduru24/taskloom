@@ -22,6 +22,7 @@ export const useSocket = create<SocketState>()((set, get) => ({
     const newSocket = io("http://localhost:3000/events", {
       auth: { token },
      withCredentials: true,
+     autoConnect: true
     });
 
     newSocket.on("connect", () => {
@@ -32,9 +33,12 @@ export const useSocket = create<SocketState>()((set, get) => ({
       console.log("socket error:", err.message);
     });
 
-    newSocket.on("online:users", (users) => {
-      set({ onlineUsers: users });
-    });
+     newSocket.on(
+      "workspace:online-users",
+      (users: string[]) => {
+        set({ onlineUsers: users });
+      }
+    );
 
     set({ socket: newSocket });
   },
