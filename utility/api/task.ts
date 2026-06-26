@@ -150,3 +150,39 @@ export async function getWorkspaceTaskId(workspaceId: string, taskId: string) {
    }
    }
 }
+
+export async function deleteWorkspaceTask(workspaceId: string, taskId: string) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+
+  try {
+    const res = await fetch(`http://localhost:3000/tasks/${workspaceId}/task/${taskId}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      },
+    });
+
+    const hasContent = res.status !== 204 && res.headers.get("content-type")?.includes("application/json");
+    const data = hasContent ? await res.json() : null;
+
+    if (!res.ok) {
+      return {
+        data: null,
+        error: data?.message || "Failed to delete task",
+      };
+    }
+
+    return {
+      data: data || { success: true },
+      error: null,
+    };
+
+  } catch (error: any) {
+    return {
+      data: null,
+      error: error?.message || "Network error, Failed to delete task.",
+    };
+  }
+}

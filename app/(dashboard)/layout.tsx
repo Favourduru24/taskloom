@@ -3,9 +3,8 @@ import Sidebar from '@/components/shared/Sidebar'
 import React from 'react'
 import { cookies } from 'next/headers';
 import SocketProvider from '@/components/shared/SocketProvider';
-  
-  const DashboardLayout = async({children}: {children: React.ReactNode}) => {
 
+  const DashboardLayout = async({children}: {children: React.ReactNode}) => {
     const token =
     (await cookies()).get('accessToken')?.value;
  
