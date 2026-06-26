@@ -55,19 +55,19 @@ const CreateTask = () => {
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [uploadingMedia, setIsUploadingMedia] = useState(false)
 
-  useEffect(() => {
-    if (!socket?.connected || !workspaceId) return;
+  // useEffect(() => {
+  //   if (!socket?.connected || !workspaceId) return;
   
-    socket.emit("workspace:join", {
-      workspaceId,
-    });
+  //   socket.emit("workspace:join", {
+  //     workspaceId,
+  //   });
   
-    return () => {
-      socket.emit("workspace:leave", {
-        workspaceId,
-      });
-    };
-  }, [socket?.connected, workspaceId]);
+  //   return () => {
+  //     socket.emit("workspace:leave", {
+  //       workspaceId,
+  //     });
+  //   };
+  // }, [socket?.connected, workspaceId]); http://localhost:3001/workspace/9af2f2a2-aeb1-4b09-a576-1c386aac571d/task/create
 
   useEffect(() => {
     if (!workspaceId) return;

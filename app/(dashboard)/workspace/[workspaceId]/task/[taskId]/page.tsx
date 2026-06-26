@@ -12,8 +12,8 @@ import { Card } from "@/components/ui/card"
 import { AlertTriangle, ArrowDown, Check, Edit, X, Trash2, UserPlus } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import { getWorkspaceTaskId, updateTaskApi } from "@/utility/api/task"
+import { useParams, useRouter} from "next/navigation"
+import { deleteWorkspaceTask, getWorkspaceTaskId, updateTaskApi } from "@/utility/api/task"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Controller, useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
@@ -53,12 +53,15 @@ type Collaborator = {
  }
 const TaskDetails = () => {
   const [loading, setLoading] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [priority, setPriority] = useState<string>("");
   const [taskDetails, setTaskDetails] = useState<TaskProps>()
 
   const params: {workspaceId: string, taskId: string} = useParams()
   
     const {workspaceId, taskId} = params
+    const router = useRouter()
 
     useEffect(() => {
      async function fetchTask () {
@@ -102,9 +105,9 @@ const TaskDetails = () => {
 
 
       async function onSubmit(data: updateTaskSchemaType) {
-        if (loading) return;
+        if (editing) return;
       
-        setLoading(true);
+        setEditing(true);
       
         try {
         //   let imageUrl: string[] = [];
@@ -135,7 +138,6 @@ const TaskDetails = () => {
             taskId,
             workspaceId,
             priority,
-            // collaboratorIds,
           );
       
           toast.success(`Task "${data.title}" saved successfully!`);
@@ -147,9 +149,34 @@ const TaskDetails = () => {
             error?.message || "Something went wrong. Please try again."
           );
         } finally {
-          setLoading(false);
+          setEditing(false);
         }
       }
+
+async function handleDelete() {
+  if (deleting) return; // Prevent multiple clicks while loading
+
+  setDeleting(true);
+
+  try {
+    await deleteWorkspaceTask(workspaceId, taskId)
+    router.push(`/workspace/${workspaceId}/tasks`);
+  } catch (error: any) {
+    toast.error(
+      error?.message || "An unexpected error occurred. Please try again"
+    );
+  } finally {
+    setDeleting(false);
+  }
+}
+     
+if(loading) {
+   return (
+     <div>
+      loading
+     </div>
+   )
+}
 
   return (
     <div className="w-full flex gap-4 flex-1 min-h-0">
@@ -433,10 +460,14 @@ const TaskDetails = () => {
              <AlertTriangle className="text-white-100 size-5"/>
             <p className="text-[1rem] leading-tight text-white-100">Raise Ticket</p>  
            </Button>
-
-           <Button className="w-full flex items-center h-12 ring-2 ring-red-500" variant={'ghost'}>
+              {/* Delete Here */}
+           <Button className="w-full flex items-center h-12 ring-2 ring-red-500 cursor-pointer"
+           variant={'ghost'} 
+           type="button" 
+           onClick={handleDelete} 
+           disabled={deleting}>
              <Trash2 className="text-destructive size-5"/>
-            <p className="text-[1rem] leading-tight text-red-500">Delete Task</p>  
+            <p className="text-[1rem] leading-tight text-red-500">{deleting ? "Deleting..." : "Delete Task"}</p>  
            </Button>
                </div>
         </div>  
