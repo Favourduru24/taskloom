@@ -74,7 +74,6 @@ import { cookies } from "next/headers";
       path: '/',
     })
 
-    console.log({data})
     return data
 
    } catch (error) {
@@ -83,4 +82,60 @@ import { cookies } from "next/headers";
    }
  }
 
- 
+ export async function uploadProfilePics(formData: FormData) {
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get('accessToken')?.value
+
+  if (!accessToken) {
+    throw new Error('Invalid login response: tokens missing')
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3000/auth/user/upload`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data?.message || 'Failed to upload asset')
+    }
+
+    return data
+  } catch (error) {
+    console.error("Upload Asset error:", error)
+    throw error
+  }
+}
+
+export async function getProfile() {
+  const cookieStore = await cookies()
+  
+  const accessToken = cookieStore.get('accessToken')?.value
+
+   try {
+       
+     const res = await fetch('http://localhost:3000/auth/user/profile', {
+      method: 'GET',
+      headers: {
+       "Content-Type": "application/json",
+       "Authorization": `Bearer ${accessToken}`
+      }
+     }) 
+     
+     const data = await res.json()
+
+     if(!res.ok) {
+       throw new Error(data?.message || 'Failed to profile.')
+     }
+
+     return data
+   } catch (error) {
+       console.error("Create Workspace error:", error);
+       throw error;
+   }
+}

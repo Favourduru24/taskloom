@@ -58,4 +58,4 @@ export function removeKeysFromQuery({ params, keysToRemove }: { params: string, 
 // #ai vs #AI
 
 // w3schools.com JavaScript Mastery
-// #meme #memes #softwareengineer #memestiktok #programmingmemes #webdev #codingmemes #programmer #java #python #javascript #memecoding #computers #csharp #developer #nerd #programmerhumor #chatgpt #programminghumor #codinglife #stackoverflow #devhumor #dev #tech #sociallpost
+// #meme #memes #softwareengineer #memestiktok #programmingmemes #webdev #codingmemes #programmer #java #python #javascript #memecoding #computers #nestjs #developer #nerd #programmerhumor #chatgpt #programminghumor #codinglife #stackoverflow #devhumor #dev #tech #sociallpost

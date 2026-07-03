@@ -33,29 +33,59 @@ export type WorkspaceMember = {
   user: User;
 };
 
-const Task = async ({params}: {params: Promise<{ workspaceId: string }>
-}) => {
+ 
+const Task = async ({params, searchParams}: {params: Promise<{ workspaceId: string }>, searchParams: Promise<{
+  priority?: string
+}>}) => {
 
   const { workspaceId } = await params
+  const {priority} = await searchParams
 
   const [{data, error}, member] = await Promise.all([
-    getWorkspaceTasksApi(workspaceId),
+    getWorkspaceTasksApi(workspaceId, priority),
     getWorkspaceMemberApi(workspaceId)]
   )
-     
+
   return (
     <div className="w-full flex gap-4 flex-1 min-h-0">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4">
-         <div className="flex items-center justify-between w-full">
-            <p className="text-2xl leading-tight font-bold">Tasks</p>
+         <div className="w-full">
+             <p className="text-2xl leading-tight font-bold">Tasks</p>
+              </div>
+                 <div className="flex flex-col-reverse md:flex-row md:gap-2 gap-5 md:items-center justify-between ">
 
-            <div className="flex items-center gap-x-4">
-            <Dialog>
+                <Category/>
+
+                 <div className="flex gap-x-3">
+
+                 <div className="flex items-center -space-x-2"> 
+                                {member?.slice(0, 3).map((wsMember: WorkspaceMember) => (
+                                  <div key={wsMember.userId} className="relative z-10">
+                                    <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm"> 
+                                      <Image
+                                        src={getAvatar(wsMember.user.avatarUrl, wsMember.user.email)}
+                                        width={32}
+                                        height={32}
+                                        alt={wsMember.user.fullName}
+                                        className="object-cover size-8" 
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                
+                                <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm flex items-center justify-center bg-primary z-20">
+                                <Plus className="size-5 text-white"/>
+                                </div>
+                              </div>
+
+                              <Dialog>
   <DialogTrigger asChild>
-  <Button className='bg-primary w-24 p-2 rounded-sm flex items-center justify-center h-9 cursor-pointer '>
-                    <Plus className="size-5 text-white"/>
-                    <p className='text-white-100 leading-tight'>Invite</p>
-                </Button></DialogTrigger>
+  <Button className='bg-primary md:w-24 w-fit px-2 py-1 rounded-sm flex items-center justify-center md:h-9 h-8 cursor-pointer '>
+                    {/* <UserPlus className="size-5 text-white-100 cursor-pointer "/> */}
+                    <p className='text-white-100 leading-tight hidden md:block text-lg'>+</p>
+                    <p className='text-white-100 leading-tight hidden md:block'>Invite</p>
+                </Button>
+                </DialogTrigger>
             <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Add Team Member</DialogTitle>
@@ -87,7 +117,7 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
                         width={42}
                         height={42}
                         alt={m.user.fullName ?? 'collaborators'}
-                        className="object-cover rounded-full" 
+                        className="object-center rounded-full size-10" 
                         />
                          </div>
                          <div className='flex flex-col gap-1'>
@@ -114,34 +144,12 @@ const Task = async ({params}: {params: Promise<{ workspaceId: string }>
               </div>
         </DialogContent>
 </Dialog>
-               
-
-                
-
-                 <div className="flex items-center -space-x-2"> 
-                                {member?.slice(0, 3).map((wsMember: WorkspaceMember) => (
-                                  <div key={wsMember.userId} className="relative z-10">
-                                    <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm"> 
-                                      <Image
-                                        src={getAvatar(null, wsMember.user.email)}
-                                        width={32}
-                                        height={32}
-                                        alt={wsMember.user.fullName}
-                                        className="object-cover" 
-                                      />
-                                    </div>
-                                  </div>
-                                ))}
-                
-                                <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-white shadow-sm flex items-center justify-center bg-primary z-20">
-                                  <UserPlus className="size-5 text-white-100 cursor-pointer"/>
-                                </div>
-                              </div>
                   </div>
-              </div>
-                <Category/>
+                  </div>
 
-           <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6">
+                  
+
+           <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] mt-6">
            <TaskList
             initialTasks={data}
             workspaceId={workspaceId}

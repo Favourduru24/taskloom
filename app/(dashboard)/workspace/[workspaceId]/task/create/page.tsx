@@ -42,8 +42,6 @@ const CreateTask = () => {
    const {workspaceId} = params
 
   const [loading, setLoading] = useState(false)
-  const {socket} = useSocket()
-
   const onlineUsers = useSocket(
     state => state.onlineUsers
   );
@@ -54,20 +52,6 @@ const CreateTask = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [uploadingMedia, setIsUploadingMedia] = useState(false)
-
-  // useEffect(() => {
-  //   if (!socket?.connected || !workspaceId) return;
-  
-  //   socket.emit("workspace:join", {
-  //     workspaceId,
-  //   });
-  
-  //   return () => {
-  //     socket.emit("workspace:leave", {
-  //       workspaceId,
-  //     });
-  //   };
-  // }, [socket?.connected, workspaceId]); http://localhost:3001/workspace/9af2f2a2-aeb1-4b09-a576-1c386aac571d/task/create
 
   useEffect(() => {
     if (!workspaceId) return;
@@ -148,8 +132,6 @@ const CreateTask = () => {
     }
   })
 
-  console.log({members, onlineUsers})
-
 
   async function onSubmit(data: createTaskSchemaType) {
     if (loading) return;
@@ -204,9 +186,9 @@ const CreateTask = () => {
     }
   }
   return (
-   <div className="w-full flex flex-co gap-4 min-h-0 max-w-3xl py-4">
+   <div className="w-full flex md:flex-row flex-col gap-4 min-h-0 max-w-3xl py-4 px-8">
 
-  <div className="w-full px-8  flex flex-col gap-4">
+  <div className="w-full  flex flex-col gap-4">
     <p className="text-2xl leading-tight font-bold">New Task</p>
     <div className="w-full flex flex-col gap-4">
       <Card className="w-full flex-1">
@@ -251,7 +233,19 @@ const CreateTask = () => {
                 <DropdownMenuTrigger asChild>
                   <div className="flex items-center justify-between border h-10 px-2 rounded-sm">
                     <p className="text-[1rem] text-gray-500 leading-tight">{field.value || "Select Category"}</p>
-                    <ArrowDown className="size-5 text-gray-500"/>
+                    <svg
+                      className={`w-5 h-5 transition-transform duration-200 mt-1 cursor-pointer`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
                    </div>
                    
                 </DropdownMenuTrigger>
@@ -303,7 +297,7 @@ const CreateTask = () => {
                     )}
                       />
 
-                <div className='flex items-center gap-2'>
+                <div className='flex md:flex-row flex-col items-center gap-2'>
                 <Controller
                   name='endDate'
                   control={form.control}
@@ -356,7 +350,7 @@ const CreateTask = () => {
                             {isVideo ? (
                               <video
                                 src={preview}
-                                className="w-full h-24 object-cover rounded border"
+                                className="w-full h-24 object-center object-cover rounded border "
                                 controls
                                 // muted
                               />
@@ -364,7 +358,7 @@ const CreateTask = () => {
                               <img
                                 src={preview}
                                 alt={`Preview ${index + 1}`}
-                                className="w-full h-24 object-cover rounded border"
+                                className="w-full h-24 object-center object-cover rounded border"
                               />
                             )}
                             <button
@@ -397,7 +391,7 @@ const CreateTask = () => {
                           width={42}
                           height={42}
                           alt='colaborator'
-                          className="object-cover rounded-full" 
+                          className="object-center object-cover rounded-full size-5" 
                           />
                           </div>
 
@@ -443,7 +437,7 @@ const CreateTask = () => {
                         width={42}
                         height={42}
                         alt={member.user.fullName ?? 'collaborators'}
-                        className="object-cover rounded-full" 
+                        className="object-center object-cover rounded-full size-10" 
                         />
                          </div>
                          <div className='flex flex-col gap-1'>
@@ -480,7 +474,7 @@ const CreateTask = () => {
                 </Field>
                 </div>
                   
-                   <div className='flex items-center gap-2'>
+                   <div className='flex sm:flex-row flex-col items-center gap-2'>
                     <Field>
                   <FieldLabel htmlFor="form-rhf-demo-title" className='text-lg'>
                     Priority
@@ -553,7 +547,7 @@ const CreateTask = () => {
     </div>
     </div>
 
-         <div className='w-56 flex items-end'>
+         <div className='md:w-56 w-full flex items-end'>
             <Button className="flex px-4 py-5 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer w-full" type="submit" onClick={form.handleSubmit(onSubmit)}>
             <Rocket className='text-white size-5'/>
               <p className='text-[1rem] leading-tight font-semibold'>{loading ? 'Loading...' : 'Launch Task'}</p>

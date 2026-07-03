@@ -34,7 +34,6 @@ import {useRouter} from 'next/navigation'
         setLoading(true);
 
         try {
-          console.log({data})
           await signUpApi(data);
 
           toast.success("Account created!");

@@ -83,6 +83,10 @@ const TaskList = ({initialTasks, workspaceId, error, }: {initialTasks: TaskProps
         };
       }, [socket]);
 
+      useEffect(() => {
+        setTasks(initialTasks);
+      }, [initialTasks]);
+
     function getPriorityColor(priority: string) {
         switch (priority) {
           case "URGENT":
@@ -129,8 +133,9 @@ const TaskList = ({initialTasks, workspaceId, error, }: {initialTasks: TaskProps
         }
       }
 
+
   return (
-    <>{tasks?.length > 0 ? tasks.map((task: TaskProps) => {
+    <>{tasks?.length > 0 ? tasks.map((task: TaskProps, index) => {
         const color = getPriorityColor(task.priority);
 
           return (
@@ -165,7 +170,7 @@ const TaskList = ({initialTasks, workspaceId, error, }: {initialTasks: TaskProps
               <div className="px-3 flex flex-col gap-1">
                 <p className="text-lg leading-8 font-semibold capitalize">{task.title.slice(0, 20)}</p>
                 <p className="text-[0.8rem] leading-6 break-all font-medium text-muted-foreground"> {task.description.slice(0, 30)}...</p>
-                   <div className="flex items-center justify-between w-full">
+                   <div className="flex gap-2 items-center justify-between w-full">
                 <Button className='w-24 p-2 rounded-sm flex items-center justify-center h-8 cursor-pointer border border-gray-200 mt-1' variant={'ghost'}>
                 <p className='text-muted-foreground leading-tight font-medium text-[0.65rem]'>{formatDate(task.endDate)
                 }</p>
@@ -180,13 +185,13 @@ const TaskList = ({initialTasks, workspaceId, error, }: {initialTasks: TaskProps
                  <div className="flex items-center -space-x-2"> 
                             {task.collaborators?.slice(0, 3).map((collab: Collaborator, index) => (
                               <div key={index} className="relative">
-                                <div className="w-6 h-6 overflow-hidden rounded-full ring-2 ring-white shadow-sm"> 
+                                <div className="w-6 h-6 overflow-hidden rounded-full  shadow-sm"> 
                                   <Image
                                     src={getAvatar(collab.user?.avatarUrl, collab.user?.fullName)}
                                     width={32}
                                     height={32}
                                     alt='avatar'
-                                    className="object-cover" 
+                                    className="object-cover size-6" 
                                   />
                                 </div>
                               </div>
@@ -195,7 +200,7 @@ const TaskList = ({initialTasks, workspaceId, error, }: {initialTasks: TaskProps
 
                    <div className="flex items-center gap-x-2">
                       <Clock className="size-5 text-gray-500"/>
-                      <p className="leading-6 break-all font-medium text-muted-foreground text-base">{Math.floor(Math.random() * 5)}/5</p>
+                      <p className="leading-6 break-all font-medium text-muted-foreground text-base">{(index % 5) + 1}/5</p>
                    </div>
                     </div>
                     </div>

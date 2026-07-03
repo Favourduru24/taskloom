@@ -11,9 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useEffect, useState } from 'react'
+import {useEffect, useRef, useState } from 'react'
 import { useRouter, usePathname, useParams} from 'next/navigation'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { getProfile, uploadProfilePics } from '@/utility/api/auth'
 
 interface WorkspaceList {
   id: string
@@ -27,16 +29,18 @@ interface WorkspaceList {
 const Header = () => {
   
   const [workspace, setWorkspace] = useState<WorkspaceList[]>([])
+  const [user, setUser] = useState<any>([])
   const router = useRouter();
   const pathname = usePathname();
    const params = useParams()
    const {workspaceId} = params
 
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const createTaskLink = `/workspace/${workspaceId}/task/create`
 
   const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceList | null>(workspace[0] || null);
-
-
 
   useEffect(() => {
     const saved = localStorage.getItem("selectedWorkspace");
@@ -50,9 +54,14 @@ const Header = () => {
   
       try {
         const data = await getWorkspaceApi();
+        const user = await getProfile();
+
         setWorkspace(data);
-      } catch (error) {
+        setUser(user);
+
+      } catch (error: any) {
         console.log(error, "Workspace error");
+        toast.error(error.message || "Failed to fetch workspace");
       } finally {
         setLoading(false);
       }
@@ -60,8 +69,6 @@ const Header = () => {
   
     fetchWorkspace();
   }, []);
-
-
 
       const handleSwitchWorkspace = (workspaceId: string) => {
         const ws = workspace.find(w => w.id === workspaceId);
@@ -78,6 +85,29 @@ const Header = () => {
         router.push(newPath);
       };
 
+      const handleUploadProfilePics = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+      
+        if (!file) return;
+      
+        try {
+          setUploading(true);
+      
+          const profileFormData = new FormData();
+          
+          profileFormData.append("file", file); 
+      
+          const profileRes = await uploadProfilePics(profileFormData);
+      
+          return profileRes?.url;
+      
+        } catch (error: any) {
+          toast.error(error.message);
+        } finally {
+          setUploading(false);
+        }
+      };      
+
   return (
     <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
          <div className='flex items-center w-full justify-between gap-2'>
@@ -92,10 +122,10 @@ const Header = () => {
                                            width={32}
                                            height={32}
                                            alt={'logo'}
-                                           className="object-cover" 
+                                           className="object-center object-cover" 
                                          />
                                        </div>
-                          <div className='flex flex-col justify-center'>
+                          <div className='md:flex flex-col justify-center hidden '>
                                 <p className='text-foreground-muted text-sm font-medium  break-all'>{loading ? 'Loading..' : selectedWorkspace? `${selectedWorkspace?.name}`.slice(0, 15) : 'No WS'}</p>
                                 <p className='text-gray-500 text-xs'>Trial Plan</p>
                           </div>
@@ -137,7 +167,7 @@ const Header = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                
-             <div className='max-w-2xl w-full flex items-center justify-center'>
+             <div className='max-w-2xl w-full md:flex items-center justify-center hidden'>
             <form  
              className='flex-1 px-2 flex justify-center items-center max-w-96'
             >
@@ -148,27 +178,48 @@ const Header = () => {
             </form>
              </div>
 
+             <div className='h-8 w-8 md:h-9 md:w-9 rounded-full flex items-center justify-center border md:hidden'>
+                  <Search className="text-black size-4 md:size-5"/>
+                </div>
+
+
             <div className='flex gap-3 items-center'>
-               <div className='h-9 w-9 rounded-md flex items-center justify-center border'>
-                  <Clock className="text-black size-5"/>
+               <div className='h-8 w-8 md:h-9 md:w-9 rounded-md flex items-center justify-center border cursor-pointer'>
+                  <Clock className="text-muted-foreground size-4 md:size-5"/>
                 </div>
 
-                 <div className='h-9 w-9 rounded-full flex items-center justify-center bg-muted-foreground/10'>
-                  <Bell className="text-primary size-5"/>
+                 <div className='h-8 w-8 md:h-9 md:w-9 rounded-full flex items-center justify-center border cursor-pointer'>
+                  <Bell className="text-muted-foreground size-4 md:size-5"/>
                 </div>
 
-                <div className='h-9 w-9 rounded-full flex items-center justify-center border'>
-                  <Moon className="text-black size-5"/>
+                <div className='h-8 w-8 md:h-9 md:w-9 rounded-full flex items-center justify-center border cursor-pointer'>
+                  <Moon className="text-muted-foreground size-4 md:size-5"/>
                 </div>
+
+                   
+                   <Link href={createTaskLink}>
+                   <Button className='bg-primary px-4 py-3 rounded-sm flex items-center justify-center h-10 cursor-pointer w-fit'>
+                     <Plus className='size-5 text-white-100'/>
+                     <p className='text-white-100 leading-tight text-sm hidden sm:block'>Create Task</p>
+                   </Button>
+                   </Link>
 
                    <div className='flex items-end justify-center gap-1'>
-                    <div className="h-9 w-9 overflow-hidden rounded-full shadow-sm"> 
-                                          <Image
-                                            src="/images/user1.png"
+                    <div className="h-8 w-8 md:h-9 md:w-9 overflow-hidden rounded-full shadow-sm" onClick={() => fileInputRef.current?.click()}> 
+                    {!uploading ? <Image
+                                            src={getAvatar(user?.avatarUrl, user?.email)}
                                             width={32}
                                             height={32}
-                                            alt="user1"
-                                            className="object-cover w-full" 
+                                            alt={'profile'}
+                                            className="object-center object-cover w-full" 
+                                          /> : <p>Loading..</p>}
+
+                                          <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            ref={fileInputRef}
+                                            onChange={handleUploadProfilePics}
                                           />
                                         </div>
 
@@ -186,11 +237,6 @@ const Header = () => {
                       />
                     </svg>
                    </div>
-
-                   <Button className='bg-primary px-4 py-5 rounded-sm flex items-center justify-center h-10 cursor-pointer w-fit'>
-                     <Plus className='size-5 text-white-100'/>
-                     <p className='text-white-100 leading-tight text-sm'>Create Task</p>
-                   </Button>
             </div>
          </div>
     </header>

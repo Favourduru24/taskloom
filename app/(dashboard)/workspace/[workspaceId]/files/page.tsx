@@ -51,8 +51,6 @@ const Files = async ({params}: {params: Promise<{ workspaceId: string }>
 
    const assets = await getLibaryAssetApi(workspaceId)
 
-   console.log({assets})
-
   return (
     <div className="w-full flex gap-4 flex-1 min-h-0 ">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col">
