@@ -3,75 +3,104 @@ import { useState } from "react";
 // import { formUrlQuery, removeKeysFromQuery } from "@/lib/utils";
 import { Card } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import { useRouter } from "next/navigation";
+import {useRouter, useSearchParams} from 'next/navigation'
+import { formUrlQuery, getAvatar, removeKeysFromQuery } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import Image from "next/image";
 
-interface taskStatusProps {
+
+interface taskPriorityProps {
     id: number;
-    status: string;
+    priority: string;
    }
 
 const Category = () => {
 
+    const [priority, setPriority] = useState('')
+    const searchParams = useSearchParams()
     const router = useRouter()
-    const [status, setStatus] = useState<string>('')
 
-    const TaskStatus: taskStatusProps[] = [
-        {
-         id: 1,
-         status: 'URGENT'
-        },
+    const TaskPriority: taskPriorityProps[] = [
+      {
+        id: 1,
+        priority: 'All'
+       },
         {
          id: 2,
-         status: 'TODO'
+         priority: 'URGENT'
         },
         {
          id: 3,
-         status: 'INPROGRESS'
+         priority: 'TODO'
         },
         {
          id: 4,
-         status: 'COMPLETED'
+         priority: 'INPROGRESS'
+        },
+        {
+         id: 5,
+         priority: 'COMPLETED'
         },
         ]
+        
+        const onSelectPriority = (priority: string) => {
+            setPriority(priority)
 
-    
-        // const onSelectSubject = (status: string) => {
-       
-        //   }
-
-        const handleCheck = (status: string) => {
-              setStatus(status)
-
-        //     let newUrl = ''
-        //    if(status && status !== 'status') {
-        //         newUrl = formUrlQuery({
-        //           params: searchParams.toString(),
-        //           key:'status',
-        //           value: status
-        //        })
-        //    } else{
-        //     newUrl = removeKeysFromQuery({
-        //       params: searchParams.toString(),
-        //       keysToRemove:['status'],
-        //    })
-        //    }
-          
-        //      router.push(newUrl, {scroll: false})
+          let newUrl = ''
+         if(priority && priority !== 'All') {
+              newUrl = formUrlQuery({
+                params: searchParams.toString(),
+                key:'priority',
+                value: priority
+             })
+         } else{
+          newUrl = removeKeysFromQuery({
+            params: searchParams.toString(),
+            keysToRemove:['priority'],
+         })
+         }
+        
+           router.push(newUrl, {scroll: false})
         }
+         
 
   return (
-    <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] mt-6"> {
-        TaskStatus.map((task: taskStatusProps) => (
-          <Card className="shadow-sm border ring-0 rounded-sm leading-none h-10 flex justify-center" key={task.id}>
-           <div className="flex flex-row items-center justify-between px-2 ">
-           <p className="text-sm leading-tight font-semibold text-black/60">{task.status}</p>
-           <div className='bg-primary w-7 rounded-full flex items-center justify-center h-7 cursor-pointer'>
-            <Checkbox className="rounded-full cursor-pointer" checked={task.status === status} onClick={() => handleCheck(task.status)}/>
-        </div>
-           </div>
-       </Card>
-        ))
-       }</div>
+    <div className='flex  gap-2 w-full md:max-w-72 ring-2 ring-gray-50 p-1 rounded-md shaddow-sm'>
+    <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+
+    <div className='flex items-start gap-x-3 justify-between cursor-pointer w-full '>
+     
+      <p className="text-muted-foreground text-lg font-semibold">{priority ? priority : 'Priority'}</p>
+
+    <svg
+    className={`w-5 h-5 transition-transform duration-200 mt-1`}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    >
+    <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth={1}
+    d="M19 9l-7 7-7-7"
+    />
+    </svg>
+    </div>
+
+    </DropdownMenuTrigger>
+    <DropdownMenuContent className='mt-1 cursor-pointer'>
+    {
+    TaskPriority.map((priority: taskPriorityProps) => (
+    <DropdownMenuItem key={priority.id} onClick={() => onSelectPriority(priority.priority)} className='cursor-pointer text-muted-foreground'>
+    {priority.priority}
+    </DropdownMenuItem>
+    ))
+    }
+
+    </DropdownMenuContent>
+    </DropdownMenu>
+</div>
   )
 }
 

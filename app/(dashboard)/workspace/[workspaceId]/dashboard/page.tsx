@@ -153,8 +153,6 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
 
   const {weekEndNewTaskCount, weekEndTaskCompletedCount, weekEndTaskCount} = dashboardStats
 
-  console.log({data})
-
   return (
     <div className="w-full flex gap-4 flex-1 relative">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-8">
@@ -214,7 +212,10 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                  <p className="text-xl leading-tight font-bold">Tasks</p>
                     
                     {data?.map((ws: any) => (
-                         <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" >
+                         <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" key=
+                         
+                         
+                         {ws?.id}>
                     <div className="flex gap-3 items-center">
                           <div className="w-11 h-11 overflow-hidden rounded-full bg-primary flex items-center justify-center">
                               <Play className="text-4 text-white" strokeWidth={1.3}/>

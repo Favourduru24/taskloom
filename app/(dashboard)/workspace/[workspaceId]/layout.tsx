@@ -1,5 +1,3 @@
-// app/(dashboard)/workspace/[workspaceId]/layout.tsx
-
 import WorkspaceSocketProvider from "@/components/shared/WorkspaceSocketProvider";
 
 
@@ -10,8 +8,6 @@ export default async function WorkspaceLayout({
     children: React.ReactNode;
     params: Promise<{ workspaceId: string }>;
   }) {
-
-    console.log("Workspace params:", await params);
     
     const { workspaceId } = await params;
   

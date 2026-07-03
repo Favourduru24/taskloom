@@ -1,12 +1,13 @@
+import React from 'react'
 
-const Timeline = () => {
+const Calender = () => {
   return (
     <div className="w-full flex gap-4 flex-1 min-h-0">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4">
-        Timeline
-       </div>
+        Calender
+    </div>
     </div>
   )
 }
 
-export default Timeline
+export default Calender

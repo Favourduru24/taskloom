@@ -18,8 +18,6 @@ export default function WorkspaceSocketProvider({
     if (!socket) return;
 
     const joinWorkspace = () => {
-      console.log("Joining workspace:", workspaceId);
-
       socket.emit("workspace:join", {
         workspaceId,
       });

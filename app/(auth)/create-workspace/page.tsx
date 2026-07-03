@@ -1,25 +1,35 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Card, CardContent } from '@/components/ui/card'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { createWorspaceApi } from '@/utility/api/workspace'
+import { getAvatar } from '@/lib/utils'
+import { createWorspaceApi, getWorkspaceApi } from '@/utility/api/workspace'
 import { createWorkSpaceSchema, createWorkspaceType } from '@/utility/validation/workspace'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowDown, Edit, Image as Media, Link2Icon, X, Plus, Rocket, Check, ArrowLeft } from 'lucide-react'
+import { useRouter, usePathname, } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-
+interface WorkspaceList {
+  id: string
+  name: string
+  logoUrl: string | null
+  logoPublicId: string | null
+  createdAt?: Date
+  updatedAt?: Date
+}
  const ForgetPassword = () => {
 
+   const [workspace, setWorkspace] = useState<WorkspaceList[]>([])
    const [loading, setLoading] = useState(false)
    const router = useRouter()
+   const pathname = usePathname()
+   const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceList | null>(workspace[0] || null);
      
     const form = useForm<createWorkspaceType>({
       resolver: zodResolver(createWorkSpaceSchema),
@@ -27,6 +37,31 @@ import { toast } from 'sonner'
         name: ''
       }
     })
+    
+    useEffect(() => {
+      const saved = localStorage.getItem("selectedWorkspace");
+    
+      if (saved) {
+        setSelectedWorkspace(JSON.parse(saved));
+      }
+    
+      async function fetchWorkspace() {
+        setLoading(true);
+    
+        try {
+          const data = await getWorkspaceApi();
+  
+          setWorkspace(data);
+  
+        } catch (error: any) {
+          toast.error(error.message || "Failed to fetch workspace");
+        } finally {
+          setLoading(false);
+        }
+      }
+    
+      fetchWorkspace();
+    }, []);
 
     async function onSubmit(data: createWorkspaceType) {
               if (loading) return;
@@ -34,8 +69,6 @@ import { toast } from 'sonner'
               
                       try {
                        const workpsace =  await createWorspaceApi(data);
-
-                       console.log()
               
                         toast.success(`Workspace ${data.name} Successfully!`);
                         router.push(`/workspace/${workpsace.workspace[0]?.id}/dashboard`)
@@ -45,6 +78,18 @@ import { toast } from 'sonner'
                         setLoading(false);
                       }
           }
+
+          const handleSwitchWorkspace = (workspaceId: string) => {
+            const ws = workspace.find(w => w.id === workspaceId);
+              if (ws) {
+                setSelectedWorkspace(ws);
+                localStorage.setItem('selectedWorkspace', JSON.stringify(ws))
+              }
+    
+            const newPath = `/workspace/${workspaceId}/dashboard`
+          
+            router.push(newPath);
+          };
     
 
     return (
@@ -62,7 +107,7 @@ import { toast } from 'sonner'
                                 </div>
                     <p className='text-xl font-semibold leading-3'>Create Your Workspace!</p>
 
-                    <p className='text-sm text-muted-foreground text-center leading-6'>Set up your workspace and <br/><span className='text-primary font-semibold cursor-pointer'>start collaborating with your team.</span></p>
+                    <p className='text-sm text-muted-foreground text-center leading-6'>Set up your workspace and <br/><span className='text-primary font-semibold'>start collaborating with your team.</span></p>
                   </div>
 
                  <CardContent>
@@ -95,14 +140,59 @@ import { toast } from 'sonner'
                            <p className='text-[1rem] leading-tight font-semibold text-white-100'>{loading ? 'Loading...' : 'Create Workspace'}</p>
                         </Button>
 
-                        <div className='flex items-center gap-2 w-full'>
-                            <Link href='/sign-in' className='flex-1 w-full flex'>
-                           <Button className='h-10 rounded-sm flex-1 bg-white-100 shadow border border-muted-foreground/25 cursor-pointer flex items-center'>
-                            <ArrowLeft className='size-5 text-muted-foreground' strokeWidth={1.5}/>
-                           <p className='text-[1rem] leading-tight font-semibold text-muted-foreground'>Back In Login</p>
-                        </Button>
-                            </Link>
-                        </div>
+                                               <div className='flex items-center gap-2'>
+                                                   <div className='w-full h-[0.5px] bg-gray-200'/>
+                                                   <p className='whitespace-nowrap text-muted-foreground'>Or Switch</p>
+                                                   <div className='w-full h-[0.5px] bg-gray-200'/>
+                                                </div>
+                        
+                <div className='flex  gap-2 w-full border p-1 rounded-md shaddow-sm'>
+                                <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+             
+                          <div className='flex items-start gap-x-3 justify-between cursor-pointer w-full '>
+                             <div className="w-8 h-8 overflow-hidden rounded-md shadow-sm shrink-0"> 
+                                         <Image
+                                           src={getAvatar(null, selectedWorkspace?.name as string)}
+                                           width={32}
+                                           height={32}
+                                           alt={'logo'}
+                                           className="object-center object-cover" 
+                                         />
+                                       </div>
+                          <div className='md:flex flex-col justify-center hidden '>
+                                <p className='text-foreground-muted text-lg font-medium  break-all'>{loading ? 'Loading..' : selectedWorkspace? `${selectedWorkspace?.name}`.slice(0, 15) : 'No WS'}</p>
+                                {/* <p className='text-gray-500 text-xs'>select</p> */}
+                          </div>
+
+                          <svg
+                      className={`w-5 h-5 transition-transform duration-200 mt-1`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                    </div>
+                        
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className='mt-1 cursor-pointer'>
+                      {
+                        workspace.map((ws: WorkspaceList) => (
+                         <DropdownMenuItem key={ws.id} onClick={() => handleSwitchWorkspace(ws.id)} className='cursor-pointer'>
+                        {ws.name}
+                      </DropdownMenuItem>
+                        ))
+                      }
+                      
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                      </div>
                      </FieldGroup>
                    </form>
                  </CardContent>

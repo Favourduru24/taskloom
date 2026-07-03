@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Card } from "@/components/ui/card"
-import { AlertTriangle, ArrowDown, Check, Edit, X, Trash2, UserPlus } from "lucide-react"
+import { AlertTriangle, Check, Edit, X, Trash2, UserPlus, ArrowLeft } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useParams, useRouter} from "next/navigation"
@@ -23,6 +23,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Category, CategoryType } from "@/constants"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "sonner"
+import { getAvatar } from "@/lib/utils"
+import Link from "next/link"
 
  type User = {
   id: string;
@@ -37,7 +39,7 @@ import { toast } from "sonner"
 type Collaborator = {
   taskId: string;
   userId: string;
-  user: User;
+  user: User[];
 };
 
  export interface TaskProps {
@@ -49,7 +51,7 @@ type Collaborator = {
   category: string;
   endDate: string;
   timeline: number;
-  collaborators: Collaborator[]
+  collaborators: Collaborator
  }
 const TaskDetails = () => {
   const [loading, setLoading] = useState(false)
@@ -68,6 +70,7 @@ const TaskDetails = () => {
        setLoading(true)
        try{
          const {data, error} = await getWorkspaceTaskId(workspaceId, taskId)
+         
          setTaskDetails(data)
 
        }catch(error: any) {
@@ -79,8 +82,6 @@ const TaskDetails = () => {
 
       fetchTask()
     }, [])
-
-    console.log({taskDetails})
     
     const form = useForm<updateTaskSchemaType>({
         resolver: zodResolver(updateTaskSchema),
@@ -143,8 +144,6 @@ const TaskDetails = () => {
           toast.success(`Task "${data.title}" saved successfully!`);
       
         } catch (error: any) {
-          console.error(error);
-      
           toast.error(
             error?.message || "Something went wrong. Please try again."
           );
@@ -153,38 +152,42 @@ const TaskDetails = () => {
         }
       }
 
-async function handleDelete() {
-  if (deleting) return; // Prevent multiple clicks while loading
+  async function handleDelete() {
+    if (deleting) return; // Prevent multiple clicks while loading
 
-  setDeleting(true);
+    setDeleting(true);
 
-  try {
-    await deleteWorkspaceTask(workspaceId, taskId)
-    router.push(`/workspace/${workspaceId}/tasks`);
-  } catch (error: any) {
-    toast.error(
-      error?.message || "An unexpected error occurred. Please try again"
-    );
-  } finally {
-    setDeleting(false);
+    try {
+      await deleteWorkspaceTask(workspaceId, taskId)
+      router.push(`/workspace/${workspaceId}/tasks`);
+    } catch (error: any) {
+      toast.error(
+        error?.message || "An unexpected error occurred. Please try again"
+      );
+    } finally {
+      setDeleting(false);
+    }
   }
-}
-     
-if(loading) {
-   return (
-     <div>
-      loading
-     </div>
-   )
-}
+      
+  if(loading) {
+    return (
+      <div>
+        loading
+      </div>
+    )
+  }
 
   return (
     <div className="w-full flex gap-4 flex-1 min-h-0">
        <form className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col" onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
-       
+           
+        <Link href={`/workspace/${workspaceId}/task`} className='border border-gray-400 flex rounded-full items-center  gap-x-3 px-2 py-1 w-fit max-w-28 cursor-pointer'>
+                                            <ArrowLeft className='size-4 cursor-pointer text-muted-foreground'/>
+                                            <p className='text-muted-foreground text-sm'>Back</p>
+                                        </Link>
                
-          <div className="flex w-full h-full gap-10">
+          <div className="flex md:flex-row flex-col w-full h-full md:gap-10 gap-5 ">
          <div className="max-w-md w-full h-full flex flex-col gap-2">
          <Controller
              name='title'
@@ -219,7 +222,7 @@ if(loading) {
                   name="description"
                   control={form.control}
                   render={({field, fieldState}) => (
-                    <Textarea className="h-32 w-full mt-4 outline-none border p-2 rounded-lg placeholder:leading-tight placeholder:text-gray-500 placeholder:text-[0.9rem]" 
+                    <Textarea className="h-36 w-full mt-4 outline-none border p-2 rounded-lg placeholder:leading-tight placeholder:text-gray-500 placeholder:text-[0.9rem] leading-6" 
                     {...field}
                     placeholder="Describe your task here."
                      autoComplete="off"
@@ -253,30 +256,6 @@ if(loading) {
                     </div>
                   )} 
 
-                 {/* const isVideo = preview.startsWith('video/');
-                          <div key={preview} className="relative group">
-                            {isVideo ? (
-                              <video
-                                src={preview}
-                                className="w-full h-24 object-cover rounded border"
-                                controls
-                                // muted
-                              />
-                            ) : (
-                              <img
-                                src={preview}
-                                alt={`Preview ${index + 1}`}
-                                className="w-full h-24 object-cover rounded border"
-                              />
-                            )}
-                            <button
-                              type="button"
-                              className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                            >
-                              <X name="X" className="h-3 w-3 text-white cursor-pointer" /> 
-                              // {/* //onClick={() => handleRemoveFile(index)}  
-                            </button>
-                          </div> */}
            
            <Card className="rounded-lg ring-0 border">
               <div className="flex flex-col px-2 gap-2">
@@ -284,19 +263,22 @@ if(loading) {
 
                  <div className="flex items-center justify-between w-full"> 
                      <div className="flex items-center gap-2">
-                    {/* {myTeam.slice(0, 3).map((team: myTeamProps) => (
-                       <div key={team.id} >
-                      <div className="w-10 h-10 rounded-full shadow-sm "> 
-                        <Image
-                        src={getAvatar(null, team.email)}
-                        width={42}
-                        height={42}
-                        alt={team.name}
-                        className="object-cover rounded-full" 
-                        />
-                        </div>
-                        </div>
-                        ))} */}
+                    {taskDetails?.collaborators?.user?.map((member: User) => (
+                                           <div className='border border-gray-400 flex rounded-full items-center gap-x-2 p-1' key={member.id}>
+                                           <div className="w-5 h-5 rounded-full shadow-sm "> 
+                                             <Image
+                                             src={getAvatar(member?.avatarUrl, member.email)}
+                                              width={42}
+                                              height={42}
+                                              alt='colaborator'
+                                              className="object-center object-cover rounded-full size-5" 
+                                              />
+                                              </div>
+                    
+                                            <p className='text-muted-foreground text-sm'>{member.fullName}</p>
+                                            <X className='size-4 cursor-pointer'/>
+                                        </div>
+                                      ))}
                         </div>
                                 
                         <div className="w-10 h-10 rounded-full  shadow-sm flex items-center justify-center bg-primary">
@@ -307,7 +289,7 @@ if(loading) {
            </Card>
         </div>  
 
-         <div className="max-w-sm w-full h-full flex flex-col gap-4 mt-3">
+         <div className="w-full md:max-w-sm h-full flex flex-col gap-4 mt-3">
 
          
               <div className='flex items-center gap-2'>
