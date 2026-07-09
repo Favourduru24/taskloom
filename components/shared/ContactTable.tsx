@@ -1,117 +1,219 @@
- "use client"
+"use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { getAvatar } from "@/lib/utils"
-import Image from "next/image"
-import { Checkbox } from "../ui/checkbox"
+import Image from "next/image";
+import { Checkbox } from "../ui/checkbox";
+import { Input } from "../ui/input";
+import { Search, Plus, Eye } from "lucide-react";
+import Link from "next/link";
 
+const contacts = [
+  {
+    id: 1,
+    name: "Duru Pristine",
+    email: "duru@pristine.dev",
+    company: "Pristine Labs",
+    status: "Active",
+    last: "Today",
+    next: "12 Jul",
+    avatar: "/images/user1.png",
+  },
+  {
+    id: 2,
+    name: "Sarah Johnson",
+    email: "sarah@acme.io",
+    company: "Acme Inc",
+    status: "Lead",
+    last: "Yesterday",
+    next: "15 Jul",
+    avatar: "/images/user1.png",
+  },
+  {
+    id: 3,
+    name: "Michael Chen",
+    email: "michael@stripe.com",
+    company: "Stripe",
+    status: "Prospect",
+    last: "3 days ago",
+    next: "20 Jul",
+    avatar: "/images/user1.png",
+  },
+  {
+    id: 4,
+    name: "Grace Williams",
+    email: "grace@notion.so",
+    company: "Notion",
+    status: "Inactive",
+    last: "1 week ago",
+    next: "--",
+    avatar: "/images/user1.png",
+  },
+  {
+    id: 5,
+    name: "James Brown",
+    email: "james@vercel.com",
+    company: "Vercel",
+    status: "Active",
+    last: "Today",
+    next: "14 Jul",
+    avatar: "/images/user1.png",
+  },
+];
 
-export function DataTable() {
+const statusStyles: Record<string, string> = {
+  Active:
+    "bg-green-100 text-green-700",
+  Lead:
+    "bg-blue-100 text-blue-700",
+  Prospect:
+    "bg-orange-100 text-orange-700",
+  Inactive:
+    "bg-gray-100 text-gray-600",
+};
 
-    const data = [
-        {
-            label: '',
-            id: 1,
-
-        },
-        {
-            label: 'Name',
-            id: 7,
-
-        },
-        {
-            label: 'Status',
-            id: 3,
-
-        },
-        {
-            label: 'Last Contact',
-            id: 4,
-
-        },
-        {
-            label: 'Next Follow-up',
-            id: 5,
-
-        },
-        {
-            label: 'Task',
-            id: 6,
-
-        }
-    ]
-
+export function ContactTable({workspaceId}: {workspaceId: string}) {
   return (
-    <section className="overflow-x-auto px-5 sm:px-8 2xl:px-0 max-w-8xl bg-primary/10 rounded-md">
-        <table className="w-full border-collapse border-t p-1 ">
-          <thead>
-            <tr className="p-medium-14 border-b text-grey-500">
-                      <th className="min-w-[20px] py-3 text-left">
-                        <Checkbox className="text-green-500"/>
-                      </th>
+    <section className="rounded-md borde bg-white ">
+      {/* Header */}
 
-            <th className="min-w-[200px] flex-1 py-2 pr-4 text-left">Username</th>
-            <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">Name</th>
-              <th className="min-w-[150px] py-3 text-left">Last Contacted</th>
-              <th className="min-w-[100px] py-3 text-left">Next Follow-up</th>
-              <th className="min-w-[100px] py-2 text-right">Status</th>
+      <div className="flex flex-col gap-4 border-b p-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            People
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-500">
+            Manage contacts and keep track of every conversation.
+          </p>
+        </div>
+
+        <div className="flex gap-3 items-center">
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+
+            <Input
+              placeholder="Search contacts..."
+              className="pl-10 w-80 border-gray-200 h-9"
+            />
+          </div>
+
+          <button
+            className="flex items-center gap-2 rounded-md shadow-sm cursor-pointer px-3 py-1.5 text-white transition hover:opacity-90"
+            style={{
+              background: "#7850CD",
+            }}
+          >
+            <Plus size={18} />
+            New Contact
+          </button>
+        </div>
+      </div>
+
+      {/* Table */}
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50 rounded-sm">
+            <tr className="text-xs uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4">
+                <Checkbox />
+              </th>
+
+              <th className="px-6 py-4 text-left">
+                Contact
+              </th>
+
+              <th className="px-6 py-4 text-left">
+                Company
+              </th>
+
+              <th className="px-6 py-4 text-left">
+                Last Contact
+              </th>
+
+              <th className="px-6 py-4 text-left">
+                Next Follow-up
+              </th>
+
+              <th className="px-6 py-4 text-right">
+                Status
+              </th>
+
+              <th className="px-6 py-4 text-right">
+               Actions
+              </th>
             </tr>
           </thead>
+
           <tbody>
-            {data && data.length === 0 ? (
-              <tr className="border-b">
-                <td colSpan={5} className="py-2 text-center text-gray-500">
-                  No  Users found.
-                  <p className="font-medium text-red-400 text-sm">{'error'}</p>
+            {contacts.map((contact) => (
+              <tr
+                className="border-t transition hover:bg-[#7850CD]/5"
+                key={contact.id}
+              >
+                <td className="px-6 py-4">
+                  <Checkbox />
                 </td>
+
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    
+                     <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm"> 
+                                      <Image
+                                        src={contact.avatar}
+                                        width={32}
+                                        height={32}
+                                        alt={contact.name}
+                                        className="object-cover object-center size-8" 
+                                      />
+                                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">
+                        {contact.name}
+                      </h4>
+
+                      <p className="text-sm text-gray-500">
+                        {contact.email}
+                      </p>
+                    </div>
+                  </div>
+                </td>
+
+                <td className="px-6 py-5 text-sm text-gray-700">
+                  {contact.company}
+                </td>
+
+                <td className="px-6 py-5 text-sm text-gray-500">
+                  {contact.last}
+                </td>
+
+                <td className="px-6 py-5 text-sm text-gray-500">
+                  {contact.next}
+                </td>
+
+                <td className="px-6 py-5 text-right">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${statusStyles[contact.status]}`}
+                  >
+                    {contact.status}
+                  </span>
+                </td>
+                <td className="px-6 py-5 text-right flex items-center justify-center">
+                  <Link
+                    href={`/workspace/${workspaceId}/contacts/${contact.id}`}
+                    className="text-primary font-medium flex items-center justify-between gap-1 sm:gap-0 leading-0"
+                  >
+                    <Eye className="size-4 text-gray-400"/>
+                    {/* <p className="text-xs font-medium">View</p> */}
+                  </Link>
+                  </td>
               </tr>
-            ) : (
-              <>
-                {data &&
-                  data.map((user) => (
-                    <tr
-                      key={user.id}
-                      className=" border-b hover:text-white cursor-pointer hover:bg-primary-100"
-                      style={{ boxSizing: 'border-box' }}>
-                      <td className="min-w-[30px] py-2 text-sm font-semibold">
-                        <Checkbox/>
-                      </td>
-
-                      <td className="min-w-[100px] flex-1 py-2 pr-4 flex items-center gap-1 text-sm font-semibold">
-                        <Image
-                                                                    src={'/images/user1.png'}
-                                                                    width={32}
-                                                                    height={32}
-                                                                    alt={'profile'}
-                                                                    className="object-center object-cover size-8 rounded-full" 
-                                                                  />
-                        {'Duru Pristine'}
-                 
-                      </td>
-                      {/* <td className="min-w-[100px] py-2 text-sm font-semibold">Client</td> */}
-                      <td className="min-w-[100px] py-2 text-sm font-semibold">Client</td>
-                      <td className="min-w-[110px] py-2 truncate px-2 text-xs font-semibold">3rd Mar 2026</td>
-                      <td className="min-w-[100px] py-2 truncate text-xs font-semibold">
-                        {'14th Aug 2026'}
-                      </td>
-                      {/* <td className="min-w-[100px] py-2 font-semibold">1</td> */}
-
-                      <td className={`min-w-[100px] py-2 text-right font-semibold text-sm font-semibold ${user.label === 'user' ? "text-pink-500"  : user.label === 'admin' ? 'text-purple-500' : "text-gray-500"}`}>
-                        <p className={`${user.label === 'agent' ? "text-pink-500"  : user.label === 'user' ? 'text-gray-500' : "text-gray-500"}`}>Admin</p>
-                      </td>                        
-                    </tr>
-                  ))}
-              </>
-            )}
+            ))}
           </tbody>
         </table>
-      </section>
-  )
+      </div>
+    </section>
+  );
 }

@@ -109,7 +109,7 @@ const Header = () => {
       };      
 
   return (
-    <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b-2 border-gray-200 sticky top-0 w-full'>
+    <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b border-gray-200 sticky top-0 w-full'>
          <div className='flex items-center w-full justify-between gap-2'>
 
             <DropdownMenu>
@@ -171,8 +171,8 @@ const Header = () => {
             <form  
              className='flex-1 px-2 flex justify-center items-center max-w-96'
             >
-              <div className='w-full flex h-10 ring-2 ring-gray-300 items-center rounded-md shadow-sm px-2'>
-              <input className='w-full outline-none p-2 placeholder:leading-tight text-[0.9rem] font-medium' placeholder='Search Tasks...'/>
+              <div className='w-full flex h-10 border-gray-200 border items-center rounded-md px-2'>
+              <input className='w-full outline-none p-2 placeholder:leading-tight text-[0.9rem] font-medium border-gray-200' placeholder='Search Tasks...'/>
               <Search className='text-gray-400 size-5'/>
               </div>
             </form>

@@ -63,7 +63,7 @@ const Sidebar = () => {
    ]
        
   return (
-    <aside className='w-64  bg-white px-2 py-2 border-r-2 border-gray-200  sticky top-0 h-screen md:block hidden'>
+    <aside className='w-64  bg-white px-2 py-2 border-r border-gray-200  sticky top-0 h-screen md:block hidden'>
        <div className='flex flex-col h-full gap-4 py-2'>
           <div className='flex justify-center items-center w-full h-13 overflow-visible'>
           <Image
