@@ -184,9 +184,9 @@ const Header = () => {
 
 
             <div className='flex gap-3 items-center'>
-               <div className='h-8 w-8 md:h-9 md:w-9 rounded-md flex items-center justify-center border cursor-pointer'>
+               {/* <div className='h-8 w-8 md:h-9 md:w-9 rounded-md flex items-center justify-center border cursor-pointer'>
                   <Clock className="text-muted-foreground size-4 md:size-5"/>
-                </div>
+                </div> */}
 
                  <div className='h-8 w-8 md:h-9 md:w-9 rounded-full flex items-center justify-center border cursor-pointer'>
                   <Bell className="text-muted-foreground size-4 md:size-5"/>

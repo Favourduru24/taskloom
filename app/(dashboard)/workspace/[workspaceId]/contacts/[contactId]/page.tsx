@@ -1,14 +1,17 @@
-import React from 'react'
+import ContactDetail from '@/components/shared/ContactDetail'
+import { getWorkspaceContactId } from '@/utility/api/contact'
 
-const ContactPage = () => {
+const ContactPage = async ({params}: {params: Promise<{contactId: string, workspaceId: string}>}) => {
+
+  const {contactId, workspaceId} = await params
+
+  const contactDetails = await getWorkspaceContactId(workspaceId, contactId)
+
+  const {data} = contactDetails || {}
 
 
   return (
-    <div className="w-full flex gap-4 flex-1 min-h-0">
-     <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-4">
-     
-     </div>
-    </div>
+     <ContactDetail data={data}/>
   )
 }
 
