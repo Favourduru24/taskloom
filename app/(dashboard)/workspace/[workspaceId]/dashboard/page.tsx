@@ -1,343 +1,398 @@
-// import {ChartLineMultiple} from "@/components/shared/ChartLineMultiple"
-// import DashboardStats from "@/components/shared/DashboardStats"
-// import { Button } from "@/components/ui/button"
-// import {
-//   Card,
-//   CardContent,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card"
-// import { cn, getAvatar } from "@/lib/utils"
-// import { getDashboardStatApi } from "@/utility/api/dashboard"
-// import { getWorkspaceApi } from "@/utility/api/workspace"
+import {ChartLineMultiple} from "@/components/shared/ChartLineMultiple"
+import DashboardStats from "@/components/shared/DashboardStats"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { cn, getAvatar } from "@/lib/utils"
+import { getDashboardStatApi } from "@/utility/api/dashboard"
+import { getWorkspaceApi } from "@/utility/api/workspace"
 
-// import { Calendar, Clock, EllipsisVertical, FilePlus, Layers, Link, LucideIcon, Menu, MessageCircleMore, Play, Plus, Star, TrendingDown, TrendingUp, UserPlus } from "lucide-react"
-// import Image from "next/image"
+import { BookCheck, Calendar, Check, Clock, FilePlus, Layers, Link, MessageCircleMore, Play, Star} from "lucide-react"
+import Image from "next/image"
 
-// const Home = async ({params}: {params: Promise<{ workspaceId: string }>
-// }) => {
+const Home = async ({params}: {params: Promise<{ workspaceId: string }>
+}) => {
 
-//    interface chartItemProps {
-//      id: number
-//     chartLabel: string
-//     chartScore: number
-//     chartDescription: string
-//     chartIcon: LucideIcon
-//     trendType: string
-//    }
+   const {workspaceId} = await params
 
-//    interface myTeamProps {
-//      id: number
-//      profilePics: string
-//      name: string;
-//      email: string,
-//      lastMessage: string
-//    }
+  const data = await getWorkspaceApi()
+  const dashboardStats = await getDashboardStatApi(workspaceId)
 
-//    interface myTaskProps {
-//      id: number
-//      startTime: string
-//      task: string
-//      link: string,
-//      commentCount: number,
-//      progress: number
-//    }
-   
-//   const chartItems: chartItemProps[] = [
-//     {
-//       id: 1,
-//       chartLabel: "Task Completed",
-//       chartScore: 10,
-//       chartDescription: "10+",
-//       chartIcon: Star,
-//       trendType: 'up'
-//     },
-//     {
-//       id: 2,
-//       chartLabel: "New Task",
-//       chartScore: 10,
-//       chartDescription: "10+",
-//       chartIcon: FilePlus,
-//       trendType: 'down'
-//     },
-//     {
-//       id: 3,
-//       chartLabel: "Project Done",
-//       chartScore: 10,
-//       chartDescription: "08+",
-//       chartIcon: Layers,
-//       trendType: 'up'
-//     },
-//   ]
+  const {weekEndNewTaskCount, weekEndTaskCompletedCount, weekEndTaskCount} = dashboardStats
 
-  
+  return (
+    <div className="w-full flex flex-1 relative bg-gray-50">
+       <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-10">
+           <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
+            
+               <DashboardStats 
+                statsLabel="Today's Follow-ups"
+                statsScore={weekEndTaskCompletedCount}
+                statsDescription={`2 from yesterday`}
+                statsIcon={<Star className="size-5 text-primary"/>}
+                trendType='up'
+               />
 
-//    const myTeam: myTeamProps[] = [
-//     {
-//       id: 1,
-//      profilePics: '/images/user1.png',
-//      name: 'Christ Moris',
-//      email: 'durupristine@gmail.com',
-//      lastMessage: 'Hi Pristine, How are you'
-//     },
-//     {
-//      id: 2,
-//      profilePics: '/images/user1.png',
-//      name: 'Joseph Mandola',
-//      email: 'joseph@gmail.com',
-//      lastMessage: 'Do you need that design'
-//     },
-//     {
-//      id: 3,
-//      profilePics: '/images/user1.png',
-//      name: 'Charlie Chu',
-//      email: 'charliechu@gmail.com',
-//      lastMessage: 'Good Morning, what is our progess'
-//     },
-//     {
-//       id: 4,
-//      profilePics: '/images/user1.png',
-//      name: 'Micheal Jordan',
-//      email: 'michealjordan@gmail.com',
-//      lastMessage: 'Have you gotten the design'
-//     },
-//     {
-//       id: 5,
-//      profilePics: '/images/user1.png',
-//      name: 'Micheal Jordan',
-//      email: 'durupristine@gmail.com',
-//      lastMessage: 'Have you gotten the design'
-//     },
+               <DashboardStats 
+                statsLabel="Upcoming Follow-ups"
+                statsScore={weekEndNewTaskCount}
+                statsDescription={`Next: Tommorrow`}
+                statsIcon={<FilePlus className="size-5 text-primary"/>}
+                trendType='down'
+               />
 
-//   ]
+               <DashboardStats 
+                statsLabel="Today's Task"
+                statsScore={weekEndTaskCount}
+                statsDescription={`2 Overdue`}
+                statsIcon={<Layers className="size-5 text-primary"/>}
+                trendType='up'
+               />
+               <DashboardStats 
+                statsLabel="People"
+                statsScore={weekEndTaskCount}
+                statsDescription={`4 new this week`}
+                statsIcon={<Layers className="size-5 text-primary"/>}
+                trendType='up'
+               />
+              </div>
 
-//   const myTasks: myTaskProps[] = [
-//   {
-//     id: 2,
-//     startTime: '11:30 am',
-//     task: 'Define project color palette',
-//     link: 'www.coolors.co',
-//     commentCount: 3,
-//     progress: 54,
-//   },
-//   {
-//     id: 3,
-//     startTime: '1:45 pm',
-//     task: 'Create high-fidelity wireframes',
-//     link: 'https://figma.com',
-//     commentCount: 12,
-//     progress: 10,
-//   },
-//   {
-//     id: 4,
-//     startTime: '4:00 pm',
-//     task: 'Review feedback from client',
-//     link: 'www.notion.so',
-//     commentCount: 8,
-//     progress: 90,
-//   },
-//   {
-//     id: 5,
-//     startTime: '6:15 pm',
-//     task: 'Setup NestJS backend boilerplate',
-//     link: '://github.com',
-//     commentCount: 2,
-//     progress: 45,
-//   }
-//   ]
 
-//    const {workspaceId} = await params
+         <div className="flex gap-4 flex-col md:flex-row">
+            <Card className="max-w-120 w-full p-0 ">
+                <CardHeader className="flex items-center justify-between gap-3 px-3 pt-2">
+                     <CardTitle>Today's follow-ups</CardTitle>
+                     <p className="text-primary text-sm font-semibold">View all</p>
+                </CardHeader>
 
-//   const data = await getWorkspaceApi()
-//   const dashboardStats = await getDashboardStatApi(workspaceId)
+                <CardContent className="border flex flex-col py-1">
+                <div className='flex flex-row gap-2 py-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
 
-//   const {weekEndNewTaskCount, weekEndTaskCompletedCount, weekEndTaskCount} = dashboardStats
+                                <div className='flex flex-col gap-2'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                          <p className='text-sm font-semibold text-gray-600'>Founder @ ABC Logistics</p>
+                                          <p className='text-sm text-gray-600 font-semibold'>Last Contact: 18days ago</p>
+                                           
+                                           <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm">
+                                            AI: Send pricing proposal today
+                                           </Button>
 
-//   return (
-//     <div className="w-full flex gap-4 flex-1 relative">
-//        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-8">
-//            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
-//            {/* {
-//       id: 1,
-//       chartLabel: "Task Completed",
-//       chartScore: 10,
-//       chartDescription: "10+",
-//       chartIcon: Star,
-//       trendType: 'up'
-//     },
-//     {
-//       id: 2,
-//       chartLabel: "New Task",
-//       chartScore: 10,
-//       chartDescription: "10+",
-//       chartIcon: FilePlus,
-//       trendType: 'down'
-//     },
-//     {
-//       id: 3,
-//       chartLabel: "Project Done",
-//       chartScore: 10,
-//       chartDescription: "08+",
-//       chartIcon: Layers,
-//       trendType: 'up'
-//     }, */}
-//                <DashboardStats 
-//                 statsLabel="Task Completed"
-//                 statsScore={weekEndTaskCompletedCount}
-//                 statsDescription={`${weekEndTaskCompletedCount}+`}
-//                 statsIcon={<Star className="size-5 text-primary"/>}
-//                 trendType='up'
-//                />
+                                           <div className="flex items-center justify-between gap-3 my-2">
+                                 <Button className="py-4 rounded-sm" size={'lg'}>
+                                 <p className="text-sm font-medium ">Generate Follow Up</p>
+                                 </Button>
 
-//                <DashboardStats 
-//                 statsLabel="New Task"
-//                 statsScore={weekEndNewTaskCount}
-//                 statsDescription={`${weekEndNewTaskCount}+`}
-//                 statsIcon={<FilePlus className="size-5 text-primary"/>}
-//                 trendType='down'
-//                />
+                                 <Button variant={'ghost'} className="ring-1 ring-gray-300 py-4 rounded-sm  " size={'lg'}>
+                                 <p className="text-sm font-medium">Mark Done</p>
+                                 </Button>
+                              </div>
+                                    </div>
+                                    </div>
 
-//                <DashboardStats 
-//                 statsLabel="Projects"
-//                 statsScore={weekEndTaskCount}
-//                 statsDescription={`${weekEndTaskCount}+`}
-//                 statsIcon={<Layers className="size-5 text-primary"/>}
-//                 trendType='up'
-//                />
-//               </div>
+                             
 
-//                          <ChartLineMultiple />
+                              <div className='flex flex-row gap-2 border-t pt-2 mt-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
 
-//                       <div className="flex flex-col gap-4">
-//                  <p className="text-xl leading-tight font-bold">Tasks</p>
-                    
-//                     {data?.map((ws: any) => (
-//                          <Card className="shadow-sm border-none ring-0 flex flex-row items-center justify-between px-2 w-full" key=
-                         
-                         
-//                          {ws?.id}>
-//                     <div className="flex gap-3 items-center">
-//                           <div className="w-11 h-11 overflow-hidden rounded-full bg-primary flex items-center justify-center">
-//                               <Play className="text-4 text-white" strokeWidth={1.3}/>
-//                            </div>
-                          
-//                           <div className="flex flex-col gap-y-2">
-//                           <p className="text-[1rem] leading-tight font-semibold">Start from</p>
-//                           <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
-//                           <Clock className="size-4"/> <p>1:45 pm</p>
-//                           </span>
-//                           </div>
-//                         </div>
+                                <div className='flex flex-col gap-2 py-2'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                          <p className='text-sm font-semibold text-gray-600'>Founder @ ABC Logistics</p>
+                                          <p className='text-sm text-gray-600 font-semibold'>Last Contact: 18days ago</p>
+                                           
+                                           <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm">
+                                            AI: Send pricing proposal today
+                                           </Button>
 
-//                         <div className="flex flex-col gap-y-1">
-//                         <p className="text-[1rem] leading-tight font-semibold">{ws.name}</p>
-//                         <div className="flex items-center gap-3">
-//                        <span className="flex flex-row items-center gap-2 text-xs leading-tight font-medium text-gray-400 truncate">
-//                           <Link className="size-4 text-primary"/> 
-//                           <p className="text-blue-500">https://figma.com</p>
-//                           </span>
+                                           <div className="flex items-center justify-between gap-3 my-2">
+                                 <Button className="py-4 rounded-sm" size={'lg'}>
+                                 <p className="text-sm font-medium">Generate Follow Up</p>
+                                 </Button>
 
-//                           <span className="flex flex-row items-center gap-1 text-xs leading-tight font-medium text-muted-foreground truncate">
-//                           <MessageCircleMore className="size-5 text-primary"/> 
-//                           <p >12 comments</p>
-//                           </span>
-//                         </div>
-//                         </div>
+                                 <Button variant={'ghost'} className="ring-1 ring-gray-300 py-4 rounded-sm  " size={'lg'}>
+                                 <p className="text-sm font-medium">Mark Done</p>
+                                 </Button>
+                              </div>
+                                    </div>
+                                    </div>
 
-//                         <div className="flex flex-col gap-y-3 ">
-//                         <p className="text-[1rem] leading-tight font-semibold">12 Completed</p>
+                             
+                </CardContent>
+            </Card>
 
-//                         <div className="flex items-center">
-//                        <span className="h-1 w-14 bg-primary rounded-l-full"></span>
-//                        <span className="h-1 w-14 bg-secondary rounded-r-full"></span>
-//                         </div>
-//                         </div>
+            <Card className="p-3 max-w-120 w-full h-full flex items-cente justify-center">
+            <CardHeader className="flex items-center justify-between gap-3">
+                     <CardTitle className="text-lg">AI Needs Your Review</CardTitle>
+                     <p className="text-primary text-sm font-semibold">View all</p>
+                </CardHeader>
 
-//                   <Button className='bg-primary w-24 py-2 px-1 rounded-md flex items-center justify-center h-9 cursor-pointer '>
-//                       <Clock className="size-4 text-white"/>
-//                      <p className='text-white-100 leading-tight text-[0.8rem]'>Reminder</p>
-//                    </Button>
-//                 </Card>
-//                     ))}
-                
-//             </div>
-//        </div>
+                <CardContent className="border flex flex-col px-3 py-3 shadow rounded-md">
+                <div className='flex flex-row gap-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
 
-//         <div className="max-w-72 top-16 h-[calc(100vh-4rem)] bg-white-100 flex flex-col px-2 pt-4 pb-2 gap-4 sticky  border-l-2 border-gray-200">
-//           {/* w-72 h-screen bg-white flex flex-col px-2 py-4 gap-2 sticky top-0 border-l border-gray-200 */}
-//               <div className="flex items-center justify-between">
-//                 <p className="text-[1.2rem] leading-tight font-semibold">Today Schedule's</p>
-//                 <Calendar className="size-5 text-gray-500" strokeWidth={1.5}/>
-//               </div>
+                                <div className='flex flex-col gap-2'>
+                                          <p className='text-lg font-semibold'>Linkedin Conversation</p>
+                                          <p className='text-sm font-semibold text-gray-600'>Founder @ ABC Logistics</p>
+                          </div>
+                          </div>
+                          <div className="w-full flex justify-end">
+                          <Button className="bg-green-100 my-2 text-green-700 border border-green-500 rounded-sm max-w-32 w-full">
+                                            Confident: 94%
+                                  </Button>
+                          </div>
 
-//               <div className="flex items-center justify-between text-blue-500 mt-2">
-//                   <p className="text-xs leading-tight font-medium">10+ Member's active</p>
-//                   <Button className="flex items-center text-blue-500" variant={'ghost'}>
-//                       <Plus className="size-4 cursor-pointer" strokeWidth={1.5}/>
-//                       <p className="text-xs leading-tight font-medium">Invite</p>
-//                   </Button>
-//               </div>
-//                 <p className="text-[1.2rem] leading-tight font-medium">Project Discovery</p>
+                          <div className="flex flex-col gap-2 justify-center">
+                             <p className="text-lg font-semibold my-1">Ai extracted:</p>
+                            <div className="flex items-center gap-1">
+                              <Check className="size-5 text-green-500"/>
+                              <p className="text-sm font-medium text-gray-500">Promise found</p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Check className="size-5 text-green-500"/>
+                              <p className="text-sm font-medium text-gray-500">Goal identify</p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Check className="size-5 text-green-500"/>
+                              <p className="text-sm font-medium text-gray-500">Budget Mentioned</p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Check className="size-5 text-green-500"/>
+                              <p className="text-sm font-medium text-gray-500">Follow-up created</p>
+                            </div>
+                          </div>
+
+                          <Button variant={'ghost'} className="ring-1 ring-purple-300 py-4 rounded-sm my-5 bg-purple-100 hover:bg-primary hover:text-white" size={'lg'}>
+                                 <p className="text-sm font-medium text-primary">Review Analysis</p>
+                                 </Button>
+                </CardContent>
+            </Card>
+         </div>
+
+         <div className="flex gap-4 flex-col md:flex-row h-full">
+         <Card className="max-w-120 w-full p-0 h-fit">
+                <CardHeader className="flex items-center justify-between gap-3 px-3 pt-3">
+                     <CardTitle>Upcomming Follow-ups</CardTitle>
+                     <p className="text-primary text-sm font-semibold">View all</p>
+                </CardHeader>
+
+                <CardContent className="border-t flex flex-col px-3 py-0">
+                  <div className="flex items-center justify-between border-b py-1">
+                <div className='flex flex-row gap-2 py-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
+
+                                <div className='flex flex-col gap-1'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
+                                    </div>
+                                    </div>
+                                    <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm text-xs">
+                                            Jun 22 2026
+                                    </Button>
+
+                  </div>
+
+                  <div className="flex items-center justify-between border-b py-1">
+                  <div className='flex flex-row gap-2 py-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
+
+                                <div className='flex flex-col gap-1'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
+                                    </div>
+                                    </div>
+                                    <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm text-xs">
+                                            Jun 22 2026
+                                    </Button>
+
+                  </div>
+
+
+                </CardContent>
+            </Card>    
+
+             <Card className='max-w-120 w-full flex flex-col py-2 px-4 min-h-58'>
+              <div className='flex items-center gap-2'>
+                  <BookCheck className='text-purple-500 size-6'/>
+                  <p className='text-lg font-semibold'>Today's Tasks</p>
+              </div>
+
+              <div className='flex flex-col justify-center gap-4'>
+                 <div className='flex items-center justify-between w-full'>
+                  <div className='flex items-center gap-2'>
+                  <Checkbox/>
+                 <p className='text-gray-500 font-medium text-sm'>Send Proposal to John</p>
+                  </div>
+                 <div className='rounded-md px-3 py-1 text-xs font-medium text-destructive bg-red-100'>
+                  Due Date
+                  </div>
+                 </div>
                  
-//                 <div className="w-full mt-2 bg-primary h-11 rounded-md flex justify-between items-center p-2 shadow-sm">
-//                      <div className="flex items-center -space-x-2 z-10"> 
-//                 {myTeam.slice(0, 3).map((team: myTeamProps) => (
-//                   <div key={team.id} className="relative">
-//                     <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm"> 
-//                       <Image
-//                         src={getAvatar(null, team.email)}
-//                         width={32}
-//                         height={32}
-//                         alt={team.name}
-//                         className="object-cover" 
-//                       />
-//                     </div>
-//                   </div>
-//                 ))}
+                 <div className='flex items-center justify-between w-full'>
+                 <div className='flex items-center gap-2'>
+                  <Checkbox/>
+                 <p className='text-gray-500 font-medium text-sm'>Discovery Call</p>
+                  </div>
+                 <div className='rounded-md px-3 py-1 text-xs font-medium text-green-600 bg-green-100'>
+                  Completed
+                  </div>
+                 </div>
 
-//                 <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm flex items-center justify-center z-20 ring ring-white-100 cursor-pointer bg-primary">
-//                   <UserPlus className="size-5 text-white-100"/>
-//                 </div>
-//               </div>
+                 <div className='flex items-center justify-between w-full'>
+                 <div className='flex items-center gap-2'>
+                  <Checkbox/>
+                 <p className='text-gray-500 font-medium text-sm'>Portfolio Sent</p>
+                  </div>
+                 <div className='rounded-md px-3 py-1 text-xs font-medium text-green-600 bg-green-100'>
+                  Completed
+                  </div>
+                 </div>
 
-//                      <p className="text-sm leading-tight font-medium text-white-100 text-center">1:30</p>
-//                       <EllipsisVertical
-//                        className="size-5 text-white-100"/>
-//                 </div>
-                
-//                  <div className="w-full flex flex-col mt-2">
-//                    <p className="text-[1.2rem] leading-tight font-medium mb-2">Messages</p>
+                 <div className='flex items-center justify-between w-full'>
+                 <div className='flex items-center gap-2'>
+                  <Checkbox/>
+                 <p className='text-gray-500 font-medium text-sm'>Schedule Demo</p>
+                  </div>
+                 <div className='rounded-md px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100'>
+                  Next Week
+                  </div>
+                 </div>
 
-//                    <div className="flex flex-col w-full pt-2 border-t-2 border-gray-100">
-//                      <div className="w-full flex flex-col gap-3 rounded-md cursor-pointer">
-//                      {myTeam.map((team: myTeamProps) => (
-//                         <div className="flex gap-3 items-center hover:bg-background rounded-md px-2 py-1" key={team.id}>
-//                           <div className="w-12 h-12 overflow-hidden rounded-full">
-//                               <Image
-//                               src={getAvatar(null, team.email)}
-//                               width={62}
-//                               height={62}
-//                               alt={team.name}
-//                               className="object-contain ring-2 ring-gray-400 shadow-sm rounded-full"
-//                               />
-//                             </div>
+              </div>
+            </Card> 
+         </div>
 
-//                           <div className="flex flex-col gap-y-2">
-//                   <p className="text-sm leading-tight font-semibold">{team.name}</p>
-//                   <p className="text-xs leading-tight font-medium text-gray-400 truncate">{team.lastMessage}</p>
-//                           </div>
-//                         </div>
-//                      ))}
-//                      </div>
-//                    </div>
-//                  </div>
-//         </div>
+         <div className="flex flex-col gap-4">
+         <Card className="w-full">
+                <CardHeader className="flex items-center justify-between gap-3 border-b">
+                     <CardTitle>Recently Added People</CardTitle>
+                     <p className="text-primary text-sm font-semibold">View all</p>
+                </CardHeader>
+          
+         <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] px-2">
+             <div className='flex flex-row gap-2 py-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
 
-//     </div>
-//   )
-// }
+                                <div className='flex flex-col gap-1'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
+                                    </div>
+                                    </div>
 
-// export default Home
+                                    <div className='flex flex-row gap-2 py-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
+
+                                <div className='flex flex-col gap-1'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
+                                    </div>
+                                    </div>
+
+                                    <div className='flex flex-row gap-2 py-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
+
+                                <div className='flex flex-col gap-1'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
+                                    </div>
+                                    </div>
+
+                                    <div className='flex flex-row gap-2 py-2'>
+               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
+                                                    <Image
+                                                      src={'/images/user1.png'}
+                                                      width={50}
+                                                      height={50}
+                                                      alt={'user-img'}
+                                                      className="object-center size-10" 
+                                                    />
+                                                  </div>
+
+                                <div className='flex flex-col gap-1'>
+                                          <p className='text-[1rem] font-semibold'>John Doe</p>
+                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
+                                    </div>
+                                    </div>
+         </div>
+         </Card>
+         </div>
+
+
+
+       </div>
+    </div>
+  )
+}
+
+export default Home
 
 
 

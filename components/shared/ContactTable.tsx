@@ -5,6 +5,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Search, Plus, Eye } from "lucide-react";
 import Link from "next/link";
+import { formatDate, getAvatar } from "@/lib/utils";
 
 const contacts = [
   {
@@ -60,7 +61,7 @@ const contacts = [
 ];
 
 const statusStyles: Record<string, string> = {
-  Active:
+  ACTIVE:
     "bg-green-100 text-green-700",
   Lead:
     "bg-blue-100 text-blue-700",
@@ -70,7 +71,10 @@ const statusStyles: Record<string, string> = {
     "bg-gray-100 text-gray-600",
 };
 
-export function ContactTable({workspaceId}: {workspaceId: string}) {
+export function ContactTable({workspaceId, data}: {workspaceId: string, data: any}) {
+
+  console.log({data})
+
   return (
     <section className="rounded-md borde bg-white ">
       {/* Header */}
@@ -78,10 +82,10 @@ export function ContactTable({workspaceId}: {workspaceId: string}) {
       <div className="flex flex-col gap-4 border-b p-6 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">
-            People
+            Contacts
           </h2>
 
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 font-semibold">
             Manage contacts and keep track of every conversation.
           </p>
         </div>
@@ -99,15 +103,17 @@ export function ContactTable({workspaceId}: {workspaceId: string}) {
             />
           </div>
 
+            <Link href={`/workspace/${workspaceId}/contacts/create`}>
           <button
             className="flex items-center gap-2 rounded-md shadow-sm cursor-pointer px-3 py-1.5 text-white transition hover:opacity-90"
             style={{
               background: "#7850CD",
             }}
-          >
+            >
             <Plus size={18} />
             New Contact
           </button>
+            </Link>
         </div>
       </div>
 
@@ -126,7 +132,7 @@ export function ContactTable({workspaceId}: {workspaceId: string}) {
               </th>
 
               <th className="px-6 py-4 text-left">
-                Company
+                Source
               </th>
 
               <th className="px-6 py-4 text-left">
@@ -148,7 +154,7 @@ export function ContactTable({workspaceId}: {workspaceId: string}) {
           </thead>
 
           <tbody>
-            {contacts.map((contact) => (
+            {data?.data?.length ? data?.data.map((contact: any) => (
               <tr
                 className="border-t transition hover:bg-[#7850CD]/5"
                 key={contact.id}
@@ -162,7 +168,7 @@ export function ContactTable({workspaceId}: {workspaceId: string}) {
                     
                      <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm"> 
                                       <Image
-                                        src={contact.avatar}
+                                        src={getAvatar('/images/user1.png', contact.email as string)}
                                         width={32}
                                         height={32}
                                         alt={contact.name}
@@ -182,22 +188,22 @@ export function ContactTable({workspaceId}: {workspaceId: string}) {
                 </td>
 
                 <td className="px-6 py-5 text-sm text-gray-700">
-                  {contact.company}
+                  {contact.source}
                 </td>
 
                 <td className="px-6 py-5 text-sm text-gray-500">
-                  {contact.last}
+                  {formatDate(contact?.lastContact)}
                 </td>
 
                 <td className="px-6 py-5 text-sm text-gray-500">
-                  {contact.next}
+                  {contact?.nextContact ?? '_ _ _'}
                 </td>
 
                 <td className="px-6 py-5 text-right">
                   <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${statusStyles[contact.status]}`}
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${statusStyles[contact?.priority]}`}
                   >
-                    {contact.status}
+                    {contact?.priority}
                   </span>
                 </td>
                 <td className="px-6 py-5 text-right flex items-center justify-center">
@@ -210,7 +216,7 @@ export function ContactTable({workspaceId}: {workspaceId: string}) {
                   </Link>
                   </td>
               </tr>
-            ))}
+            )) : ''}
           </tbody>
         </table>
       </div>

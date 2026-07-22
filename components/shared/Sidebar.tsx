@@ -65,15 +65,25 @@ const Sidebar = () => {
   return (
     <aside className='w-64  bg-white px-2 py-2 border-r border-gray-200  sticky top-0 h-screen md:block hidden'>
        <div className='flex flex-col h-full gap-4 py-2'>
-          <div className='flex justify-center items-center w-full h-13 overflow-visible'>
-          <Image
+          {/* <div className='flex items-center w-full overflow-visible'> */}
+          {/* <Image
             src="/images/logo1.png"
             width={500}
             height={500}
             alt="logo"
-            className="object-cover"
-          />
-        </div>
+            className="object-cover "
+          /> */}
+
+          <div className="w-full h-10 overflow-hidden p-0"> 
+                                                            <Image
+                                                              src={'/images/logo1.png'}
+                                                              width={500}
+                                                              height={500}
+                                                              alt={'user-img'}
+                                                              className="object-cover size-full p-0" 
+                                                            />
+                                                          </div>
+         
          
          <div className='flex flex-col h-full justify-between'>
 
@@ -83,7 +93,7 @@ const Sidebar = () => {
                  
                  return (
                   <Link href={item.href} key={item.id}>
-                   <li className={`flex px-2 py-2 items-center text-black justify-start gap-2 rounded-md ${pathname === item.href ? 'bg-primary  cursor-pointer text-white leading-tight' : 'text-black leading-tight hover:bg-secondary cursor-pointer'}`} >
+                   <li className={`flex px-2 py-2 items-center text-black justify-start gap-2 rounded-sm ${pathname === item.href ? 'bg-primary  cursor-pointer text-white leading-tight' : 'text-black leading-tight hover:bg-secondary cursor-pointer'}`} >
                       <Icons className="size-5" strokeWidth={1.5}/>
                       <p className='text-[0.9rem] font-medium '>{item.label}</p>
                   </li> 
