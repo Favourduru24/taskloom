@@ -5,16 +5,75 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { formatDate } from '@/lib/utils'
-import { MoreHorizontalIcon, BookCheck, Brain, Globe, LocationEdit, LogOut, Mail, MessageCircle, Phone, PhoneCallIcon, Plus, RefreshCcw, Sparkle, Sparkles, User, Copy } from 'lucide-react'
+import { MoreHorizontalIcon, BookCheck, Brain, Globe, LocationEdit, LogOut, Mail, MessageCircle, Phone, PhoneCallIcon, Plus, RefreshCcw, Sparkle, Sparkles, User, Copy, LucideIcon, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import {useState} from 'react'
 import { Textarea } from '../ui/textarea'
+import { createConversationSchemaType } from '@/utility/validation/conversation'
+import { toast } from 'sonner'
+import { createConversationApi } from '@/utility/api/conversation'
 
-const ContactDetail = ({data}: {data: any}) => {
+const ContactDetail = ({data, contactId}: {data: any, contactId: string}) => {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [pasteModal, setPasteModal] = useState(false)
   const [followUpModal, setFollowUpModal] = useState(false)
+
+  const [loading, setLoading] = useState(false)
+
+
+  const [content, setContent] = useState('')
+  const [source, setSource] = useState('EMAIL')
+
+  const SOURCE: {label: string, icon: LucideIcon, id: number}[] = [
+  {
+    label: 'EMAIL',
+    icon: Mail,
+    id: 1
+  },
+  {
+    label: 'LINKEDIN',
+    icon: Mail,
+    id: 2
+  },
+  {
+    label: 'WHATAPP',
+    icon: PhoneCallIcon ,
+    id: 3
+  }, {
+    label: 'OTHER',
+    icon: MoreHorizontalIcon,
+    id: 4
+  }
+  ]
+  
+// console.log({source, content, contactId})
+
+
+  const handleCreateConversation = async (data: createConversationSchemaType) => {
+
+    if (loading) return;
+
+    setLoading(true);
+
+    try {
+      await createConversationApi(
+         data
+      );
+  
+      toast.success(`Conversation from "${data.source}" created successfully!`);
+      setPasteModal(false)
+
+    } catch(error: any) {
+      console.error(error);
+  
+      toast.error(
+        error?.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false)
+    }
+  }
 
     return (
         <div className="w-full flex gap-6 flex-1 min-h-0">
@@ -372,35 +431,18 @@ const ContactDetail = ({data}: {data: any}) => {
 
                     <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(50px,1fr))]">
 
-                    <div className='flex flex-col gap-1 justify-center items-center w-full cursor-pointer'>
-                    <div className='flex flex-col gap-3 items-center bg-muted rounded-sm py-3 w-full border'>
-                      <Mail className='text-primary size-5'/>
-                       </div>
-                            <p className="text-xs text-gray-700 font-semibold">Email</p>
-                    </div>
+                     {SOURCE.map((item: {label: string, icon: LucideIcon, id: number}) => {
+                      const Icons = item.icon
 
-                    <div className='flex flex-col gap-1 justify-center items-center w-full cursor-pointer'>
-                    <div className='flex flex-col gap-3 items-center bg-muted rounded-sm py-3 w-full border'>
-                      <Mail className='text-gray-500 size-5'/>
-                       </div>
-                            <p className="text-xs text-gray-700 font-semibold">Linkedin</p>
-                    </div>
-
-
-                    <div className='flex flex-col gap-1 justify-center items-center w-full cursor-pointer'>
-                    <div className='flex flex-col gap-3 items-center bg-muted rounded-sm py-3 w-full border'>
-                      <PhoneCallIcon className='text-green-500 size-5'/>
-                       </div>
-                            <p className="text-xs text-gray-700 font-semibold">Whatapp</p>
-                    </div>
-
-
-                    <div className='flex flex-col gap-1 justify-center items-center w-full cursor-pointer'>
-                    <div className='flex flex-col gap-3 items-center bg-muted rounded-sm py-3 w-full border'>
-                      <MoreHorizontalIcon className='text-gray-500 size-5'/>
-                       </div>
-                            <p className="text-xs text-gray-700 font-semibold">Other</p>
-                    </div>
+                      return (
+                        <div className='flex flex-col gap-1 justify-center items-center w-full cursor-pointer' key={item.id}>
+                        <div className='flex flex-col gap-3 items-center bg-muted rounded-sm py-3 w-full border' onClick={() => setSource(item.label)}>
+                          <Icons className='text-primary size-5'/>
+                           </div>
+                                <p className="text-xs text-gray-700 font-semibold">{item.label}</p>
+                        </div>
+                      )
+                     })}
 
                     </div>
 
@@ -411,15 +453,25 @@ const ContactDetail = ({data}: {data: any}) => {
                   <Textarea
                   id="conversation"
                   name="conversation"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
                   // label="Conversation"
                   placeholder="Write your content description or caption..."
                   className="pr-10 sm:h-auto"
                   />
              </div>
 
-                 <div className='w-full flex items-center justify-end'>
-                      <Button className='rounded-sm text-[0.85rem] font-medium cursor-pointer' size={'lg'}>
-                        Analyze with Ai
+                 <div className='w-full flex items-center justify-end' onClick={() => handleCreateConversation({source, contactId, content})}>
+                      <Button className='rounded-sm text-[0.85rem] font-medium cursor-pointer' size={'lg'} 
+                      
+                      onSubmit={() => handleCreateConversation({source, contactId, content})}
+                      >
+                        {loading ? 
+                        <div className="flex items-center gap-2">
+                         <Loader2 className="size-4 animate-spin" />
+                         <p>Analyzing...</p>
+                        </div>
+                        : 'Analyze with Ai'}
                       </Button>
                  </div>
              </div>

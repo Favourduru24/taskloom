@@ -11,7 +11,7 @@ const ContactPage = async ({params}: {params: Promise<{contactId: string, worksp
 
 
   return (
-     <ContactDetail data={data}/>
+     <ContactDetail data={data} contactId={contactId}/>
   )
 }
 
