@@ -224,7 +224,7 @@ const Header = () => {
                                         </div>
 
                                         <svg
-                      className={`w-5 h-5 transition-transform duration-200 cursor-pointer text-muted-foreground`}
+                      className={`w-5 h-5 transition-transform duration-200 cursor-pointer text-muted-foreground rotate-60`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
