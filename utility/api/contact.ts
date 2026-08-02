@@ -1,7 +1,7 @@
 'use server'
 
 import { cookies } from "next/headers"
-import { createContactType } from "../validation/contact"
+import { createContactType, createReminderPreferenceType } from "../validation/contact"
 
 export async function createContactApi(formData: createContactType, workspaceId: string, contactUrl?: string) {
     const cookieStore = await cookies()
@@ -119,6 +119,81 @@ export async function createContactApi(formData: createContactType, workspaceId:
      }
      }
   }
+
+  export async function createReminderPreferenceApi(contactId: string, formData: createReminderPreferenceType) {
+    const cookieStore = await cookies()
+    
+    const accessToken = cookieStore.get('accessToken')?.value
+ 
+    const {timezone, reminderCadence} = formData
+ 
+    if (!accessToken) {
+       throw new Error('Invalid login response: tokens missing')
+     }
+ 
+     try {
+         
+       const res = await fetch(`http://localhost:3000/contacts/${contactId}/reminder/preference`, {
+        method: 'POST',
+        headers: {
+         "Content-Type": "application/json",
+         "Authorization": `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({timezone, reminderCadence}),
+       }) 
+       
+       const data = await res.json()
+ 
+       if(!res.ok) {
+         throw new Error(data?.message || 'Failed to create reminder preference')
+       }
+ 
+       return data
+     } catch (error) {
+         console.error("Create Reminder preference error:", error);
+         throw error;
+     }
+ }
+
+
+ export async function getReminderPreferenceApi(contactId: string) {
+  const cookieStore = await cookies()
+  
+  const accessToken = cookieStore.get('accessToken')?.value
+
+   try {
+       
+     const res = await fetch(`http://localhost:3000/contacts/${contactId}/preference/list`, {
+      method: 'GET',
+      headers: {
+       "Content-Type": "application/json",
+       ...(accessToken
+         ? { Authorization: `Bearer ${accessToken}` }
+         : {}),
+     },
+     }) 
+     
+     const data = await res.json()
+
+     if (!res.ok) {
+       return {
+         data: null,
+         error: data?.message || "Failed to fetch workspace contact preference details",
+       };
+     }
+
+    return {
+     data,
+     error: null,
+   };
+
+   } catch (error: any) {
+      return {
+     data: null,
+     error: error?.message || "Network error, Failed to fetch contact.",
+   }
+   }
+}
   
 
   

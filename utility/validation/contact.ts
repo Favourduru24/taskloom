@@ -47,5 +47,16 @@ export const createContactSchema = z.object({
     .min(1, "source must be at least 1 char")
 });
 
+export const createReminderPreferenceSchema = z.object({
+  timezone: z
+  .string()
+  .min(2, "timezone must be at least 20 char"),
+
+  reminderCadence: z
+  .string()
+  .min(4, 'reminderCadence must be at least 4 char')
+})
+
 
 export type createContactType = z.infer<typeof createContactSchema>
+export type createReminderPreferenceType = z.infer<typeof createReminderPreferenceSchema>

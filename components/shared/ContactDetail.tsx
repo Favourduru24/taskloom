@@ -4,22 +4,30 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { formatDate } from '@/lib/utils'
-import { MoreHorizontalIcon, BookCheck, Brain, Globe, LocationEdit, LogOut, Mail, MessageCircle, Phone, PhoneCallIcon, Plus, RefreshCcw, Sparkle, Sparkles, User, Copy, LucideIcon, Loader2 } from 'lucide-react'
+import { cn, formatDate } from '@/lib/utils'
+import { MoreHorizontalIcon, BookCheck, Brain, Globe, LocationEdit, LogOut, Mail, MessageCircle, Phone, PhoneCallIcon, Plus, RefreshCcw, Sparkle, Sparkles, User, Copy, LucideIcon, Loader2, BellRing, CloudSync, Sun, CalendarHeart, CalendarCheck2, Clock, Calendar, Bell, Trash } from 'lucide-react'
 import Image from 'next/image'
 import {useState} from 'react'
 import { Textarea } from '../ui/textarea'
 import { createConversationSchemaType } from '@/utility/validation/conversation'
 import { toast } from 'sonner'
 import { createConversationApi } from '@/utility/api/conversation'
+import { createReminderPreferenceType } from '@/utility/validation/contact'
+import { createReminderPreferenceApi } from '@/utility/api/contact'
 
-const ContactDetail = ({data, contactId}: {data: any, contactId: string}) => {
+const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contactId: string, reminderPreference: any}) => {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [pasteModal, setPasteModal] = useState(false)
   const [followUpModal, setFollowUpModal] = useState(false)
+  const [openPreferenceModal, setOpenPreferenceModal] = useState(false)
+  const [reminderModal, setReminderModal] = useState(false)
+  const [contactPreference, setContactPreference] = useState('DAILY')
+
+  const [timezone, setTimezone] = useState('UTC')
 
   const [loading, setLoading] = useState(false)
+  const [creatingPreference, setCreatingPreference] = useState(false)
 
 
   const [content, setContent] = useState('')
@@ -46,8 +54,39 @@ const ContactDetail = ({data, contactId}: {data: any, contactId: string}) => {
     id: 4
   }
   ]
+
+  const ContactPreference: {label: string, icon: LucideIcon, id: number}[] = [
+    {
+      label: 'DAILY',
+      icon: Sun,
+      id: 1
+    },
+    {
+      label: 'WEEKLY',
+      icon: CalendarHeart,
+      id: 2
+    },
+    {
+      label: 'BIWEEKLY',
+      icon: CalendarCheck2,
+      id: 3
+    }, {
+      label: 'MONTHLY',
+      icon:  CalendarHeart,
+      id: 5
+    },
+    {
+      label: 'QUARTERLY',
+      icon: Clock,
+      id: 6
+    },
+    {
+      label: 'CUSTOM',
+      icon: MoreHorizontalIcon,
+      id: 7
+    }
+    ]
   
-// console.log({source, content, contactId})
 
 
   const handleCreateConversation = async (data: createConversationSchemaType) => {
@@ -72,6 +111,34 @@ const ContactDetail = ({data, contactId}: {data: any, contactId: string}) => {
       );
     } finally {
       setLoading(false)
+    }
+  }
+
+    console.log({contactPreference, timezone})
+
+  const handleCreateContactPreference = async (data: createReminderPreferenceType) => {
+
+    if (creatingPreference) return;
+
+    setCreatingPreference(true);
+
+    try {
+      await createReminderPreferenceApi(
+        contactId,
+         data
+      );
+  
+      toast.success(`Contact preference ${data.reminderCadence} " created successfully!`);
+      setOpenPreferenceModal(false)
+
+    } catch(error: any) {
+      console.error(error);
+  
+      toast.error(
+        error?.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setCreatingPreference(false)
     }
   }
 
@@ -148,12 +215,13 @@ const ContactDetail = ({data, contactId}: {data: any, contactId: string}) => {
                            <p className="text-sm text-gray-700 font-medium">Paste Conversation</p>
                            </div>
    
-                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => setPasteModal(true)}>
+                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => reminderPreference?.reminderPreference ? setOpenPreferenceModal(true) : setReminderModal(true)}>
                            <Plus className='text-gray-500 size-4'/>
                            <p className="text-sm text-gray-700 font-medium">Add Reminder</p>
                            </div>
    
-                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer'>
+                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' 
+                           >
                            <BookCheck className='text-gray-500 size-4'/>
                            <p className="text-sm text-gray-700 font-medium">Add Task</p>
                            </div>
@@ -606,6 +674,169 @@ const ContactDetail = ({data, contactId}: {data: any, contactId: string}) => {
                   
                    
           </DialogContent>
+          
+               </Dialog>
+
+               {/* User Contact Preference */}
+               <Dialog open={openPreferenceModal} onOpenChange={setOpenPreferenceModal}>
+                <DialogContent className="max-w-[80vw] w-full">
+
+            <DialogHeader>
+              <div className='w-full flex flex-col justify-center items-center'>
+                <BellRing className='size-12 text-primary'/>
+                 <DialogTitle className='text-lg'>Set Reminder</DialogTitle>
+                 <p className='text-muted-foreground text-sm'>Chose how often you want to be reminded</p>
+              </div>
+          </DialogHeader>
+
+         <div className='flex flex-col gap-8'>
+
+             <div className='flex flex-col gap-2'>
+                 <p className="text-sm font-semibold">Frequency</p>
+
+                    <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(50px,1fr))]">
+
+                     {ContactPreference.map((item: {label: string, icon: LucideIcon, id: number}) => {
+                      const Icons = item.icon
+
+                      return (
+                        <div className='flex flex-col gap-1 justify-center items-center w-full cursor-pointer' key={item.id}>
+                        <div className={cn('flex flex-col gap-2 items-center rounded-sm py-2 w-full', item.label === contactPreference ? 'border-primary border-2 bg-purple-100' : 'border')} onClick={() => setContactPreference(item.label)}>
+                          <Icons className='text-primary size-5'/>
+                          <p className="text-[8px] text-gray-700 font-medium">{item.label}</p>
+                           </div>
+                        </div>
+                      )
+                     })}
+
+                    </div>
+             </div>
+
+             <div className='flex flex-col gap-2'>
+                 <div className='flex items-center justify-between gap-2'>
+
+                <div className='flex flex-col gap-2'>
+                <p className="text-sm font-semibold">Time</p>
+                <div className='shadow w-20 h-8 rounded-sm border'>
+
+                </div>
+                </div>  
+
+                <div className='flex flex-col gap-2'>
+                <p className="text-sm font-semibold">Timezone</p>
+                <input className='shadow w-32 h-8 rounded-sm border-2' type='text' value={timezone} onChange={(e) => setTimezone(e.target.value)}/>
+                </div>  
+
+                 </div>
+
+
+                <div className='border w-full h-fit rounded-md flex items-center justify-between px-2 py-1 gap-3 my-2'>
+                  <div className='w-8 h-8 rounded-sm flex items-center justify-center bg-purple-100 text-purple-500'>
+                    <CloudSync className='text-primary size-5'/>
+                  </div>
+
+                  <div className='flex flex-col gap-1'>
+                  <p className='text-black text-sm font-semibold'>Reapeat Automatically</p>
+                  <p className='text-muted-foreground text-xs leading-5'>We'll send reminder base on the frequency you selected</p>
+                  </div>
+
+                  <div className='w-10 h-5 rounded-full justify-end bg-primary'>
+                     <div className='w-5 h-full rounded-full bg-white'/>
+                  </div>
+                </div>
+
+
+                <div className='flex items-center justify-between gap-2 '>
+
+                <Button className='px-2 py-2 rounded-sm text-[0.85rem] font-medium cursor-pointer ring-1 ring-gray-200' size={'lg'} variant={'ghost'}>
+               Cancel
+                </Button>
+
+                <Button className='px-2 py-2 rounded-sm text-[0.85rem] font-medium cursor-pointer bg-primary text-white shadow outline-none' size={'lg'} onClick={() => handleCreateContactPreference({reminderCadence: contactPreference, timezone})}>
+                {creatingPreference ? 'Saving Reminder' : 'Save Reminder'} 
+                </Button>
+                </div>
+
+            </div>
+             </div>
+                </DialogContent>
+               </Dialog>
+
+
+
+               <Dialog open={reminderModal} onOpenChange={setReminderModal}>
+                <DialogContent className="max-w-[80vw] w-full bg-purple-100">
+
+            <DialogHeader>
+              <div className='w-full flex flex-col gap-2 justify-center items-center bg-white/50 p-2 rounded-md'>
+                <Calendar className='size-10 text-primary'/>
+                 <DialogTitle className='text-[1rem]'>{reminderPreference.reminderCadence}</DialogTitle>
+                 <p className='text-muted-foreground text-xs'>7:AM</p>
+              </div>
+          </DialogHeader>
+
+         <div className='flex flex-col gap-5'>
+             <div className='flex flex-col gap-2'>
+                 
+                <div className=' w-full h-fit rounded-md flex items-center justify-between px-2 py-1 gap-3 my-2'>
+
+                <div className='flex flex-row items-start gap-3'>
+                  <div className='w-8 h-8 rounded-sm flex items-center justify-center bg-purple-100 text-purple-500'>
+                    <Calendar className='text-muted-foreground size-5'/>
+                  </div>
+
+                  <div className='flex flex-col gap-1'>
+                  <p className='text-black text-sm font-semibold'>Next Reminder</p>
+                  <p className='text-muted-foreground text-xs leading-5'>Mon, May 26, 2026 <br/> 09:00AM</p>
+                  </div>
+                  </div>
+                </div>
+
+                <div className=' w-full h-fit rounded-md flex items-center justify-between px-2 py-1 gap-3 my-2'>
+                     <div className='flex flex-row items-start gap-3'>
+                  <div className='w-8 h-8 rounded-sm flex items-center gap-2 justify-center bg-purple-100 text-purple-500'>
+                    <CloudSync className='text-muted-foreground size-5'/>
+                  </div>
+
+                  <div className='flex flex-col gap-1'>
+                  <p className='text-black text-sm font-semibold'>Repeat</p>
+                  <p className='text-muted-foreground text-xs leading-5'>Every Week</p>
+                  </div>
+                     </div>
+                </div>
+
+                <div className=' w-full h-fit rounded-md flex items-center justify-between px-2 py-1 gap-3 my-2'>
+                <div className='flex flex-row items-start gap-3'>
+                <div className='w-8 h-8 rounded-sm flex items-center justify-center bg-purple-100 text-purple-500'>
+                    <Bell className='text-muted-foreground size-5'/>
+                  </div>
+                     
+                  <div className='flex flex-col gap-1'>
+                  <p className='text-black text-sm font-semibold'>Status</p>
+                  <p className='text-muted-foreground text-xs leading-5'>Every Week</p>
+                  </div>
+                </div>
+                
+
+                 
+
+                  <div className='px-2 py-1 rounded-sm text-sm text-center justify-end bg-primary text-white'>
+                    Active
+                  </div>
+                </div>
+
+
+                <div className='flex items-center justify-between gap-2 w-full'>
+
+                <Button className='px-2 py-1 rounded-sm text-[0.85rem] text-destructive font-medium cursor-pointer w-full ring-1 ring-destructive bg-red-100 hover:bg-destructive hover:text-white' size={'lg'} variant={'ghost'}>
+                  <Trash className='text-destructive'/>
+               Delete Reminder
+                </Button>
+                </div>
+
+            </div>
+             </div>
+                </DialogContent>
                </Dialog>
    
            </div>
