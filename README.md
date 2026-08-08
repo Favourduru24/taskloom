@@ -35,34 +35,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-
-import { useEffect, useState } from "react";
-
-interface Notification {
-  id: string;
-  title: string;
-  body: string;
-  createdAt: string;
-}
-
-export default function NotificationPage() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleNotification = (notification: Notification) => {
-      console.log(notification);
-
-      // Add the new notification to the top of the list
-      setNotifications((prev) => [notification, ...prev]);
-
-      toast.success(notification.title);
-    };
-
-    socket.on("notification:created", handleNotification);
-
-    return () => {
-      socket.off("notification:created", handleNotification);
-    };
-  }, [socket]);
+http://github.com/ITZ-HURAIRAH18?tab=repositories

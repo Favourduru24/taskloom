@@ -23,6 +23,19 @@ export function formatDate(date: string | Date | null | undefined): string {
     year: 'numeric',
   });
 }
+export function formatNotificationDate(date: string | Date | null | undefined): string {
+  if (!date) return 'No date';
+
+  const d = typeof date === 'string' ? new Date(date) : date;
+
+  if (isNaN(d.getTime())) return 'Invalid date';
+
+  return d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    // year: 'numeric',
+  });
+}
 
 export function formUrlQuery({ params, key, value }: { params: string, key: string, value: string }) {
   const currentUrl = qs.parse(params)

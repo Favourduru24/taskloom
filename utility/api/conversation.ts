@@ -16,7 +16,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
  
      try {
          
-       const res = await fetch(`http://localhost:3000/conversation/create`, {
+       const res = await fetch(`http://localhost:3000/conversation/${contactId}/create`, {
         method: 'POST',
         headers: {
          "Content-Type": "application/json",

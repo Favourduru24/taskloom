@@ -16,6 +16,9 @@ import { useRouter, usePathname, useParams} from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { getProfile, uploadProfilePics } from '@/utility/api/auth'
+import { useSocket } from '@/hooks/use-socket'
+import { getWorkspaceNotificationApi, markAllNotificationsAsReadApi } from '@/utility/api/notification'
+import Notifications from './Notifications'
 
 interface WorkspaceList {
   id: string
@@ -26,6 +29,14 @@ interface WorkspaceList {
   updatedAt?: Date
 }
 
+interface Notification {
+    id: string;
+    title: string;
+    body: string;
+    createdAt: string;
+    read?: boolean
+  }
+
 const Header = () => {
   
   const [workspace, setWorkspace] = useState<WorkspaceList[]>([])
@@ -33,6 +44,7 @@ const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
    const params = useParams()
+  const socket = useSocket(state => state.socket);
    const {workspaceId} = params
 
   const [loading, setLoading] = useState(false)
@@ -41,6 +53,27 @@ const Header = () => {
   const createTaskLink = `/workspace/${workspaceId}/task/create`
 
   const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceList | null>(workspace[0] || null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNotification = (notification: Notification) => {
+      console.log('Pristine Dam you good', notification);
+
+      // Add the new notification to the top of the list
+      setNotifications((prev) => [notification, ...prev]);
+
+      toast.success(notification.title);
+    };
+
+    socket.on("notification:created", handleNotification);
+
+    return () => {
+      socket.off("notification:created", handleNotification);
+    };
+  }, [socket]);
+
 
   useEffect(() => {
     const saved = localStorage.getItem("selectedWorkspace");
@@ -53,11 +86,16 @@ const Header = () => {
       setLoading(true);
   
       try {
-        const data = await getWorkspaceApi();
-        const user = await getProfile();
+
+         const [data, user, notification] = await Promise.all([
+          getWorkspaceApi(),
+          getProfile(),
+          getWorkspaceNotificationApi()
+         ])        
 
         setWorkspace(data);
         setUser(user);
+        setNotifications(notification.data || []);
 
       } catch (error: any) {
         console.log(error, "Workspace error");
@@ -69,6 +107,12 @@ const Header = () => {
   
     fetchWorkspace();
   }, []);
+
+
+  const unreadCount = notifications.filter(
+    notification => !notification.read
+  ).length;
+
 
       const handleSwitchWorkspace = (workspaceId: string) => {
         const ws = workspace.find(w => w.id === workspaceId);
@@ -106,7 +150,29 @@ const Header = () => {
         } finally {
           setUploading(false);
         }
-      };      
+      };    
+      
+    
+      const handleMarkAllAsRead = async () => {
+        const { error } = await markAllNotificationsAsReadApi();
+
+        console.log('Click')
+      
+        if (error) {
+          toast.error(error);
+          return;
+        }
+      
+        setNotifications(prev =>
+          prev.map(notification => ({
+            ...notification,
+            read: true,
+          }))
+        ); 
+      };
+
+      console.log({notifications})
+
 
   return (
     <header className='px-5 h-16 z-50 flex items-center bg-white-100 border-b border-gray-200 sticky top-0 w-full'>
@@ -188,9 +254,7 @@ const Header = () => {
                   <Clock className="text-muted-foreground size-4 md:size-5"/>
                 </div> */}
 
-                 <div className='h-8 w-8 md:h-9 md:w-9 rounded-full flex items-center justify-center border cursor-pointer'>
-                  <Bell className="text-muted-foreground size-4 md:size-5"/>
-                </div>
+                 <Notifications notifications={notifications} handleMarkAllAsRead={handleMarkAllAsRead}/>
 
                 <div className='h-8 w-8 md:h-9 md:w-9 rounded-full flex items-center justify-center border cursor-pointer'>
                   <Moon className="text-muted-foreground size-4 md:size-5"/>

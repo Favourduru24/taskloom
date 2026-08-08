@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { formatDate, getAvatar } from '@/lib/utils';
 import { EmptyOutline } from './NotFound';
 import { useSocket } from '@/hooks/use-socket';
+import { toast } from 'sonner';
 
 
 type User = {
@@ -87,6 +88,7 @@ const TaskList = ({initialTasks, workspaceId, error, }: {initialTasks: TaskProps
         setTasks(initialTasks);
       }, [initialTasks]);
 
+  
     function getPriorityColor(priority: string) {
         switch (priority) {
           case "URGENT":

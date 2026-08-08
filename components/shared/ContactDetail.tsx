@@ -33,6 +33,7 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
   const [content, setContent] = useState('')
   const [source, setSource] = useState('EMAIL')
 
+  
   const SOURCE: {label: string, icon: LucideIcon, id: number}[] = [
   {
     label: 'EMAIL',
@@ -215,7 +216,7 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
                            <p className="text-sm text-gray-700 font-medium">Paste Conversation</p>
                            </div>
    
-                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => reminderPreference?.reminderPreference ? setOpenPreferenceModal(true) : setReminderModal(true)}>
+                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => !reminderPreference?.reminderPreference ? setOpenPreferenceModal(true) : setReminderModal(true)}>
                            <Plus className='text-gray-500 size-4'/>
                            <p className="text-sm text-gray-700 font-medium">Add Reminder</p>
                            </div>
@@ -529,10 +530,10 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
                   />
              </div>
 
-                 <div className='w-full flex items-center justify-end' onClick={() => handleCreateConversation({source, contactId, content})}>
+                 <div className='w-full flex items-center justify-end'>
                       <Button className='rounded-sm text-[0.85rem] font-medium cursor-pointer' size={'lg'} 
                       
-                      onSubmit={() => handleCreateConversation({source, contactId, content})}
+                      onClick={() => handleCreateConversation({source, contactId, content})}
                       >
                         {loading ? 
                         <div className="flex items-center gap-2">
@@ -770,7 +771,7 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
             <DialogHeader>
               <div className='w-full flex flex-col gap-2 justify-center items-center bg-white/50 p-2 rounded-md'>
                 <Calendar className='size-10 text-primary'/>
-                 <DialogTitle className='text-[1rem]'>{reminderPreference.reminderCadence}</DialogTitle>
+                 <DialogTitle className='text-[1rem]'>{reminderPreference?.reminderCadence}</DialogTitle>
                  <p className='text-muted-foreground text-xs'>7:AM</p>
               </div>
           </DialogHeader>
