@@ -1,25 +1,26 @@
 import ContactDetail from '@/components/shared/ContactDetail'
 import { getReminderPreferenceApi, getWorkspaceContactId } from '@/utility/api/contact'
+import { getWorkspaceConversationApi } from '@/utility/api/conversation'
 
 const ContactPage = async ({params}: {params: Promise<{contactId: string, workspaceId: string}>}) => {
 
   const {contactId, workspaceId} = await params
-
-  // const contactDetails = await getWorkspaceContactId(workspaceId, contactId)
-  // const contactReminderPreference = await getReminderPreferenceApi(contactId)
   
   
-  const [contactDetails, contactReminderPreference] = await Promise.all([
+  const [contactDetails, contactReminderPreference, conversations] = await Promise.all([
     getWorkspaceContactId(workspaceId, contactId),
-    getReminderPreferenceApi(contactId)
+    getReminderPreferenceApi(contactId),
+    getWorkspaceConversationApi(contactId)
     ])
     
     const {data} = contactDetails || {}
     const {data: reminderPreference} = contactReminderPreference || {}
+    const {data: conversation} = conversations || {}
+
 
 
   return (
-     <ContactDetail data={data} contactId={contactId} reminderPreference={reminderPreference}/>
+     <ContactDetail data={data} contactId={contactId} reminderPreference={reminderPreference} conversation={conversation}/>
   )
 }
 

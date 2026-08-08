@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { cn, formatDate } from '@/lib/utils'
+import { cn, formatDate, formatNotificationDate } from '@/lib/utils'
 import { MoreHorizontalIcon, BookCheck, Brain, Globe, LocationEdit, LogOut, Mail, MessageCircle, Phone, PhoneCallIcon, Plus, RefreshCcw, Sparkle, Sparkles, User, Copy, LucideIcon, Loader2, BellRing, CloudSync, Sun, CalendarHeart, CalendarCheck2, Clock, Calendar, Bell, Trash } from 'lucide-react'
 import Image from 'next/image'
 import {useState} from 'react'
@@ -15,7 +15,7 @@ import { createConversationApi } from '@/utility/api/conversation'
 import { createReminderPreferenceType } from '@/utility/validation/contact'
 import { createReminderPreferenceApi } from '@/utility/api/contact'
 
-const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contactId: string, reminderPreference: any}) => {
+const ContactDetail = ({data, contactId, reminderPreference, conversation}: {data: any, contactId: string, reminderPreference: any, conversation: any}) => {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [pasteModal, setPasteModal] = useState(false)
@@ -143,6 +143,8 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
     }
   }
 
+  
+
     return (
         <div className="w-full flex gap-6 flex-1 min-h-0">
         <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-10">
@@ -216,7 +218,7 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
                            <p className="text-sm text-gray-700 font-medium">Paste Conversation</p>
                            </div>
    
-                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => !reminderPreference?.reminderPreference ? setOpenPreferenceModal(true) : setReminderModal(true)}>
+                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => !reminderPreference?.remindersEnabled ? setOpenPreferenceModal(true) : setReminderModal(true)}>
                            <Plus className='text-gray-500 size-4'/>
                            <p className="text-sm text-gray-700 font-medium">Add Reminder</p>
                            </div>
@@ -291,7 +293,7 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
               </div>
            </Card>
    
-           <div className='flex items-center gap-4'>
+           <div className='flex items-cente gap-4'>
    
                <Card className='max-w-[20rem] w-full flex flex-col py-2 px-4'>
                  <div className='flex items-center gap-2'>
@@ -402,10 +404,11 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
    
                  <div className='flex flex-col justify-center rounded-md px-1'>
                    
-                   <div className='py-4 border-b'>
+                   {conversation.slice(0, 5).map((converse: any) => (
+                    <div className='py-4 border-b' key={converse?.id}>
                     <div className='flex items-center justify-between'>
-                    <p className="text-sm text-gray-500 font-medium">Jun 12</p>
-                    <p className="text-sm text-gray-500 font-medium">Linkedin</p>
+                    <p className="text-sm text-gray-500 font-medium">{formatNotificationDate(converse?.createdAt)}</p>
+                    <p className="text-sm text-gray-500 font-medium">{converse?.source}</p>
    
                     <div className='flex items-center gap-2'>
                     <div className='rounded-md px-3 py-1 text-xs font-medium text-purple-600 bg-purple-100 '>
@@ -429,61 +432,11 @@ const ContactDetail = ({data, contactId, reminderPreference}: {data: any, contac
                     </div>
                     </div>
                    </div>
-   
-   
-                   <div className='py-4 border-b cursor-pointer'>
-                    <div className='flex items-center justify-between'>
-                    <p className="text-sm text-gray-500 font-medium">Jun 12</p>
-                    <p className="text-sm text-gray-500 font-medium">Linkedin</p>
-   
-                    <div className='flex items-center gap-2'>
-                    <div className='rounded-md px-3 py-1 text-xs font-medium text-purple-600 bg-purple-100 cursor-pointer'>
-                     Update Ai Memory
-                     </div>
-   
-                     <svg
-                         className={`w-4 h-4 transition-transform duration-200 rotate-270 text-muted-foreground`}
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke="currentColor"
-                       >
-                         <path
-                           strokeLinecap="round"
-                           strokeLinejoin="round"
-                           strokeWidth={2}
-                           d="M19 9l-7 7-7-7"
-                         />
-                       </svg>
-                    </div>
-                    </div>
-                   </div>
-                   <div className='py-4 border-b cursor-pointer'>
-                    <div className='flex items-center justify-between'>
-                    <p className="text-sm text-gray-500 font-medium">Jun 12</p>
-                    <p className="text-sm text-gray-500 font-medium">Linkedin</p>
-   
-                    <div className='flex items-center gap-2'>
-                    <div className='rounded-md px-3 py-1 text-xs font-medium text-purple-600 bg-purple-100 '>
-                     Update Ai Memory
-                     </div>
-   
-                     <svg
-                         className={`w-4 h-4 transition-transform duration-200 rotate-270 cursor-pointer text-muted-foreground`}
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke="currentColor"
-                       >
-                         <path
-                           strokeLinecap="round"
-                           strokeLinejoin="round"
-                           strokeWidth={2}
-                           d="M19 9l-7 7-7-7"
-                         />
-                       </svg>
-                    </div>
-                    </div>
-                   </div>
-   
+                   ))}
+                     
+                     <Button className='w-full py-5 cursor-pointer rounded-md my-2'>
+                      <p>View All</p>
+                     </Button>   
                  </div>
                </Card>
    

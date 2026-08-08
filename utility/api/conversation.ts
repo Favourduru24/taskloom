@@ -38,7 +38,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
      }
  }
 
- export async function getWorkspaceContactsApi(contactId: string) {
+ export async function getWorkspaceConversationApi(contactId: string) {
     const cookieStore = await cookies()
     
     const accessToken = cookieStore.get('accessToken')?.value

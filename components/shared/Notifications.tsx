@@ -1,5 +1,6 @@
-import React from 'react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
+'use client'
+
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Bell } from 'lucide-react'
 import {formatNotificationDate } from '@/lib/utils';
 
@@ -10,7 +11,7 @@ interface Notification {
     createdAt: string;
     read?: boolean
   }
-const Notifications = ({notifications, handleMarkAllAsRead}: {notifications: Notification[], handleMarkAllAsRead: () => void}) => {
+const Notifications = ({notifications, handleMarkAllAsRead}: {notifications: Notification[], handleMarkAllAsRead: () => Promise<void>}) => {
 
     const unreadCount = notifications.filter(
         notification => !notification.read
@@ -18,9 +19,9 @@ const Notifications = ({notifications, handleMarkAllAsRead}: {notifications: Not
     
   return (
     <DropdownMenu>
-    <DropdownMenuTrigger asChild onClick={handleMarkAllAsRead}>
+    <DropdownMenuTrigger asChild>
            
-    <div className="relative cursor-pointer">
+    <div className="relative cursor-pointer" onClick={() => handleMarkAllAsRead()}>
   {/* Ripple */}
   {unreadCount > 0 && (
     <span className="absolute inset-0 rounded-full border-2 border-[#7850CD] animate-ping opacity-30" />
