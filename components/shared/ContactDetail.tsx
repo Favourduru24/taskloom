@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { createConversationApi } from '@/utility/api/conversation'
 import { createReminderPreferenceType } from '@/utility/validation/contact'
 import { createReminderPreferenceApi } from '@/utility/api/contact'
+import ConversationModal from './ConversationModal'
 
 const ContactDetail = ({data, contactId, reminderPreference, conversation}: {data: any, contactId: string, reminderPreference: any, conversation: any}) => {
 
@@ -28,6 +29,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
 
   const [loading, setLoading] = useState(false)
   const [creatingPreference, setCreatingPreference] = useState(false)
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
 
 
   const [content, setContent] = useState('')
@@ -115,8 +117,6 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
     }
   }
 
-    console.log({contactPreference, timezone})
-
   const handleCreateContactPreference = async (data: createReminderPreferenceType) => {
 
     if (creatingPreference) return;
@@ -142,9 +142,8 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
       setCreatingPreference(false)
     }
   }
-
-  
-
+   
+     
     return (
         <div className="w-full flex gap-6 flex-1 min-h-0">
         <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-10">
@@ -295,13 +294,13 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
    
            <div className='flex items-cente gap-4'>
    
-               <Card className='max-w-[20rem] w-full flex flex-col py-2 px-4'>
+               <Card className='max-w-[20rem] w-full flex flex-col py-4 px-4 h-fit '>
                  <div className='flex items-center gap-2'>
                      <User className='text-purple-500 size-6'/>
                      <p className='text-lg font-semibold'>Relationship Details</p>
                  </div>
    
-                 <div className='flex flex-col justify-center gap-2'>
+                 <div className='flex flex-col justify-center gap-4'>
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Status</p>
                     <div className='rounded-md px-3 py-1 text-xs font-medium text-gray-600 bg-muted'>
@@ -311,21 +310,21 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                     
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>First Contact</p>
-                    <p className="text-sm text-gray-500 font-medium">{formatDate(data?.lastContact)}</p>
+                    <p className="text-xs text-gray-500 font-medium">{formatDate(data?.lastContact)}</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Last Contact</p>
-                    <p className="text-sm text-gray-500 font-medium">18days ago</p>
+                    <p className="text-xs text-gray-500 font-medium">18days ago</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Next Follow-up</p>
-                    <p className="text-sm text-green-500 font-medium">Tommorrow</p>
+                    <p className="text-xs text-green-500 font-medium">Tommorrow</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
-                    <p className='text-gray-500 font-medium text-sm'>Priority</p>
+                    <p className='text-gray-500 font-medium text-xs'>Priority</p>
                     <div className='rounded-full px-3 py-1 text-xs font-medium text-purple-600 bg-purple-100'>
                      Active
                      </div>
@@ -333,7 +332,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
    
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Source</p>
-                    <p className="text-sm text-gray-500 font-medium">{data?.source}</p>
+                    <p className="text-xs text-gray-500 font-medium">{data?.source}</p>
                     </div>
    
                  </div>
@@ -398,7 +397,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                  </div>
                      
                  <div className=' flex items-center justify-center gap-2 border p-1 text-center rounded-md cursor-pointer'>
-                           <Plus className='text-purple-500 size-5'/>
+                           <Plus className='text-purple-500 size-5' onClick={() => setModalOpen(true)}/>
                            </div>
                  </div>
    
@@ -407,11 +406,11 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                    {conversation.slice(0, 5).map((converse: any) => (
                     <div className='py-4 border-b' key={converse?.id}>
                     <div className='flex items-center justify-between'>
-                    <p className="text-sm text-gray-500 font-medium">{formatNotificationDate(converse?.createdAt)}</p>
-                    <p className="text-sm text-gray-500 font-medium">{converse?.source}</p>
+                    <p className="text-xs text-gray-500 font-medium">{formatNotificationDate(converse?.createdAt)}</p>
+                    <p className="text-xs text-gray-500 font-medium">{converse?.source}</p>
    
                     <div className='flex items-center gap-2'>
-                    <div className='rounded-md px-3 py-1 text-xs font-medium text-purple-600 bg-purple-100 '>
+                    <div className='rounded-md px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-100'  >
                      Update Ai Memory
                      </div>
    
@@ -420,7 +419,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                          fill="none"
                          viewBox="0 0 24 24"
                          stroke="currentColor"
-                         onClick={() => setFollowUpModal(true)}
+                         onClick={() => {setFollowUpModal(true), setSelectedConversationId(converse.id)}}
                        >
                          <path
                            strokeLinecap="round"
@@ -557,79 +556,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                </Dialog>
 
 
-               <Dialog open={followUpModal} onOpenChange={setFollowUpModal}>
-               <DialogContent className="max-w-[80vw] w-full">
-
-                 <div className="flex flex-col gap-6">
-                     <div className='flex flex-row justify-between items-center'>
-
-                     <div className='flex flex-row gap-3 items-start'>
-                  <div className="w-10 h-10 overflow-hidden rounded-sm shadow-sm"> 
-                                                       <Image
-                                                         src={'/images/user1.png'}
-                                                         width={100}
-                                                         height={100}
-                                                         alt={'user-img'}
-                                                         className="object-center size-10" 
-                                                       />
-                                                     </div>
-                                                     <div className='flex flex-col leading-0 gap-3'>
-                                       <DialogTitle className='text-[0.80rem] font-semibold'>Follow up with</DialogTitle>
-
-                                       <div className='flex items-center gap-2'>
-                                             <p className='text-xl font-semibold'>Duru Pristine</p>
-                                       </div>
-   
-                                       <p className='text-[0.85rem] font-semibold text-gray-500'>ABC Logistics</p>
-   
-                        </div>
-
-                        </div>
-
-
-                        <div className='rounded-full h-6 flex items-center justify-center max-w-20 w-full text-xs font-medium text-amber-600 bg-amber-100 lowercase text-center border-amber-600 border'>
-                                              Due Date
-                                             </div>
-                     </div>
-
-                     <div className='flex flex-col border rounded-md leading-0 p-2'>
-                        <p className='text-[0.80rem] font-semibold leading-4'>Reason</p>
-
-                        <p className='text-[0.85rem] text-muted-foreground leading-4'>Send Pricing After Prototype</p>
-                        </div>
-
-                     <div className='flex flex-col gap-2 border rounded-sm p-2 w-full'>
-                        <p className='text-sm font-semibold'>Ai Suggested Message</p>
-                           
-                          <div className='flex flex-col gap-1 '>
-
-                        <p className='text-sm leading-6 text-muted-foreground'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus neque sed assumenda veniam ut! Est, quisquam atque placeat!</p>
-
-                         <div className="flex justify-end w-full">
-                             <Copy className="text-green-500 size-4 cursor-pointer"/>
-                         </div>
-                          </div>
-
-                        </div>
-
-                        <div className='w-full flex items-center justify-between'>
-                      <Button className='px-2 py-2 rounded-sm text-[0.85rem] font-medium cursor-pointer bg-purple-100 text-primary shadow outline-none' size={'lg'}>
-
-                       Edit Message
-                      </Button>
-
-                      <Button className='px-2 py-2 rounded-sm text-[0.85rem] font-medium cursor-pointer ring-1 ring-gray-200' size={'lg'} variant={'ghost'}>
-                      <Mail className='text-red-500 size-5 shadow'/>
-                        Send Via Gmail
-                      </Button>
-                 </div>
-                        
-                 </div>
-                  
-                   
-          </DialogContent>
-          
-               </Dialog>
+                <ConversationModal followUpModal={followUpModal} setFollowUpModal={setFollowUpModal} id={selectedConversationId} contactId={contactId}/>
 
                {/* User Contact Preference */}
                <Dialog open={openPreferenceModal} onOpenChange={setOpenPreferenceModal}>

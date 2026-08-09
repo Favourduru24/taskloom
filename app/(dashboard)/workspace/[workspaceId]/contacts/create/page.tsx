@@ -231,16 +231,16 @@ const CreateContact = () => {
             />
 
                 <Controller
-             name='location'
-             control={form.control}
-             render={({field, fieldState}) => (
+              name='location'
+              control={form.control}
+              render={({field, fieldState}) => (
               <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-title" className='text-xl'>
+                  <FieldLabel htmlFor="form-rhf-demo-location" className='text-xl'>
                     Contact Location
                   </FieldLabel>
                   <Input
                    {...field}
-                    id="form-rhf-demo-title"
+                    id="form-rhf-demo-location"
                     placeholder="Lagos Nigeria"
                     autoComplete="off"
                     className='h-10 px-2 outline-none focus:ring-0'

@@ -17,7 +17,7 @@ const ContactPage = async ({params}: {params: Promise<{contactId: string, worksp
     const {data: reminderPreference} = contactReminderPreference || {}
     const {data: conversation} = conversations || {}
 
-
+   console.log({conversation})
 
   return (
      <ContactDetail data={data} contactId={contactId} reminderPreference={reminderPreference} conversation={conversation}/>
