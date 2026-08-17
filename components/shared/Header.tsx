@@ -59,7 +59,6 @@ const Header = () => {
     if (!socket) return;
 
     const handleNotification = (notification: Notification) => {
-      console.log('Pristine Dam you good', notification);
 
       // Add the new notification to the top of the list
       setNotifications((prev) => [notification, ...prev]);
@@ -98,7 +97,6 @@ const Header = () => {
         setNotifications(notification.data || []);
 
       } catch (error: any) {
-        console.log(error, "Workspace error");
         toast.error(error.message || "Failed to fetch workspace");
       } finally {
         setLoading(false);
@@ -156,8 +154,6 @@ const Header = () => {
       const handleMarkAllAsRead = async () => {
         const { error } = await markAllNotificationsAsReadApi();
 
-        console.log('Click')
-      
         if (error) {
           toast.error(error);
           return;
@@ -170,8 +166,6 @@ const Header = () => {
           }))
         ); 
       };
-
-      console.log({notifications})
 
 
   return (

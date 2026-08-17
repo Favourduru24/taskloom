@@ -8,11 +8,12 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { cn } from "@/lib/utils"
 import { CheckSquare } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 
-export function EmptyOutline({title, description, buttonText}: {title: string, description?: string, buttonText: string}) {
+export function EmptyOutline({title, description, buttonText, className}: {title: string, description?: string, buttonText: string, className?: string}) {
 
     const params = useParams()
     
@@ -20,7 +21,7 @@ export function EmptyOutline({title, description, buttonText}: {title: string, d
     
        const createTaskLink = `/workspace/${workspaceId}/task/create`
   return (
-    <Empty className="border-2 border-dashed">
+    <Empty className={cn("border-2 border-dashed", `${className}`)}>
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <CheckSquare />

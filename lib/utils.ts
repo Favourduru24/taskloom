@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import qs from "query-string"
+import { toast } from "sonner";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -31,9 +32,9 @@ export function formatNotificationDate(date: string | Date | null | undefined): 
   if (isNaN(d.getTime())) return 'Invalid date';
 
   return d.toLocaleDateString('en-GB', {
+    minute: 'numeric',
     day: '2-digit',
     month: 'short',
-    // year: 'numeric',
   });
 }
 
@@ -65,6 +66,53 @@ export function removeKeysFromQuery({ params, keysToRemove }: { params: string, 
     },
     { skipNull: true }
   )
+}
+
+export const getTextPreview = (text: string = "", maxLength = 100) => {
+  const sentences = text
+    .split(".")
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+  const preview: string[] = [];
+  let characterCount = 0;
+
+  for (const sentence of sentences) {
+    const formattedSentence = `${sentence}.`;
+
+    if (characterCount + formattedSentence.length > maxLength) {
+      break;
+    }
+
+    preview.push(formattedSentence);
+    characterCount += formattedSentence.length;
+  }
+
+  return {
+    preview,
+    sentences,
+    hasMore: preview.length < sentences.length,
+  };
+};
+
+export const formatUsername = (name: string)=> { 
+   const first = name.trim().charAt(0)
+   return `${first}`
+}
+
+export const buildReminderUrl = (message: string, contactNumber: string) =>  {
+  if (!contactNumber) {
+    toast.error("Contact number is required to build reminder URL."); 
+    return null;
+  }
+
+  const cleaned = contactNumber.replace(/\D/g, "");
+
+  if (!/^0\d{10}$/.test(cleaned) && !/^\d{10,}$/.test(cleaned)) return null;
+
+  return `https://wa.me/${cleaned.replace(/^0/, "234")}?text=${encodeURIComponent(
+    message,
+  )}`;
 }
 
 // Credits: JavaScript Mastery 

@@ -9,7 +9,7 @@ interface chartItemProps {
    statsIcon: any
    trendType: string
   }
-const DashboardStats = ({statsLabel, statsDescription, statsScore, statsIcon, trendType}: chartItemProps) => {
+const DashboardStats = ({statsLabel, statsDescription, statsScore, trendType}: chartItemProps) => {
     
   return (
     <Card className="shadow border ring-0 ">
@@ -21,7 +21,7 @@ const DashboardStats = ({statsLabel, statsDescription, statsScore, statsIcon, tr
                       
                     </CardHeader>
                     <CardContent className="flex gap-x-2 items-center justify-center w-full leading-none ">
-                     <p className="text-4xl font-semibold">{statsScore}2</p>
+                     <p className="text-4xl font-semibold">{statsScore}</p>
                     </CardContent>
                      <CardFooter className="flex items-center gap-2 bg-white  border-0">
                       <ArrowUp className="size-6 text-green-500" strokeWidth={1}/>

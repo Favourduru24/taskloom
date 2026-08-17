@@ -60,7 +60,7 @@ const Notifications = ({notifications, handleMarkAllAsRead}: {notifications: Not
                        <DropdownMenuItem key={notification.id} className='flex flex-col gap-2 cursor-pointer'>
                         <div className='flex items-start gap-4 px-1 py-1'>
 
-                      <div className='w-12 h-12 bg-primary rounded-md flex items-center justify-center'>
+                      <div className='w-11 h-11 bg-primary rounded-md flex items-center justify-center shrink-0'>
                         <Bell className="size-5 text-[#7850CD text-white"/>
                       </div>
                           

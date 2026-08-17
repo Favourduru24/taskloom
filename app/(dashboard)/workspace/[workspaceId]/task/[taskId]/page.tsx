@@ -6,7 +6,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Card } from "@/components/ui/card"
 import { AlertTriangle, Check, Edit, X, Trash2, UserPlus, ArrowLeft } from "lucide-react"
@@ -74,7 +74,7 @@ const TaskDetails = () => {
          setTaskDetails(data)
 
        }catch(error: any) {
-        console.log(error, "Workspace error");
+        toast.error(error, "Workspace error");
        } finally {
         setLoading(false)
        }

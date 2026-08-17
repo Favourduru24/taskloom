@@ -5,60 +5,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Search, Plus, Eye } from "lucide-react";
 import Link from "next/link";
-import { formatDate, getAvatar } from "@/lib/utils";
-
-const contacts = [
-  {
-    id: 1,
-    name: "Duru Pristine",
-    email: "duru@pristine.dev",
-    company: "Pristine Labs",
-    status: "Active",
-    last: "Today",
-    next: "12 Jul",
-    avatar: "/images/user1.png",
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    email: "sarah@acme.io",
-    company: "Acme Inc",
-    status: "Lead",
-    last: "Yesterday",
-    next: "15 Jul",
-    avatar: "/images/user1.png",
-  },
-  {
-    id: 3,
-    name: "Michael Chen",
-    email: "michael@stripe.com",
-    company: "Stripe",
-    status: "Prospect",
-    last: "3 days ago",
-    next: "20 Jul",
-    avatar: "/images/user1.png",
-  },
-  {
-    id: 4,
-    name: "Grace Williams",
-    email: "grace@notion.so",
-    company: "Notion",
-    status: "Inactive",
-    last: "1 week ago",
-    next: "--",
-    avatar: "/images/user1.png",
-  },
-  {
-    id: 5,
-    name: "James Brown",
-    email: "james@vercel.com",
-    company: "Vercel",
-    status: "Active",
-    last: "Today",
-    next: "14 Jul",
-    avatar: "/images/user1.png",
-  },
-];
+import { formatDate, getAvatar, formatUsername} from "@/lib/utils";
 
 const statusStyles: Record<string, string> = {
   ACTIVE:
@@ -73,7 +20,6 @@ const statusStyles: Record<string, string> = {
 
 export function ContactTable({workspaceId, data}: {workspaceId: string, data: any}) {
 
-  console.log({data})
 
   return (
     <section className="rounded-md borde bg-white ">
@@ -166,15 +112,18 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     
-                     <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm"> 
-                                      <Image
+                     <div className="w-8 h-8 overflow-hidden rounded-full shadow-sm flex items-center justify-center border"> 
+                                      {contact.contactUrl ? 
+                                        <Image
                                         src={getAvatar('/images/user1.png', contact.email as string)}
                                         width={32}
                                         height={32}
                                         alt={contact.name}
                                         className="object-cover object-center size-8" 
-                                      />
-                                    </div>
+                                      /> : 
+                                    <p className="text-center">{formatUsername(contact.name)}</p> }
+                                      
+                                  </div>
                     <div>
                       <h4 className="font-medium text-gray-900">
                         {contact.name}
@@ -196,7 +145,7 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
                 </td>
 
                 <td className="px-6 py-5 text-sm text-gray-500">
-                  {contact?.nextContact ?? '_ _ _'}
+                  {contact?.contactPreference[0]?.reminderCadence ?? '_ _ _'}
                 </td>
 
                 <td className="px-6 py-5 text-right">

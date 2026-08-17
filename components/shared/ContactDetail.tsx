@@ -4,19 +4,25 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { cn, formatDate, formatNotificationDate } from '@/lib/utils'
+import { cn, formatDate, formatNotificationDate, formatUsername, getTextPreview } from '@/lib/utils'
 import { MoreHorizontalIcon, BookCheck, Brain, Globe, LocationEdit, LogOut, Mail, MessageCircle, Phone, PhoneCallIcon, Plus, RefreshCcw, Sparkle, Sparkles, User, Copy, LucideIcon, Loader2, BellRing, CloudSync, Sun, CalendarHeart, CalendarCheck2, Clock, Calendar, Bell, Trash } from 'lucide-react'
 import Image from 'next/image'
 import {useState} from 'react'
 import { Textarea } from '../ui/textarea'
 import { createConversationSchemaType } from '@/utility/validation/conversation'
 import { toast } from 'sonner'
-import { createConversationApi } from '@/utility/api/conversation'
+import { createConversationApi, updateAiMemoryApi } from '@/utility/api/conversation'
 import { createReminderPreferenceType } from '@/utility/validation/contact'
 import { createReminderPreferenceApi } from '@/utility/api/contact'
 import ConversationModal from './ConversationModal'
+import { EmptyOutline } from './NotFound';
 
-const ContactDetail = ({data, contactId, reminderPreference, conversation}: {data: any, contactId: string, reminderPreference: any, conversation: any}) => {
+const ContactDetail = ({data, contactId, reminderPreference, conversation, aiMemory}: {data: any, contactId: string, reminderPreference: any, conversation: any, aiMemory: any}) => {
+
+  const summary = getTextPreview(
+    aiMemory?.relationshipSummary ? aiMemory?.relationshipSummary : data?.relationshipSummary,
+    200
+  );
 
   const [modalOpen, setModalOpen] = useState(false)
   const [pasteModal, setPasteModal] = useState(false)
@@ -28,17 +34,19 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
   const [timezone, setTimezone] = useState('UTC')
 
   const [loading, setLoading] = useState(false)
+  const [updating, setUpdating] = useState(false)
   const [creatingPreference, setCreatingPreference] = useState(false)
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string>('');
 
 
   const [content, setContent] = useState('')
-  const [source, setSource] = useState('EMAIL')
+  const [source, setSource] = useState('GMAIL')
+  const [showMore, setShowMore] = useState(false)
 
   
   const SOURCE: {label: string, icon: LucideIcon, id: number}[] = [
   {
-    label: 'EMAIL',
+    label: 'GMAIL',
     icon: Mail,
     id: 1
   },
@@ -90,8 +98,6 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
     }
     ]
   
-
-
   const handleCreateConversation = async (data: createConversationSchemaType) => {
 
     if (loading) return;
@@ -142,7 +148,31 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
       setCreatingPreference(false)
     }
   }
-   
+
+  const handleUpdateAiMemory = async (data: string) => {
+    if (updating) return;
+
+    setUpdating(true);
+
+    try {
+      await updateAiMemoryApi(
+         contactId,
+         data
+      );
+  
+      toast.success(`Ai memory updated successfully!`);
+
+    } catch(error: any) {
+      console.error(error);
+  
+      toast.error(
+        error?.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setUpdating(false)
+    }
+  }
+        
      
     return (
         <div className="w-full flex gap-6 flex-1 min-h-0">
@@ -151,15 +181,17 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
               
            <div className=" w-full min-h-40 h-fit rounded-t-md p-2 ">
                 <div className='flex flex-row gap-6 '>
-                  <div className="w-30 h-30 overflow-hidden rounded-full shadow-sm"> 
-                                                       <Image
-                                                         src={'/images/user1.png'}
-                                                         width={200}
-                                                         height={200}
-                                                         alt={'user-img'}
-                                                         className="object-center size-30" 
-                                                       />
-                                                     </div>
+                  <div className="w-30 h-30 overflow-hidden rounded-full shadow-sm flex items-center justify-center"> 
+                                 {data?.contactUrl ? 
+                                          <Image
+                                           src={'/images/user1.png'}
+                                           width={200}
+                                           height={200}
+                                           alt={'user-img'}
+                                           className="object-center size-30" 
+                                            /> : 
+                                            <p className="text-center text-[3rem]">{formatUsername(data?.name)}</p> }
+                                            </div>
    
                                    <div className='flex flex-col gap-3'>
                                        <div className='flex items-center gap-4'>
@@ -222,11 +254,11 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                            <p className="text-sm text-gray-700 font-medium">Add Reminder</p>
                            </div>
    
-                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' 
+                           {/* <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' 
                            >
                            <BookCheck className='text-gray-500 size-4'/>
                            <p className="text-sm text-gray-700 font-medium">Add Task</p>
-                           </div>
+                           </div> */}
                    </div>
                </div>
            </Card>
@@ -250,18 +282,52 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
               <div className='flex flex-col bg-white p-4 rounded-md break-all border max-w-120 w-full'>
                  <div className='flex flex-col gap-2'>
                    <p className='text-lg font-semibold'>Relationship Summary</p>
-                   <p className='text-gray-500 font-medium text-sm'>John is a founder of ABC Logistics</p>
-                   <p className='text-gray-500 text-sm font-medium'>We connected on linkedin after my post about web development</p>
-                   <p className='text-gray-500 font-medium text-sm'>He prefer whatapp communication</p>
+                   <p className='text-gray-500 font-medium text-sm'>{aiMemory?.whoIsThisPerson ? aiMemory?.whoIsThisPerson : `This is ${data?.name}`}</p>
+                   <div>
+                {!showMore ? (
+                  <>
+                    {summary.preview.map((sentence, index) => (
+                      <p key={index} className='text-gray-900 text-[1rem] font-mediu leading-8'>{sentence}</p>
+                    ))}
+
+                    {summary.hasMore && (
+                      <button
+                        type="button"
+                        className="text-primary underline cursor-pointer"
+                        onClick={() => setShowMore(true)}
+                      >
+                        Show all
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {summary.sentences.map((sentence, index) => (
+                      <p key={index} className='text-gray-900 text-[1rem] font-mediu leading-7'>{sentence}.</p>
+                    ))}
+
+                    {summary.hasMore && (
+                      <button
+                        type="button"
+                        className="text-primary underline cursor-pointer"
+                        onClick={() => setShowMore(false)}
+                      >
+                        Show less
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
                  </div>
    
-                 <div className="flex flex-col justify-center items-center p-2 bg-muted w-full min-h-10 rounded-md mt-5">
+                 <div className="flex flex-col justify-cente items-cente p-2 bg-muted w-full min-h-10 rounded-md mt-5">
                        <div className="flex items-start flex-row gap-2">
                           <LogOut className='size-4 text-purple-500'/>
    
                           <div className='flex flex-col gap-1'>
                           <p className='text-sm font-bold'>Last Promise</p>
-                          <p className='text-gray-500 text-sm font-medium'>"Sending pricing document after finishing the prototype"</p>
+                          <p className='text-gray-500 text-sm font-medium'>{aiMemory?.lastPromise 
+                            ?? 'No Promise found'}</p>
                           </div>
                        </div>       
                  </div>
@@ -272,7 +338,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
               <div className='flex flex-col bg-white rounded-md break-all border  max-w-120 w-full'>
                  <div className='flex flex-col gap-2 px-4 pt-4'>
                    <p className='text-lg font-semibold'>Recommended Next Step</p>
-                   <p className='text-gray-500 font-medium text-sm'>Follow-Up this week with the pricing documents</p>
+                   <p className='text-gray-900 text-[1rem] font-mediu leading-8'>{aiMemory?.nextAction ?? 'Next step not Provided'}</p>
                  </div>
    
                  <div className="flex flex-col gap-4 w-full min-h-10 rounded-md mt-5 border-t py-2 px-4">
@@ -294,7 +360,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
    
            <div className='flex items-cente gap-4'>
    
-               <Card className='max-w-[20rem] w-full flex flex-col py-4 px-4 h-fit '>
+               <Card className='max-w-120 w-full flex flex-col py-4 px-4 h-fit '>
                  <div className='flex items-center gap-2'>
                      <User className='text-purple-500 size-6'/>
                      <p className='text-lg font-semibold'>Relationship Details</p>
@@ -310,17 +376,17 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                     
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>First Contact</p>
-                    <p className="text-xs text-gray-500 font-medium">{formatDate(data?.lastContact)}</p>
+                    <p className="text-xs text-gray-500 font-medium">{formatDate(data?.createdAt)}</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Last Contact</p>
-                    <p className="text-xs text-gray-500 font-medium">18days ago</p>
+                    <p className="text-xs text-gray-500 font-medium">{formatDate(data?.lastContact)}</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Next Follow-up</p>
-                    <p className="text-xs text-green-500 font-medium">Tommorrow</p>
+                    <p className="text-xs text-green-500 font-medium">{reminderPreference?.reminderCadence ?? 'Unknown'}</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
@@ -338,58 +404,8 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                  </div>
                </Card>
    
-               <Card className='max-w-[20rem] w-full flex flex-col py-2 px-4 min-h-58'>
-                 <div className='flex items-center gap-2'>
-                     <BookCheck className='text-purple-500 size-6'/>
-                     <p className='text-lg font-semibold'>Tasks</p>
-                 </div>
    
-                 <div className='flex flex-col justify-center gap-4'>
-                    <div className='flex items-center justify-between w-full'>
-                     <div className='flex items-center gap-2'>
-                     <Checkbox/>
-                    <p className='text-gray-500 font-medium text-sm'>Send Proposal</p>
-                     </div>
-                    <div className='rounded-md px-3 py-1 text-xs font-medium text-destructive bg-red-100'>
-                     Due Date
-                     </div>
-                    </div>
-                    
-                    <div className='flex items-center justify-between w-full'>
-                    <div className='flex items-center gap-2'>
-                     <Checkbox/>
-                    <p className='text-gray-500 font-medium text-sm'>Discovery Call</p>
-                     </div>
-                    <div className='rounded-md px-3 py-1 text-xs font-medium text-green-600 bg-green-100'>
-                     Completed
-                     </div>
-                    </div>
-   
-                    <div className='flex items-center justify-between w-full'>
-                    <div className='flex items-center gap-2'>
-                     <Checkbox/>
-                    <p className='text-gray-500 font-medium text-sm'>Portfolio Sent</p>
-                     </div>
-                    <div className='rounded-md px-3 py-1 text-xs font-medium text-green-600 bg-green-100'>
-                     Completed
-                     </div>
-                    </div>
-   
-                    <div className='flex items-center justify-between w-full'>
-                    <div className='flex items-center gap-2'>
-                     <Checkbox/>
-                    <p className='text-gray-500 font-medium text-sm'>Schedule Demo</p>
-                     </div>
-                    <div className='rounded-md px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100'>
-                     Next Week
-                     </div>
-                    </div>
-   
-                 </div>
-               </Card>
-   
-   
-               <Card className='max-w-[20rem] w-full flex flex-col py-2 px-3 min-h-56'>
+               <Card className='max-w-120 w-full flex flex-col py-2 px-3 min-h-56'>
                  <div className='flex items-center justify-between gap-2'>
                  <div className='flex items-center gap-2'>
                      <MessageCircle className='text-purple-500 size-5'/>
@@ -403,14 +419,14 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
    
                  <div className='flex flex-col justify-center rounded-md px-1'>
                    
-                   {conversation.slice(0, 5).map((converse: any) => (
+                   {conversation?.length ? conversation?.slice(0, 5).map((converse: any) => (
                     <div className='py-4 border-b' key={converse?.id}>
                     <div className='flex items-center justify-between'>
                     <p className="text-xs text-gray-500 font-medium">{formatNotificationDate(converse?.createdAt)}</p>
                     <p className="text-xs text-gray-500 font-medium">{converse?.source}</p>
    
                     <div className='flex items-center gap-2'>
-                    <div className='rounded-md px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-100'  >
+                    <div className='rounded-md px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-100' onClick={() => {handleUpdateAiMemory(converse?.summary)}}>
                      Update Ai Memory
                      </div>
    
@@ -419,7 +435,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                          fill="none"
                          viewBox="0 0 24 24"
                          stroke="currentColor"
-                         onClick={() => {setFollowUpModal(true), setSelectedConversationId(converse.id)}}
+                         onClick={() => {setFollowUpModal(true), setConversationId(converse.id)}}
                        >
                          <path
                            strokeLinecap="round"
@@ -431,11 +447,17 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                     </div>
                     </div>
                    </div>
-                   ))}
+                   )) : <div className="flex justify-center w-full">
+                   <EmptyOutline
+                    title="No conversation found"
+                    description={"You don’t have any conversation yet. Create your first conversation to get started."}
+                    buttonText="Create Conversation"
+                  />
+                  </div>}
                      
-                     <Button className='w-full py-5 cursor-pointer rounded-md my-2'>
+                     { conversation?.length && <Button className='w-full py-5 cursor-pointer rounded-md my-2'>
                       <p>View All</p>
-                     </Button>   
+                     </Button>} 
                  </div>
                </Card>
    
@@ -457,7 +479,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
 
                       return (
                         <div className='flex flex-col gap-1 justify-center items-center w-full cursor-pointer' key={item.id}>
-                        <div className='flex flex-col gap-3 items-center bg-muted rounded-sm py-3 w-full border' onClick={() => setSource(item.label)}>
+                        <div className={`flex flex-col gap-3 items-center bg-muted rounded-sm py-3 w-full border ${source === item.label ? 'border-primary border-2' : ''}`} onClick={() => setSource(item.label)}>
                           <Icons className='text-primary size-5'/>
                            </div>
                                 <p className="text-xs text-gray-700 font-semibold">{item.label}</p>
@@ -556,7 +578,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation}: {dat
                </Dialog>
 
 
-                <ConversationModal followUpModal={followUpModal} setFollowUpModal={setFollowUpModal} id={selectedConversationId} contactId={contactId}/>
+                <ConversationModal followUpModal={followUpModal} setFollowUpModal={setFollowUpModal} conversationId={conversationId} contactId={contactId} contactName={data?.name} contactStatus={data?.status} contactNumber={data?.number}/>
 
                {/* User Contact Preference */}
                <Dialog open={openPreferenceModal} onOpenChange={setOpenPreferenceModal}>
