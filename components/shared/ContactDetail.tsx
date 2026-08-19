@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { cn, formatDate, formatNotificationDate, formatUsername, getTextPreview } from '@/lib/utils'
+import { cn, formatDate, formatNotificationDate, formatUsername, getTextPreview} from '@/lib/utils'
 import { MoreHorizontalIcon, BookCheck, Brain, Globe, LocationEdit, LogOut, Mail, MessageCircle, Phone, PhoneCallIcon, Plus, RefreshCcw, Sparkle, Sparkles, User, Copy, LucideIcon, Loader2, BellRing, CloudSync, Sun, CalendarHeart, CalendarCheck2, Clock, Calendar, Bell, Trash } from 'lucide-react'
 import Image from 'next/image'
 import {useState} from 'react'
@@ -13,11 +13,11 @@ import { createConversationSchemaType } from '@/utility/validation/conversation'
 import { toast } from 'sonner'
 import { createConversationApi, updateAiMemoryApi } from '@/utility/api/conversation'
 import { createReminderPreferenceType } from '@/utility/validation/contact'
-import { createReminderPreferenceApi } from '@/utility/api/contact'
+import { createReminderPreferenceApi, deleteReminderPreferenceApi } from '@/utility/api/contact'
 import ConversationModal from './ConversationModal'
 import { EmptyOutline } from './NotFound';
 
-const ContactDetail = ({data, contactId, reminderPreference, conversation, aiMemory}: {data: any, contactId: string, reminderPreference: any, conversation: any, aiMemory: any}) => {
+const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conversation, aiMemory}: {data: any, contactId: string, workspaceId: string, reminderPreference: any, conversation: any, aiMemory: any}) => {
 
   const summary = getTextPreview(
     aiMemory?.relationshipSummary ? aiMemory?.relationshipSummary : data?.relationshipSummary,
@@ -37,6 +37,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation, aiMem
   const [updating, setUpdating] = useState(false)
   const [creatingPreference, setCreatingPreference] = useState(false)
   const [conversationId, setConversationId] = useState<string>('');
+  const [deleting, setDeleting] = useState(false)
 
 
   const [content, setContent] = useState('')
@@ -132,6 +133,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation, aiMem
     try {
       await createReminderPreferenceApi(
         contactId,
+        workspaceId,
          data
       );
   
@@ -147,6 +149,31 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation, aiMem
     } finally {
       setCreatingPreference(false)
     }
+  }
+
+  const handleDeletePreference = async (preferenceId: string) => {
+     if(deleting) return
+   
+     setDeleting(true)
+
+     try {
+
+      await deleteReminderPreferenceApi(
+        preferenceId,
+        contactId,
+        workspaceId
+      );
+  
+      toast.success(`Contact preference ${data.reminderCadence} " created successfully!`);
+
+    } catch(error: any) {  
+      toast.error(
+        error?.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setCreatingPreference(false)
+    } 
+     
   }
 
   const handleUpdateAiMemory = async (data: string) => {
@@ -731,7 +758,7 @@ const ContactDetail = ({data, contactId, reminderPreference, conversation, aiMem
 
                 <div className='flex items-center justify-between gap-2 w-full'>
 
-                <Button className='px-2 py-1 rounded-sm text-[0.85rem] text-destructive font-medium cursor-pointer w-full ring-1 ring-destructive bg-red-100 hover:bg-destructive hover:text-white' size={'lg'} variant={'ghost'}>
+                <Button className='px-2 py-1 rounded-sm text-[0.85rem] text-destructive font-medium cursor-pointer w-full ring-1 ring-destructive bg-red-100 hover:bg-destructive hover:text-white' size={'lg'} variant={'ghost'} onClick={() => handleDeletePreference(reminderPreference.id)}>
                   <Trash className='text-destructive'/>
                Delete Reminder
                 </Button>

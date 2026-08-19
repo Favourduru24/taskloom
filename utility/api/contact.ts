@@ -120,7 +120,7 @@ export async function createContactApi(formData: createContactType, workspaceId:
      }
   }
 
-  export async function createReminderPreferenceApi(contactId: string, formData: createReminderPreferenceType) {
+  export async function createReminderPreferenceApi(contactId: string, workspaceId: string, formData: createReminderPreferenceType) {
     const cookieStore = await cookies()
     
     const accessToken = cookieStore.get('accessToken')?.value
@@ -133,7 +133,7 @@ export async function createContactApi(formData: createContactType, workspaceId:
  
      try {
          
-       const res = await fetch(`http://localhost:3000/contacts/${contactId}/reminder/preference`, {
+       const res = await fetch(`http://localhost:3000/contacts/${workspaceId}/${contactId}/reminder/preference`, {
         method: 'POST',
         headers: {
          "Content-Type": "application/json",
@@ -195,5 +195,41 @@ export async function createContactApi(formData: createContactType, workspaceId:
    }
 }
   
+export async function deleteReminderPreferenceApi(preferenceId: string, contactId: string, workspaceId: string) {
+  const cookieStore = await cookies()
+  
+  const accessToken = cookieStore.get('accessToken')?.value
 
+   try {
+       
+     const res = await fetch(`http://localhost:3000/contacts/${workspaceId}/${contactId}/${preferenceId}/delete`, {
+      method: 'DELETE',
+      headers: {
+       "Content-Type": "application/json",
+       ...(accessToken
+         ? { Authorization: `Bearer ${accessToken}` }
+         : {}),
+     },
+     }) 
+     
+     const data = await res.json()
+
+     if (!res.ok) {
+       return {
+         data: null,
+         error: data?.message || "Failed to delete workspace contact preference details",
+       };
+     }
+
+    return {
+     data: data.message || "Contact preference deleted successfully",
+   };
+
+   } catch (error: any) {
+      return {
+     data: null,
+     error: error?.message || "Network error, Failed to delete contact preference",
+   }
+   }
+}
   

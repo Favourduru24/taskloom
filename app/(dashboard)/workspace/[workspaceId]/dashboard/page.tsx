@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { cn, formatUsername, getAvatar } from "@/lib/utils"
+import { cn, formatUsername, getAvatar, formatDate } from "@/lib/utils"
 import { getWorkspaceContactsApi } from "@/utility/api/contact"
 import { getDashboardStatApi, getDashboardTodayFollowupApi, getDashboardTodayTaskApi, getDashboardUpcommingFollowupApi } from "@/utility/api/dashboard"
 import { getWorkspaceApi } from "@/utility/api/workspace"
@@ -38,7 +38,6 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
     newTodoTaskCount,
     totalContactCount} = dashboardStats
 
-    console.log({upcommingFollowUp, todayFollowUp})
   return (
     <div className="w-full flex flex-1 relative bg-gray-50">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-10">
@@ -79,78 +78,43 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
 
          <div className="flex gap-4 flex-col md:flex-row">
             <Card className="max-w-120 w-full p-0 ">
-                <CardHeader className="flex items-center justify-between gap-3 px-3 pt-2">
+                <CardHeader className="flex items-center justify-between gap-3 pt-2">
                      <CardTitle>Today's follow-ups</CardTitle>
                      <p className="text-primary text-sm font-semibold">View all</p>
                 </CardHeader>
 
-                <CardContent className="border flex flex-col py-1">
-                <div className='flex flex-row gap-2 py-2'>
-               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
-                                                    <Image
-                                                      src={'/images/user1.png'}
-                                                      width={50}
-                                                      height={50}
-                                                      alt={'user-img'}
-                                                      className="object-center size-10" 
-                                                    />
-                                                  </div>
+                <CardContent className="border flex flex-col py-1 px-0 ">
+            
 
-                                <div className='flex flex-col gap-2'>
-                                          <p className='text-[1rem] font-semibold'>John Doe</p>
-                                          <p className='text-sm font-semibold text-gray-600'>Founder @ ABC Logistics</p>
-                                          <p className='text-sm text-gray-600 font-semibold'>Last Contact: 18days ago</p>
-                                           
-                                           <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm">
-                                            AI: Send pricing proposal today
-                                           </Button>
 
-                                           <div className="flex items-center justify-between gap-3 my-2">
-                                 <Button className="py-4 rounded-sm" size={'lg'}>
-                                 <p className="text-sm font-medium ">Generate Follow Up</p>
-                                 </Button>
-
-                                 <Button variant={'ghost'} className="ring-1 ring-gray-300 py-4 rounded-sm  " size={'lg'}>
-                                 <p className="text-sm font-medium">Mark Done</p>
-                                 </Button>
-                              </div>
-                                    </div>
-                                    </div>
-
-                             
-
-                              <div className='flex flex-row gap-2 border-t pt-2 mt-2'>
-               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
-                                                    <Image
-                                                      src={'/images/user1.png'}
-                                                      width={50}
-                                                      height={50}
-                                                      alt={'user-img'}
-                                                      className="object-center size-10" 
-                                                    />
-                                                  </div>
-
-                                <div className='flex flex-col gap-2 py-2'>
-                                          <p className='text-[1rem] font-semibold'>John Doe</p>
-                                          <p className='text-sm font-semibold text-gray-600'>Founder @ ABC Logistics</p>
-                                          <p className='text-sm text-gray-600 font-semibold'>Last Contact: 18days ago</p>
-                                           
-                                           <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm">
-                                            AI: Send pricing proposal today
-                                           </Button>
-
-                                           <div className="flex items-center justify-between gap-3 my-2">
-                                 <Button className="py-4 rounded-sm" size={'lg'}>
-                                 <p className="text-sm font-medium">Generate Follow Up</p>
-                                 </Button>
-
-                                 <Button variant={'ghost'} className="ring-1 ring-gray-300 py-4 rounded-sm  " size={'lg'}>
-                                 <p className="text-sm font-medium">Mark Done</p>
-                                 </Button>
-                              </div>
-                                    </div>
-                                    </div>
-
+               {todayFollowUp?.length ? todayFollowUp.map((followUp: any) => (
+                <div className='flex flex-row gap-2 border-t mt-2 px-2 pt-2' key={followUp.id}>
+                 <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm flex items-center justify-center"> 
+                                                       {followUp?.contact?.contactUrl ? 
+                                                       <Image
+                                                       src={getAvatar('/images/user1.png', followUp?.contact.email as string)}
+                                                       width={32}
+                                                       height={32}
+                                                       alt={followUp.name}
+                                                       className="object-cover object-center size-8" 
+                                                     /> : 
+                                                   <p className="text-center text-[1rem]">{formatUsername(followUp?.contact.name)}</p> }
+                                                      </div>
+ 
+                                 <div className='flex flex-col gap-2 py-2'>
+                                           <p className='text-[1rem] font-semibold'>{followUp?.contact.name}</p>
+                                           <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.company ?? 'Unknown'}</p>
+                                           <p className='text-sm text-gray-600 font-semibold'>Last Contact: {formatDate(followUp?.contact.createdAt)}</p>
+ 
+                                            <div className="flex items-cente justify-betwen gap-3 my-2">
+                                  <Button className="py-4 rounded-sm w-full" size={'lg'}>
+                                  <p className="text-sm font-medium">View all follow up</p>
+                                  </Button>
+                               </div>
+                                     </div>
+                                     </div>
+ 
+               )) : <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2"/>}
                              
                 </CardContent>
             </Card>
@@ -219,52 +183,33 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                 </CardHeader>
 
                 <CardContent className="border-t flex flex-col px-3 py-0">
-                  <div className="flex items-center justify-between border-b py-1">
-                <div className='flex flex-row gap-2 py-2'>
-               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
-                                                    <Image
-                                                      src={'/images/user1.png'}
-                                                      width={50}
-                                                      height={50}
-                                                      alt={'user-img'}
-                                                      className="object-center size-10" 
-                                                    />
-                                                  </div>
 
-                                <div className='flex flex-col gap-1'>
-                                          <p className='text-[1rem] font-semibold'>John Doe</p>
-                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
-                                    </div>
-                                    </div>
-                                    <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm text-xs">
-                                            Jun 22 2026
-                                    </Button>
-
-                  </div>
-
-                  <div className="flex items-center justify-between border-b py-1">
-                  <div className='flex flex-row gap-2 py-2'>
-               <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
-                                                    <Image
-                                                      src={'/images/user1.png'}
-                                                      width={50}
-                                                      height={50}
-                                                      alt={'user-img'}
-                                                      className="object-center size-10" 
-                                                    />
-                                                  </div>
-
-                                <div className='flex flex-col gap-1'>
-                                          <p className='text-[1rem] font-semibold'>John Doe</p>
-                                        <p className='text-sm font-semibold text-gray-600'>Co-founder @ WavePay</p>
-                                    </div>
-                                    </div>
-                                    <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm text-xs">
-                                            Jun 22 2026
-                                    </Button>
-
-                  </div>
-
+                 {upcommingFollowUp?.length ? upcommingFollowUp.map((followUp: any) => (
+                    <div className="flex items-center justify-between border-b py-1" key={followUp.id}>
+                    <div className='flex flex-row gap-2 py-2'>
+                    <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm flex items-center justify-center"> 
+                                                       {followUp?.contact?.contactUrl ? 
+                                                       <Image
+                                                       src={getAvatar('/images/user1.png', followUp?.contact.email as string)}
+                                                       width={32}
+                                                       height={32}
+                                                       alt={followUp.name}
+                                                       className="object-cover object-center size-8" 
+                                                     /> : 
+                                                   <p className="text-center text-[1rem]">{formatUsername(followUp?.contact.name)}</p> }
+                                                      </div>
+  
+                                  <div className='flex flex-col gap-1'>
+                                            <p className='text-[1rem] font-semibold'>{followUp?.contact.name}</p>
+                                          <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.lacation ?? 'Unknown'}</p>
+                                      </div>
+                                      </div>
+                                      <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm text-xs">
+                                             {formatDate(followUp?.contact.createdAt)}
+                                      </Button>
+  
+                    </div>
+                 )): <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2 border-none"/>}
 
                 </CardContent>
             </Card>    
@@ -286,7 +231,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                    {task?.priority}
                   </div>
                  </div>
-                 )) : <EmptyOutline title="No new Task today" description="no task today hurray!!" buttonText="Create Task" className=""/>}
+                 )) : <EmptyOutline title="No new Task today" description="no task today hurray!!" buttonText="Create Task" className="border-none"/>}
               </div>
             </Card> 
          </div>

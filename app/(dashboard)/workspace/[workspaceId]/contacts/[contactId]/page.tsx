@@ -20,7 +20,7 @@ const ContactPage = async ({params}: {params: Promise<{contactId: string, worksp
     const {data: aiMemory} = aiMemorys || {}
 
   return (
-     <ContactDetail data={data} contactId={contactId} reminderPreference={reminderPreference} conversation={conversation} aiMemory={aiMemory}/>
+     <ContactDetail data={data} contactId={contactId} workspaceId={workspaceId} reminderPreference={reminderPreference} conversation={conversation} aiMemory={aiMemory} />
   )
 }
 
