@@ -19,7 +19,7 @@ export const useSocket = create<SocketState>()((set, get) => ({
 
     if (socket?.connected) return;
 
-    const newSocket = io("http://localhost:3000/events", {
+    const newSocket = io(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
       auth: { token },
      withCredentials: true,
      autoConnect: true

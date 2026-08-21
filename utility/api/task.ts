@@ -16,7 +16,7 @@ export async function createTaskApi(formData: createTaskSchemaType, priority: st
 
     try {
         
-      const res = await fetch('http://localhost:3000/tasks', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, {
        method: 'POST',
        headers: {
         "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export async function updateTaskApi(formData: updateTaskSchemaType, taskId: stri
 
    try {
        
-     const res = await fetch(`http://localhost:3000/tasks/${workspaceId}/task/${taskId}`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${workspaceId}/task/${taskId}`, {
       method: 'PATCH',
       headers: {
        "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export async function getWorkspaceTasksApi(workspaceId: string, priority?: strin
       params.append("priority", priority);
     }
 
-    const url = `http://localhost:3000/tasks/${workspaceId}${
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/tasks/${workspaceId}${
       params.toString() ? `?${params.toString()}` : ""
     }`;
 
@@ -131,7 +131,7 @@ export async function getWorkspaceTaskId(workspaceId: string, taskId: string) {
 
    try {
        
-     const res = await fetch(`http://localhost:3000/tasks/${workspaceId}/task/${taskId}`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${workspaceId}/task/${taskId}`, {
       method: 'GET',
       headers: {
        "Content-Type": "application/json",
@@ -168,7 +168,7 @@ export async function deleteWorkspaceTask(workspaceId: string, taskId: string) {
   const accessToken = cookieStore.get('accessToken')?.value;
 
   try {
-    const res = await fetch(`http://localhost:3000/tasks/${workspaceId}/task/${taskId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${workspaceId}/task/${taskId}`, {
       method: 'DELETE',
       headers: {
         "Content-Type": "application/json",

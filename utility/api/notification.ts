@@ -6,7 +6,7 @@ export async function getWorkspaceNotificationApi() {
     
     const accessToken = cookieStore.get('accessToken')?.value
  
-     const url = `http://localhost:3000/contacts/user/notification`;
+     const url = `${process.env.NEXT_PUBLIC_API_URL}/contacts/user/notification`;
  
      try {
          
@@ -48,7 +48,7 @@ export async function getWorkspaceNotificationApi() {
   
     const accessToken = cookieStore.get("accessToken")?.value;
   
-    const url = `http://localhost:3000/contacts/user/notification/read-all`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/contacts/user/notification/read-all`;
   
     try {
       const res = await fetch(url, {

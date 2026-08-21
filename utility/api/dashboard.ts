@@ -7,7 +7,7 @@ export async function getDashboardStatApi(workspaceId: string) {
   
      try {
          
-       const res = await fetch(`http://localhost:3000/dashboard/${workspaceId}/stats`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/${workspaceId}/stats`, {
         method: 'GET',
         headers: {
          "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export async function getDashboardTodayTaskApi(workspaceId: string) {
   
      try {
          
-       const res = await fetch(`http://localhost:3000/dashboard/${workspaceId}/today/task`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/${workspaceId}/today/task`, {
         method: 'GET',
         headers: {
          "Content-Type": "application/json",
@@ -63,7 +63,7 @@ export async function getDashboardUpcommingFollowupApi(workspaceId: string) {
   
      try {
          
-       const res = await fetch(`http://localhost:3000/dashboard/${workspaceId}/upcomming/followup`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/${workspaceId}/upcomming/followup`, {
         method: 'GET',
         headers: {
          "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export async function getDashboardTodayFollowupApi(workspaceId: string) {
   
      try {
          
-       const res = await fetch(`http://localhost:3000/dashboard/${workspaceId}/today/followup`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/${workspaceId}/today/followup`, {
         method: 'GET',
         headers: {
          "Content-Type": "application/json",

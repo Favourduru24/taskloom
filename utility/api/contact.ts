@@ -16,7 +16,7 @@ export async function createContactApi(formData: createContactType, workspaceId:
  
      try {
          
-       const res = await fetch(`http://localhost:3000/contacts/${workspaceId}/create`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/${workspaceId}/create`, {
         method: 'POST',
         headers: {
          "Content-Type": "application/json",
@@ -43,7 +43,7 @@ export async function createContactApi(formData: createContactType, workspaceId:
     
     const accessToken = cookieStore.get('accessToken')?.value
  
-     const url = `http://localhost:3000/contacts/${workspaceId}/list`;
+     const url = `${process.env.NEXT_PUBLIC_API_URL}/contacts/${workspaceId}/list`;
  
      try {
          
@@ -88,7 +88,7 @@ export async function createContactApi(formData: createContactType, workspaceId:
   
      try {
          
-       const res = await fetch(`http://localhost:3000/contacts/${workspaceId}/list/${contactId}`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/${workspaceId}/list/${contactId}`, {
         method: 'GET',
         headers: {
          "Content-Type": "application/json",
@@ -133,7 +133,7 @@ export async function createContactApi(formData: createContactType, workspaceId:
  
      try {
          
-       const res = await fetch(`http://localhost:3000/contacts/${workspaceId}/${contactId}/reminder/preference`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/${workspaceId}/${contactId}/reminder/preference`, {
         method: 'POST',
         headers: {
          "Content-Type": "application/json",
@@ -163,7 +163,7 @@ export async function createContactApi(formData: createContactType, workspaceId:
 
    try {
        
-     const res = await fetch(`http://localhost:3000/contacts/${contactId}/preference/list`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/${contactId}/preference/list`, {
       method: 'GET',
       headers: {
        "Content-Type": "application/json",
@@ -202,7 +202,7 @@ export async function deleteReminderPreferenceApi(preferenceId: string, contactI
 
    try {
        
-     const res = await fetch(`http://localhost:3000/contacts/${workspaceId}/${contactId}/${preferenceId}/delete`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/${workspaceId}/${contactId}/${preferenceId}/delete`, {
       method: 'DELETE',
       headers: {
        "Content-Type": "application/json",

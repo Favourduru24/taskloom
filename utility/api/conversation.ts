@@ -16,7 +16,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
  
      try {
          
-       const res = await fetch(`http://localhost:3000/conversation/${contactId}/create`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/conversation/${contactId}/create`, {
         method: 'POST',
         headers: {
          "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
    }
 
    try {
-    const url = `http://localhost:3000/conversation/${contactId}/${conversationId}/update`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/conversation/${contactId}/${conversationId}/update`;
 
      const res = await fetch(url, {
       method: 'PATCH',
@@ -78,7 +78,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
     
     const accessToken = cookieStore.get('accessToken')?.value
  
-     const url = `http://localhost:3000/conversation/${contactId}/list`;
+     const url = `${process.env.NEXT_PUBLIC_API_URL}/conversation/${contactId}/list`;
  
      try {
          
@@ -121,7 +121,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
   
      try {
          
-       const res = await fetch(`http://localhost:3000/conversation/${contactId}/${conversationId}`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/conversation/${contactId}/${conversationId}`, {
         method: 'GET',
         headers: {
          "Content-Type": "application/json",
@@ -165,7 +165,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
  
      try {
          
-       const res = await fetch(`http://localhost:3000/conversation/${contactId}/ai-memory`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/conversation/${contactId}/ai-memory`, {
         method: 'PATCH',
         headers: {
          "Content-Type": "application/json",
@@ -194,7 +194,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
 
    try {
        
-     const res = await fetch(`http://localhost:3000/conversation/${contactId}/aimemory`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/conversation/${contactId}/aimemory`, {
       method: 'GET',
       headers: {
        "Content-Type": "application/json",

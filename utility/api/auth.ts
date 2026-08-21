@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
   const {email, fullName, password} = formData
    
    try {
-      const res = await fetch('http://localhost:3000/auth/signup', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/signup`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
@@ -36,7 +36,7 @@ import { cookies } from "next/headers";
   const {email, password} = formData
    
    try {
-      const res = await fetch('http://localhost:3000/auth/login', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
@@ -91,7 +91,7 @@ import { cookies } from "next/headers";
   }
 
   try {
-    const res = await fetch(`http://localhost:3000/auth/user/upload`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user/upload`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -119,7 +119,7 @@ export async function getProfile() {
 
    try {
        
-     const res = await fetch('http://localhost:3000/auth/user/profile', {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user/profile`, {
       method: 'GET',
       headers: {
        "Content-Type": "application/json",

@@ -9,7 +9,7 @@ export async function uploadAsset(formData: FormData, workspaceId: string) {
     }
   
     try {
-      const res = await fetch(`http://localhost:3000/library/${workspaceId}/upload`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/library/${workspaceId}/upload`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -36,7 +36,7 @@ export async function uploadAsset(formData: FormData, workspaceId: string) {
     const accessToken = cookieStore.get('accessToken')?.value
  
      try {
-       const res = await fetch(`http://localhost:3000/library/${workspaceId}/list`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/library/${workspaceId}/list`, {
         method: 'GET',
         headers: {
          "Content-Type": "application/json",
