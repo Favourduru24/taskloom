@@ -42,6 +42,46 @@ export async function getWorkspaceNotificationApi() {
      }
  }
 
+ export async function deleteWorkspaceNotificationApi(notificationId: string) {
+  const cookieStore = await cookies()
+  
+  const accessToken = cookieStore.get('accessToken')?.value
+
+   const url = `${process.env.NEXT_PUBLIC_API_URL}/contacts/notification/${notificationId}/delete`;
+
+   try {
+       
+     const res = await fetch(url, { 
+      method: 'DELETE',
+      headers: {
+       "Content-Type": "application/json",
+       ...(accessToken
+         ? { Authorization: `Bearer ${accessToken}` }
+         : {}),
+     },
+     }) 
+     
+     const data = await res.json()
+
+     if (!res.ok) {
+       return {
+         data: null,
+         error: data?.message || "Failed to delete notification",
+       };
+     }
+
+    return {
+     data,
+     error: null,
+   };
+
+   } catch (error: any) {
+      return {
+     data: null,
+     error: error?.message || "Network error, Failed to delete notification.",
+   }
+   }
+}
 
  export async function markAllNotificationsAsReadApi() {
     const cookieStore = await cookies();

@@ -34,9 +34,12 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
   ])
 
   const {todayFollowUpCount,
+    yesterdayFollowUpCount,
     upcomingFollowUpCount,
     newTodoTaskCount,
-    totalContactCount} = dashboardStats
+    overdueTasks,
+    totalContactCount,
+    newContactsThisWeek} = dashboardStats
 
   return (
     <div className="w-full flex flex-1 relative bg-gray-50">
@@ -46,7 +49,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                <DashboardStats 
                 statsLabel="Today's Follow-ups"
                 statsScore={todayFollowUpCount}
-                statsDescription={`2 from yesterday`}
+                statsDescription={`${yesterdayFollowUpCount} from yesterday`}
                 statsIcon={<Star className="size-5 text-primary"/>}
                 trendType='up'
                />
@@ -62,14 +65,14 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                <DashboardStats 
                 statsLabel="Todo's Task"
                 statsScore={newTodoTaskCount}
-                statsDescription={`2 Overdue`}
+                statsDescription={`${overdueTasks} Overdue`}
                 statsIcon={<Layers className="size-5 text-primary"/>}
                 trendType='up'
                />
                <DashboardStats 
                 statsLabel={totalContactCount > 1 ? "Contacts" : 'Contact'}
                 statsScore={totalContactCount}
-                statsDescription={`${totalContactCount} new this week`}
+                statsDescription={`${newContactsThisWeek} new this week`}
                 statsIcon={<Layers className="size-5 text-primary"/>}
                 trendType='up'
                />
@@ -114,7 +117,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                                      </div>
                                      </div>
  
-               )) : <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2"/>}
+               )) : <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2" navigateLink={`/workspace/${workspaceId}/contacts`} />}
                              
                 </CardContent>
             </Card>
@@ -129,7 +132,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                 <div className='flex flex-row gap-2'>
                <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm"> 
                                                     <Image
-                                                      src={'/images/user1.png'}
+                                                       src={getAvatar(null, 'taskloomdummy@gmail.com')}
                                                       width={50}
                                                       height={50}
                                                       alt={'user-img'}
@@ -168,8 +171,8 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                             </div>
                           </div>
 
-                          <Button variant={'ghost'} className="ring-1 ring-purple-300 py-4 rounded-sm my-5 bg-purple-100 hover:bg-primary hover:text-white" size={'lg'}>
-                                 <p className="text-sm font-medium text-primary">Review Analysis</p>
+                          <Button  className="ring-1 ring-purple-300 py-4 rounded-sm my-5 bg-purple-100 hover:bg-primary group cursor-pointer" size={'lg'}>
+                                 <p className="text-sm font-medium text-primary group-hover:text-white">Review Analysis</p>
                                  </Button>
                 </CardContent>
             </Card>
@@ -209,7 +212,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                                       </Button>
   
                     </div>
-                 )): <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2 border-none"/>}
+                 )): <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2 border-none" navigateLink={`/workspace/${workspaceId}/contacts`}/>}
 
                 </CardContent>
             </Card>    
@@ -231,7 +234,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                    {task?.priority}
                   </div>
                  </div>
-                 )) : <EmptyOutline title="No new Task today" description="no task today hurray!!" buttonText="Create Task" className="border-none"/>}
+                 )) : <EmptyOutline title="No new Task today" description="no task today hurray!!" buttonText="Create Task" className="border-none" navigateLink={`/workspace/${workspaceId}/task/create`}/>}
               </div>
             </Card> 
          </div>
@@ -270,6 +273,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
                  title="No contact found"
                  description={"You don’t have any contact yet. Create your first contact to get started."}
                  buttonText="Create Contact"
+                 navigateLink={`/workspace/${workspaceId}/contacts/create`}
                />
                </div>}
          </div>

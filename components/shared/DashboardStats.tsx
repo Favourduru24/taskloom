@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, LucideIcon, TrendingDown, TrendingUp } from "lucide-react"
+import { Activity , ArrowUp } from "lucide-react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { cn } from "@/lib/utils"
 
@@ -24,7 +24,7 @@ const DashboardStats = ({statsLabel, statsDescription, statsScore, trendType}: c
                      <p className="text-4xl font-semibold">{statsScore}</p>
                     </CardContent>
                      <CardFooter className="flex items-center gap-2 bg-white  border-0">
-                      <ArrowUp className="size-6 text-green-500" strokeWidth={1}/>
+                      <Activity className="size-6 text-green-500" strokeWidth={1}/>
                       <p className="font-medium text-gray-500 text-sm">{statsDescription}</p>
                      </CardFooter>
                   </Card>

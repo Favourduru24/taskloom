@@ -248,7 +248,7 @@ const Header = () => {
                   <Clock className="text-muted-foreground size-4 md:size-5"/>
                 </div> */}
 
-                 <Notifications notifications={notifications} handleMarkAllAsRead={handleMarkAllAsRead}/>
+                 <Notifications  workspaceId={workspaceId} notifications={notifications} handleMarkAllAsRead={handleMarkAllAsRead}/>
 
                 <div className='h-8 w-8 md:h-9 md:w-9 rounded-full flex items-center justify-center border cursor-pointer'>
                   <Moon className="text-muted-foreground size-4 md:size-5"/>
@@ -282,7 +282,7 @@ const Header = () => {
                                         </div>
 
                                         <svg
-                      className={`w-5 h-5 transition-transform duration-200 cursor-pointer text-muted-foreground rotate-60`}
+                      className={`w-5 h-5 transition-transform duration-200 cursor-pointer text-muted-foreground rotate-`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

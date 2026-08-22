@@ -11,15 +11,9 @@ import {
 import { cn } from "@/lib/utils"
 import { CheckSquare } from "lucide-react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
 
-export function EmptyOutline({title, description, buttonText, className}: {title: string, description?: string, buttonText: string, className?: string}) {
+export function EmptyOutline({title, description, buttonText, className, navigateLink}: {title: string, description?: string, buttonText: string, className?: string, navigateLink?: string}) {
 
-    const params = useParams()
-    
-      const {workspaceId} = params
-    
-       const createTaskLink = `/workspace/${workspaceId}/task/create`
   return (
     <Empty className={cn("border-2 border-dashed", `${className}`)}>
       <EmptyHeader>
@@ -33,7 +27,7 @@ export function EmptyOutline({title, description, buttonText, className}: {title
       </EmptyHeader>
       <EmptyContent>
         <Button variant="outline" size="sm">
-          <Link href={createTaskLink}>
+          <Link href={navigateLink ?? ''}>
           
           {buttonText}
           </Link>

@@ -3,6 +3,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Bell } from 'lucide-react'
 import {formatNotificationDate } from '@/lib/utils';
+import Link from 'next/link';
 
 interface Notification {
     id: string;
@@ -11,7 +12,7 @@ interface Notification {
     createdAt: string;
     read?: boolean
   }
-const Notifications = ({notifications, handleMarkAllAsRead}: {notifications: Notification[], handleMarkAllAsRead: () => Promise<void>}) => {
+const Notifications = ({workspaceId, notifications, handleMarkAllAsRead}: {workspaceId: any, notifications: Notification[], handleMarkAllAsRead: () => Promise<void>}) => {
 
     const unreadCount = notifications.filter(
         notification => !notification.read
@@ -21,7 +22,7 @@ const Notifications = ({notifications, handleMarkAllAsRead}: {notifications: Not
     <DropdownMenu>
     <DropdownMenuTrigger asChild>
            
-    <div className="relative cursor-pointer" onClick={() => handleMarkAllAsRead()}>
+    <div className="relative cursor-pointer">
   {/* Ripple */}
   {unreadCount > 0 && (
     <span className="absolute inset-0 rounded-full border-2 border-[#7850CD] animate-ping opacity-30" />
@@ -75,10 +76,12 @@ const Notifications = ({notifications, handleMarkAllAsRead}: {notifications: Not
                       ))
                     }
                     {/* <DropdownMenuSeparator /> */}
-                    <DropdownMenuItem>
-                      <div className='text-white hover:text-white bg-primary px-2 py-3 flex items-center justify-center gap-1 cursor-pointer w-full text-sm rounded-md'>
-                         View All
+                    <DropdownMenuItem className='group' asChild>
+                      <Link href={`/workspace/${workspaceId}/notification`}>
+                      <div className='text-white  bg-primary px-2 py-3 flex items-center justify-center gap-1 cursor-pointer w-full text-sm rounded-md group' onClick={() => handleMarkAllAsRead()}>
+                         <p className='group-hover:text-white'>View All</p>
                       </div>
+                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
 
