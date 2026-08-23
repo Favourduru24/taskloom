@@ -80,9 +80,9 @@ const Task = async ({params, searchParams}: {params: Promise<{ workspaceId: stri
 
                               <Dialog>
   <DialogTrigger asChild>
-  <Button className='bg-primary md:w-24 w-fit px-2 py-1 rounded-sm flex items-center justify-center md:h-9 h-8 cursor-pointer '>
+  <Button className='bg-primary md:w-24 w-fit sm:px-2 sm:py-1 rounded-sm flex items-center justify-center md:h-9 h-8 cursor-pointer '>
                     {/* <UserPlus className="size-5 text-white-100 cursor-pointer "/> */}
-                    <p className='text-white-100 leading-tight hidden md:block text-lg'>+</p>
+                    <p className='text-white-100 leading-tight  text-xl'>+</p>
                     <p className='text-white-100 leading-tight hidden md:block'>Invite</p>
                 </Button>
                 </DialogTrigger>

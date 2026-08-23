@@ -75,7 +75,7 @@ const Header = () => {
 
 
   useEffect(() => {
-    const saved = localStorage.getItem("selectedWorkspace");
+    const saved = sessionStorage.getItem("selectedWorkspace");
   
     if (saved) {
       setSelectedWorkspace(JSON.parse(saved));
@@ -116,7 +116,7 @@ const Header = () => {
         const ws = workspace.find(w => w.id === workspaceId);
           if (ws) {
             setSelectedWorkspace(ws);
-            localStorage.setItem('selectedWorkspace', JSON.stringify(ws))
+            sessionStorage.setItem('selectedWorkspace', JSON.stringify(ws))
           }
 
         const newPath = pathname.replace(

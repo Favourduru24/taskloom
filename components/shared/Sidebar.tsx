@@ -13,7 +13,7 @@ const Sidebar = () => {
   const {workspaceId} = params
 
   const pathname = usePathname()
-   const createTaskLink = `/workspace/${workspaceId}/task/create`
+   const createContactLink = `/workspace/${workspaceId}/contacts/create`
 
     interface SidebarProp {
       id: number
@@ -102,7 +102,7 @@ const Sidebar = () => {
              })}
           </ul>
            
-           <Link href={createTaskLink}>
+           <Link href={createContactLink}>
           <li className="flex px-2 py-2 items-center justify-center gap-2 rounded-md bg-primary text-white cursor-pointer">
                       <Users2  className='text-white size-5'/>
                       <p className='text-[1rem] leading-tight font-semibold'>Add Contact</p>

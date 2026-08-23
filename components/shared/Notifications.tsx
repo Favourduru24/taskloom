@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Bell } from 'lucide-react'
 import {formatNotificationDate } from '@/lib/utils';
 import Link from 'next/link';
+import { EmptyOutline } from './NotFound';
 
 interface Notification {
     id: string;
@@ -56,9 +57,9 @@ const Notifications = ({workspaceId, notifications, handleMarkAllAsRead}: {works
                   <DropdownMenuContent className='mt-5 cursor-pointer border max-w-[30rem] w-full mr-5 flex flex-col gap-3 py-4'>
                      <p className='text-2xl text-gray-800 font-semibold px-2'>Notifications</p>
                     {
-                      notifications.slice(0, 4).map((notification: Notification) => (
+                      notifications?.length ? notifications?.slice(0, 4)?.map((notification: Notification) => (
                         
-                       <DropdownMenuItem key={notification.id} className='flex flex-col gap-2 cursor-pointer'>
+                       <DropdownMenuItem key={notification.id} className='flex flex-col gap-2 cursor-pointer border-2'>
                         <div className='flex items-start gap-4 px-1 py-1'>
 
                       <div className='w-11 h-11 bg-primary rounded-md flex items-center justify-center shrink-0'>
@@ -73,7 +74,7 @@ const Notifications = ({workspaceId, notifications, handleMarkAllAsRead}: {works
                           </div>
                      
                     </DropdownMenuItem>
-                      ))
+                      )) : <EmptyOutline title="No Notifications" description="You're all caught up! Nothing needs your attention right now." className="w-full border-none"/>
                     }
                     {/* <DropdownMenuSeparator /> */}
                     <DropdownMenuItem className='group' asChild>

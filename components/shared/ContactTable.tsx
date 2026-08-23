@@ -6,6 +6,7 @@ import { Input } from "../ui/input";
 import { Search, Plus, Eye } from "lucide-react";
 import Link from "next/link";
 import { formatDate, getAvatar, formatUsername} from "@/lib/utils";
+import { EmptyOutline } from "./NotFound";
 
 const statusStyles: Record<string, string> = {
   ACTIVE:
@@ -66,6 +67,7 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
       {/* Table */}
 
       <div className="overflow-x-auto">
+        {data?.data?.length ? 
         <table className="w-full">
           <thead className="bg-gray-50 rounded-sm">
             <tr className="text-xs uppercase tracking-wider text-gray-500">
@@ -98,9 +100,8 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
               </th>
             </tr>
           </thead>
-
           <tbody>
-            {data?.data?.length ? data?.data.map((contact: any) => (
+            {data?.data.map((contact: any) => (
               <tr
                 className="border-t transition hover:bg-[#7850CD]/5"
                 key={contact.id}
@@ -165,9 +166,16 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
                   </Link>
                   </td>
               </tr>
-            )) : ''}
+            ))}
           </tbody>
         </table>
+      : <EmptyOutline
+      title="No contact found"
+      description={"You don’t have any contact yet. Create your first contact to get started."}
+      buttonText="Create Contact"
+      navigateLink={`/workspace/${workspaceId}/contacts/create`}
+      className="mt-2"
+    /> }
       </div>
     </section>
   );

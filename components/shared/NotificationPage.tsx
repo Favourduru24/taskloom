@@ -1,7 +1,7 @@
 'use client'
 
 import { formatDate } from "@/lib/utils";
-import { deleteWorkspaceNotificationApi, markAllNotificationsAsReadApi } from "@/utility/api/notification";
+import { deleteWorkspaceNotificationApi, getWorkspaceNotificationApi, markAllNotificationsAsReadApi } from "@/utility/api/notification";
 import {
   Bell,
   CheckCheck,
@@ -13,9 +13,11 @@ import {
   MessageCircle,
   UserRound,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { EmptyOutline } from "./NotFound";
 
 const notifications = [
   {
@@ -108,22 +110,8 @@ function NotificationIcon({ type }: {type: string}) {
   return <Bell {...iconProps} />;
 }
 
-function NotificationItem({ notification }: {notification: any}) {
-
-    const [deleting, setDeleting] = useState(false)
-
-    const handleDeleteNotification = async (notificationId: string) => {
-        setDeleting(true)
-      try {
-          await deleteWorkspaceNotificationApi(notificationId)
-
-      } catch (error: any) {
-          toast.error(error?.message)
-      } finally{
-          setDeleting(false)
-      }
-    }
-
+function NotificationItem({ notification, handleDeleteNotification, deletingId}: {notification: any, handleDeleteNotification:(notificationId: string) => Promise<void>, deletingId: string | null}) {
+    
   return (
     <div
       className={`
@@ -131,7 +119,7 @@ function NotificationItem({ notification }: {notification: any}) {
         px-4 py-4 transition-all duration-200
         ${
           !notification.read
-            ? "border-[#7C4DFF]/15 bg-[#7C4DFF]/[0.025]"
+            ? "border-[#7C4DFF]/15 bg-[#7C4DFF]/2.5"
             : "border-zinc-200 bg-white"
         }
         hover:border-[#7C4DFF]/30 hover:shadow-sm
@@ -184,6 +172,7 @@ function NotificationItem({ notification }: {notification: any}) {
         )}
 
         <button
+         disabled={deletingId === notification.id}
           className="
             hidden rounded-lg p-1.5 text-zinc-400
             transition-colors
@@ -191,9 +180,9 @@ function NotificationItem({ notification }: {notification: any}) {
             group-hover:block
             cursor-pointer
           "
-          onClick={() => handleDeleteNotification(notification?.id)}
+          onClick={() => handleDeleteNotification(notification.id)}
         >
-          {deleting ? <Loader2 size={18} className="animate-spin"/> : <MoreHorizontal size={18} />}
+          {deletingId === notification.id ? <Loader2 size={18} className="animate-spin"/> : <Trash2 size={18} className="text-destructive"/>}
         </button>
       </div>
     </div>
@@ -201,6 +190,9 @@ function NotificationItem({ notification }: {notification: any}) {
 }
 
 const NotificationsPage = ({data}: {data: any}) =>  {
+
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+    const [notifications, setNotifications] = useState<any[]>(data)
 
      const handleMarkAllAsRead = async () => {
         const { error } = await markAllNotificationsAsReadApi();
@@ -215,6 +207,28 @@ const NotificationsPage = ({data}: {data: any}) =>  {
             read: true,
          }))
       };
+
+      const handleDeleteNotification = async (notificationId: string) => {
+        setDeletingId(notificationId)
+      
+        setNotifications((prev) =>
+          prev.filter((notification) => notification.id !== notificationId)
+        )
+      
+        try {
+          await deleteWorkspaceNotificationApi(notificationId)
+        } catch (error: any) {
+          toast.error(error?.message || "Failed to delete notification")
+      
+          const refreshed = await getWorkspaceNotificationApi()
+      
+          if (refreshed?.data) {
+            setNotifications(refreshed.data)
+          }
+        } finally {
+          setDeletingId(null)
+        }
+      }
 
   return (
     <main className="min-h-screen bg-white px-6 py-10 md:px-10">
@@ -233,7 +247,7 @@ const NotificationsPage = ({data}: {data: any}) =>  {
                   text-xs font-semibold text-[#7C4DFF]
                 "
               >
-                {data?.length || 0} 
+                {notifications?.length || 0} 
               </span>
             </div>
 
@@ -268,12 +282,14 @@ const NotificationsPage = ({data}: {data: any}) =>  {
             </div>
 
             <div className="space-y-2.5">
-              {data.map((notification: any) => (
+              {notifications?.length ? notifications.map((notification: any) => (
                   <NotificationItem
                     key={notification.id}
                     notification={notification}
+                    handleDeleteNotification={handleDeleteNotification}
+                    deletingId={deletingId}
                   />
-                ))}
+                )) : <EmptyOutline title="No Notifications" description="You're all caught up! Nothing needs your attention right now." className="w-full"/>}
             </div>
           </div>
 
@@ -301,7 +317,7 @@ const NotificationsPage = ({data}: {data: any}) =>  {
         </section>
 
         {/* Pagination */}
-        <div className="mt-8 flex items-center justify-center gap-2">
+        {notifications?.length && <div className="mt-8 flex items-center justify-center gap-2">
           <button
             className="
               flex h-9 w-9 items-center justify-center rounded-lg
@@ -341,7 +357,7 @@ const NotificationsPage = ({data}: {data: any}) =>  {
           >
             <ChevronRight size={18} />
           </button>
-        </div>
+        </div>}
       </div>
     </main>
   );
