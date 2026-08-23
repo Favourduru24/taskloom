@@ -137,7 +137,7 @@ const TaskList = ({initialTasks, workspaceId, error, }: {initialTasks: TaskProps
 
 
   return (
-    <>{tasks?.length > 0 ? tasks.map((task: TaskProps, index) => {
+    <>{tasks?.length ? tasks?.map((task: TaskProps, index) => {
         const color = getPriorityColor(task.priority);
 
           return (

@@ -23,8 +23,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
    const {workspaceId} = await params
 
 
-  const [data, dashboardStats, contacts, todayTask, upcommingFollowUp, todayFollowUp] = await Promise.all([
-    await getWorkspaceApi(),
+  const [dashboardStats, contacts, todayTask, upcommingFollowUp, todayFollowUp] = await Promise.all([
     getDashboardStatApi(workspaceId),
     getWorkspaceContactsApi(workspaceId),
     getDashboardTodayTaskApi(workspaceId),
@@ -40,6 +39,8 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
     overdueTasks,
     totalContactCount,
     newContactsThisWeek} = dashboardStats
+
+    const {data} = contacts || {}
 
   return (
     <div className="w-full flex flex-1 relative bg-gray-50">
@@ -249,7 +250,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
          <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] px-2">
             
 
-                {contacts.data?.length ? contacts.data?.slice(0, 4).map((contact: any) => (
+                {data?.length ? data?.slice(0, 4).map((contact: any) => (
                    <div className='flex flex-row gap-2 py-2' key={contact?.id}>
                    <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm flex items-center justify-center"> 
                                                        {contact?.contactUrl ? 

@@ -59,7 +59,7 @@ const Notifications = ({workspaceId, notifications, handleMarkAllAsRead}: {works
                     {
                       notifications?.length ? notifications?.slice(0, 4)?.map((notification: Notification) => (
                         
-                       <DropdownMenuItem key={notification.id} className='flex flex-col gap-2 cursor-pointer border-2'>
+                       <DropdownMenuItem key={notification.id} className='flex flex-col gap-2 cursor-pointer'>
                         <div className='flex items-start gap-4 px-1 py-1'>
 
                       <div className='w-11 h-11 bg-primary rounded-md flex items-center justify-center shrink-0'>

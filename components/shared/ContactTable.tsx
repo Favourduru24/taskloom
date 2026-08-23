@@ -67,7 +67,7 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
       {/* Table */}
 
       <div className="overflow-x-auto">
-        {data?.data?.length ? 
+        {data?.length ? 
         <table className="w-full">
           <thead className="bg-gray-50 rounded-sm">
             <tr className="text-xs uppercase tracking-wider text-gray-500">
@@ -101,7 +101,7 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
             </tr>
           </thead>
           <tbody>
-            {data?.data.map((contact: any) => (
+            {data?.map((contact: any) => (
               <tr
                 className="border-t transition hover:bg-[#7850CD]/5"
                 key={contact.id}
