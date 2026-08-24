@@ -146,7 +146,7 @@ export function ContactTable({workspaceId, data}: {workspaceId: string, data: an
                 </td>
 
                 <td className="px-6 py-5 text-sm text-gray-500">
-                  {contact?.contactPreference[0]?.reminderCadence ?? '_ _ _'}
+                  {contact?.contactPreference[0]?.reminderCadence || '_ _ _'}
                 </td>
 
                 <td className="px-6 py-5 text-right">

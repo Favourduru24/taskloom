@@ -116,7 +116,7 @@ const Task = async ({params, searchParams}: {params: Promise<{ workspaceId: stri
                         src={getAvatar(m.user.avatarUrl, m.user.email)}
                         width={42}
                         height={42}
-                        alt={m.user.fullName ?? 'collaborators'}
+                        alt={m.user.fullName || 'collaborators'}
                         className="object-center rounded-full size-10" 
                         />
                          </div>

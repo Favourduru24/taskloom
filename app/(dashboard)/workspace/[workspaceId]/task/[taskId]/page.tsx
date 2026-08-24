@@ -74,7 +74,7 @@ const TaskDetails = () => {
          setTaskDetails(data)
 
        }catch(error: any) {
-        toast.error(error, "Workspace error");
+        toast.error(error || "Workspace error");
        } finally {
         setLoading(false)
        }

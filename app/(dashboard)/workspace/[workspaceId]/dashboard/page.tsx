@@ -107,7 +107,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
  
                                  <div className='flex flex-col gap-2 py-2'>
                                            <p className='text-[1rem] font-semibold'>{followUp?.contact.name}</p>
-                                           <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.company ?? 'Unknown'}</p>
+                                           <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.company || 'Unknown'}</p>
                                            <p className='text-sm text-gray-600 font-semibold'>Last Contact: {formatDate(followUp?.contact.createdAt)}</p>
  
                                             <div className="flex items-cente justify-betwen gap-3 my-2">
@@ -205,7 +205,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
   
                                   <div className='flex flex-col gap-1'>
                                             <p className='text-[1rem] font-semibold'>{followUp?.contact.name}</p>
-                                          <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.lacation ?? 'Unknown'}</p>
+                                          <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.lacation || 'Unknown'}</p>
                                       </div>
                                       </div>
                                       <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm text-xs">
@@ -266,7 +266,7 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
     
                                     <div className='flex flex-col gap-1'>
                                               <p className='text-[1rem] font-semibold'>{contact?.name}</p>
-                                            <p className='text-sm font-semibold text-gray-600'>{contact?.status} @ {contact?.company ?? 'Unknown'}</p>
+                                            <p className='text-sm font-semibold text-gray-600'>{contact?.status} @ {contact?.company || 'Unknown'}</p>
                                         </div>
                                         </div>
                 )) : <div className="col-span-full flex justify-center w-full">

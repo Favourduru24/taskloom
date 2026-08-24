@@ -224,11 +224,11 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
                                        <div className='flex items-center gap-4'>
                                              <p className='text-2xl font-semibold'>{data?.name}</p>
                                              <div className='rounded-full px-3 py-1 text-xs font-medium text-green-600 bg-green-200 lowercase'>
-                                               {data?.priority ?? 'Active'}
+                                               {data?.priority || 'Active'}
                                              </div>
                                        </div>
    
-                                       <p className='text-[1rem] font-semibold text-gray-500'>{data?.status} @ {data?.company ?? 'Unknown'}</p>
+                                       <p className='text-[1rem] font-semibold text-gray-500'>{data?.status} @ {data?.company || 'Unknown'}</p>
    
                                        <div className='flex flex-row items-center gap-8'>
                                          <div className='flex items-center gap-2'>
@@ -353,8 +353,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
    
                           <div className='flex flex-col gap-1'>
                           <p className='text-sm font-bold'>Last Promise</p>
-                          <p className='text-gray-500 text-sm font-medium'>{aiMemory?.lastPromise 
-                            ?? 'No Promise found'}</p>
+                          <p className='text-gray-500 text-sm font-medium'>{aiMemory?.lastPromise?.trim() || 'No Promise found'}</p>
                           </div>
                        </div>       
                  </div>
@@ -365,7 +364,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
               <div className='flex flex-col bg-white rounded-md break-all border  max-w-120 w-full'>
                  <div className='flex flex-col gap-2 px-4 pt-4'>
                    <p className='text-lg font-semibold'>Recommended Next Step</p>
-                   <p className='text-gray-900 text-[1rem] font-mediu leading-8'>{aiMemory?.nextAction ?? 'Next step not Provided'}</p>
+                   <p className='text-gray-900 text-[1rem] font-mediu leading-8'>{aiMemory?.nextAction || 'Next step not Provided'}</p>
                  </div>
    
                  <div className="flex flex-col gap-4 w-full min-h-10 rounded-md mt-5 border-t py-2 px-4">
@@ -413,7 +412,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
    
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Next Follow-up</p>
-                    <p className="text-xs text-green-500 font-medium">{reminderPreference?.reminderCadence ?? 'Unknown'}</p>
+                    <p className="text-xs text-green-500 font-medium">{reminderPreference?.reminderCadence || 'Unknown'}</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
