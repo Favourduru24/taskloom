@@ -7,7 +7,6 @@ import {
   CheckCheck,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal,
   CalendarDays,
   CheckSquare,
   MessageCircle,
@@ -18,72 +17,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { EmptyOutline } from "./NotFound";
-
-const notifications = [
-  {
-    id: 1,
-    type: "reminder",
-    title: "DAILY follow-up reminder",
-    description:
-      "It's been a while since your last conversation. Reach out to keep things moving.",
-    date: "22 Aug, 10:37 AM",
-    unread: true,
-  },
-  {
-    id: 2,
-    type: "reminder",
-    title: "DAILY follow-up reminder",
-    description:
-      "It's been a while since your last conversation. Reach out to keep things moving.",
-    date: "22 Aug, 09:36 AM",
-    unread: true,
-  },
-  {
-    id: 3,
-    type: "reminder",
-    title: "DAILY follow-up reminder",
-    description:
-      "It's been a while since your last conversation. Reach out to keep things moving.",
-    date: "22 Aug, 08:35 AM",
-    unread: true,
-  },
-  {
-    id: 4,
-    type: "reminder",
-    title: "Thomas explicitly requested to be contacted in 3 days.",
-    description:
-      "It's been a while since your last conversation. Reach out to keep things moving.",
-    date: "11 Aug, 03:20 AM",
-    unread: true,
-  },
-  {
-    id: 5,
-    type: "task",
-    title: "Task updated",
-    description:
-      '“Follow up with Sarah Johnson” was marked as completed.',
-    date: "10 Aug, 11:15 AM",
-    unread: false,
-  },
-  {
-    id: 6,
-    type: "calendar",
-    title: "Task reminder",
-    description:
-      "You have 2 tasks due today. Don't forget to check them out.",
-    date: "10 Aug, 09:00 AM",
-    unread: false,
-  },
-  {
-    id: 7,
-    type: "task",
-    title: "Task created",
-    description:
-      'New task “Send proposal to Babat Lambo” has been created.',
-    date: "09 Aug, 04:45 PM",
-    unread: false,
-  },
-];
 
 function NotificationIcon({ type }: {type: string}) {
   const iconProps = {

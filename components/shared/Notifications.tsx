@@ -54,7 +54,7 @@ const Notifications = ({workspaceId, notifications, handleMarkAllAsRead}: {works
 </div>
 </DropdownMenuTrigger>
 
-                  <DropdownMenuContent className='mt-5 cursor-pointer border max-w-[30rem] w-full mr-5 flex flex-col gap-3 py-4'>
+                  <DropdownMenuContent className='mt-5 cursor-pointer border max-w-120 w-full mr-5 flex flex-col gap-3 py-4'>
                      <p className='text-2xl text-gray-800 font-semibold px-2'>Notifications</p>
                     {
                       notifications?.length ? notifications?.slice(0, 4)?.map((notification: Notification) => (
