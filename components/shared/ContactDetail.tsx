@@ -107,6 +107,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
 
     try {
       await createConversationApi(
+        workspaceId,
          data
       );
   

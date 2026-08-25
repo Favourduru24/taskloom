@@ -3,7 +3,7 @@
 import { cookies } from "next/headers"
 import { createConversationSchemaType } from "../validation/conversation"
 
-export async function createConversationApi(formData: createConversationSchemaType) {
+export async function createConversationApi(workspaceId: string, formData: createConversationSchemaType) {
     const cookieStore = await cookies()
     
     const accessToken = cookieStore.get('accessToken')?.value
@@ -16,7 +16,7 @@ export async function createConversationApi(formData: createConversationSchemaTy
  
      try {
          
-       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/conversation/${contactId}/create`, {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/conversation/${workspaceId}/${contactId}/create`, {
         method: 'POST',
         headers: {
          "Content-Type": "application/json",
