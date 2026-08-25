@@ -526,7 +526,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
                   onChange={(e) => setContent(e.target.value)}
                   // label="Conversation"
                   placeholder="Write your content description or caption..."
-                  className="pr-10 sm:h-auto"
+                  className="pr-10 h-40 overflow-y-scroll "
                   />
              </div>
 

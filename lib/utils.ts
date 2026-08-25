@@ -96,7 +96,7 @@ export const getTextPreview = (text: string = "", maxLength = 100) => {
 };
 
 export const formatUsername = (name: string)=> { 
-   const first = name.trim().charAt(0)
+   const first = name?.trim()?.charAt(0)
    return `${first}`
 }
 
