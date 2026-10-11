@@ -58,7 +58,8 @@ const ConversationModal = ({followUpModal, setFollowUpModal, conversationId, con
     if(!reminderUrl) {
       toast.error("Contact number is required to build reminder URL."); return null;
     }
-
+    
+    console.log({conversation})
 
   const handleUpdateConversation = async () => {
     if (updating) return;

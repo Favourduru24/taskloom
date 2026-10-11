@@ -1,5 +1,3 @@
-import {ChartLineMultiple} from "@/components/shared/ChartLineMultiple"
-import DashboardStats from "@/components/shared/DashboardStats"
 import { EmptyOutline } from "@/components/shared/NotFound"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,13 +7,20 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { cn, formatUsername, getAvatar, formatDate } from "@/lib/utils"
+import {formatUsername, getAvatar, formatDate } from "@/lib/utils"
 import { getWorkspaceContactsApi } from "@/utility/api/contact"
-import { getDashboardStatApi, getDashboardTodayFollowupApi, getDashboardTodayTaskApi, getDashboardUpcommingFollowupApi } from "@/utility/api/dashboard"
-import { getWorkspaceApi } from "@/utility/api/workspace"
+import {getDashboardTodayTaskApi} from "@/utility/api/dashboard"
 
-import { BookCheck, Calendar, Check, Clock, FilePlus, Layers, Link, MessageCircleMore, Play, Star} from "lucide-react"
+import { BookCheck, Check, Link as NavLink} from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
+import { Suspense } from "react"
+import DashboardStatsSkeleton from "./components/DashboardStatsSkeleton"
+import DashboardStatsSection from "./components/DashboardStatsSection"
+import TodayFollowUps from "./components/TodayFollowUps"
+import DashboardCardSkeleton from "./components/DashboardCardSkeleton"
+import UpcommingFollowUps from "./components/UpcommingFollowUps"
+import RecentlyAddedContact from "./components/RecentlyAddedContact"
 
 const Home = async ({params}: {params: Promise<{ workspaceId: string }>
 }) => {
@@ -23,110 +28,32 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
    const {workspaceId} = await params
 
 
-  const [dashboardStats, contacts, todayTask, upcommingFollowUp, todayFollowUp] = await Promise.all([
-    getDashboardStatApi(workspaceId),
+  const [contacts, todayTask] = await Promise.all([
     getWorkspaceContactsApi(workspaceId),
-    getDashboardTodayTaskApi(workspaceId),
-    getDashboardUpcommingFollowupApi(workspaceId),
-    getDashboardTodayFollowupApi(workspaceId)
-
+    getDashboardTodayTaskApi(workspaceId)
   ])
 
-  const {todayFollowUpCount,
-    yesterdayFollowUpCount,
-    upcomingFollowUpCount,
-    newTodoTaskCount,
-    overdueTasks,
-    totalContactCount,
-    newContactsThisWeek} = dashboardStats
-
-    const {data} = contacts || {}
 
   return (
     <div className="w-full flex flex-1 relative bg-gray-50">
        <div className="w-full max-w-6xl px-8 py-4 flex flex-1 flex-col gap-10">
-           <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
-            
-               <DashboardStats 
-                statsLabel="Today's Follow-ups"
-                statsScore={todayFollowUpCount}
-                statsDescription={`${yesterdayFollowUpCount} from yesterday`}
-                statsIcon={<Star className="size-5 text-primary"/>}
-                trendType='up'
-               />
-
-               <DashboardStats 
-                statsLabel="Upcoming Follow-ups"
-                statsScore={upcomingFollowUpCount}
-                statsDescription={`Next: Tommorrow`}
-                statsIcon={<FilePlus className="size-5 text-primary"/>}
-                trendType='down'
-               />
-
-               <DashboardStats 
-                statsLabel="Todo's Task"
-                statsScore={newTodoTaskCount}
-                statsDescription={`${overdueTasks} Overdue`}
-                statsIcon={<Layers className="size-5 text-primary"/>}
-                trendType='up'
-               />
-               <DashboardStats 
-                statsLabel={totalContactCount > 1 ? "Contacts" : 'Contact'}
-                statsScore={totalContactCount}
-                statsDescription={`${newContactsThisWeek} new this week`}
-                statsIcon={<Layers className="size-5 text-primary"/>}
-                trendType='up'
-               />
-              </div>
-
+        
+           <Suspense fallback={<DashboardStatsSkeleton/>}>
+             <DashboardStatsSection workspaceId={workspaceId}/>
+           </Suspense>
 
          <div className="flex gap-4 flex-col md:flex-row">
-            <Card className="max-w-120 w-full p-0 ">
-                <CardHeader className="flex items-center justify-between gap-3 pt-2">
-                     <CardTitle>Today's follow-ups</CardTitle>
-                     <p className="text-primary text-sm font-semibold">View all</p>
-                </CardHeader>
-
-                <CardContent className="border flex flex-col py-1 px-0 ">
-            
-
-
-               {todayFollowUp?.length ? todayFollowUp.map((followUp: any) => (
-                <div className='flex flex-row gap-2 border-t mt-2 px-2 pt-2' key={followUp.id}>
-                 <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm flex items-center justify-center"> 
-                                                       {followUp?.contact?.contactUrl ? 
-                                                       <Image
-                                                       src={getAvatar('/images/user1.png', followUp?.contact.email as string)}
-                                                       width={32}
-                                                       height={32}
-                                                       alt={followUp.name}
-                                                       className="object-cover object-center size-8" 
-                                                     /> : 
-                                                   <p className="text-center text-[1rem]">{formatUsername(followUp?.contact.name)}</p> }
-                                                      </div>
- 
-                                 <div className='flex flex-col gap-2 py-2'>
-                                           <p className='text-[1rem] font-semibold'>{followUp?.contact.name}</p>
-                                           <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.company || 'Unknown'}</p>
-                                           <p className='text-sm text-gray-600 font-semibold'>Last Contact: {formatDate(followUp?.contact.createdAt)}</p>
- 
-                                            <div className="flex items-cente justify-betwen gap-3 my-2">
-                                  <Button className="py-4 rounded-sm w-full" size={'lg'}>
-                                  <p className="text-sm font-medium">View all follow up</p>
-                                  </Button>
-                               </div>
-                                     </div>
-                                     </div>
- 
-               )) : <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2" navigateLink={`/workspace/${workspaceId}/contacts`} />}
-                             
-                </CardContent>
-            </Card>
+             
+             <Suspense fallback={<DashboardCardSkeleton/>}>
+            <TodayFollowUps workspaceId={workspaceId}/>
+             </Suspense>
 
             <Card className="p-3 max-w-120 w-full h-full flex items-cente justify-center">
             <CardHeader className="flex items-center justify-between gap-3">
                      <CardTitle className="text-lg">AI Needs Your Review</CardTitle>
+                     <Link href={`/workspace/${workspaceId}/contacts`} className="cursor-pointer">
                      <p className="text-primary text-sm font-semibold">View all</p>
+                     </Link>
                 </CardHeader>
 
                 <CardContent className="border flex flex-col px-3 py-3 shadow rounded-md">
@@ -180,43 +107,9 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
          </div>
 
          <div className="flex gap-4 flex-col md:flex-row h-full">
-         <Card className="max-w-120 w-full p-0 h-fit">
-                <CardHeader className="flex items-center justify-between gap-3 px-3 pt-3">
-                     <CardTitle>Upcomming Follow-ups</CardTitle>
-                     <p className="text-primary text-sm font-semibold">View all</p>
-                </CardHeader>
-
-                <CardContent className="border-t flex flex-col px-3 py-0">
-
-                 {upcommingFollowUp?.length ? upcommingFollowUp.map((followUp: any) => (
-                    <div className="flex items-center justify-between border-b py-1" key={followUp.id}>
-                    <div className='flex flex-row gap-2 py-2'>
-                    <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm flex items-center justify-center"> 
-                                                       {followUp?.contact?.contactUrl ? 
-                                                       <Image
-                                                       src={getAvatar('/images/user1.png', followUp?.contact.email as string)}
-                                                       width={32}
-                                                       height={32}
-                                                       alt={followUp.name}
-                                                       className="object-cover object-center size-8" 
-                                                     /> : 
-                                                   <p className="text-center text-[1rem]">{formatUsername(followUp?.contact.name)}</p> }
-                                                      </div>
-  
-                                  <div className='flex flex-col gap-1'>
-                                            <p className='text-[1rem] font-semibold'>{followUp?.contact.name}</p>
-                                          <p className='text-sm font-semibold text-gray-600'>{followUp?.contact.status} @ {followUp?.contact.lacation || 'Unknown'}</p>
-                                      </div>
-                                      </div>
-                                      <Button className="bg-amber-100 my-2 text-black border border-amber-500 rounded-sm text-xs">
-                                             {formatDate(followUp?.contact.createdAt)}
-                                      </Button>
-  
-                    </div>
-                 )): <EmptyOutline title="No new Upcomming follow up" description="no follow up today hurray!!" buttonText="Create Conversation" className="m-2 border-none" navigateLink={`/workspace/${workspaceId}/contacts`}/>}
-
-                </CardContent>
-            </Card>    
+                <Suspense fallback={<DashboardCardSkeleton/>}>
+               <UpcommingFollowUps workspaceId={workspaceId}/>
+                </Suspense>
 
              <Card className='max-w-120 w-full flex flex-col py-2 px-4 h-fit'>
               <div className='flex items-center gap-2'>
@@ -239,50 +132,10 @@ const Home = async ({params}: {params: Promise<{ workspaceId: string }>
               </div>
             </Card> 
          </div>
-
-         <div className="flex flex-col gap-4">
-         <Card className="w-full">
-                <CardHeader className="flex items-center justify-between gap-3 border-b">
-                     <CardTitle>Recently Added People</CardTitle>
-                     <p className="text-primary text-sm font-semibold">View all</p>
-                </CardHeader>
-          
-         <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] px-2">
-            
-
-                {data?.length ? data?.slice(0, 4).map((contact: any) => (
-                   <div className='flex flex-row gap-2 py-2' key={contact?.id}>
-                   <div className="w-10 h-10 overflow-hidden rounded-full shadow-sm flex items-center justify-center"> 
-                                                       {contact?.contactUrl ? 
-                                                       <Image
-                                                       src={getAvatar('/images/user1.png', contact.email as string)}
-                                                       width={32}
-                                                       height={32}
-                                                       alt={contact.name}
-                                                       className="object-cover object-center size-8" 
-                                                     /> : 
-                                                   <p className="text-center text-[1rem]">{formatUsername(contact.name)}</p> }
-                                                      </div>
-    
-                                    <div className='flex flex-col gap-1'>
-                                              <p className='text-[1rem] font-semibold'>{contact?.name}</p>
-                                            <p className='text-sm font-semibold text-gray-600'>{contact?.status} @ {contact?.company || 'Unknown'}</p>
-                                        </div>
-                                        </div>
-                )) : <div className="col-span-full flex justify-center w-full">
-                <EmptyOutline
-                 title="No contact found"
-                 description={"You don’t have any contact yet. Create your first contact to get started."}
-                 buttonText="Create Contact"
-                 navigateLink={`/workspace/${workspaceId}/contacts/create`}
-               />
-               </div>}
-         </div>
-         </Card>
-         </div>
-
-
-
+           
+           <Suspense fallback={<DashboardStatsSkeleton/>}>
+           <RecentlyAddedContact workspaceId={workspaceId}/>
+           </Suspense>
        </div>
     </div>
   )

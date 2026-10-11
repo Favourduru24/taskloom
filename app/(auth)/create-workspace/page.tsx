@@ -162,7 +162,6 @@ interface WorkspaceList {
                                        </div>
                           <div className='md:flex flex-col justify-center hidden '>
                                 <p className='text-foreground-muted text-lg font-medium  break-all'>{loading ? 'Loading..' : selectedWorkspace? `${selectedWorkspace?.name}`.slice(0, 15) : 'No WS'}</p>
-                                {/* <p className='text-gray-500 text-xs'>select</p> */}
                           </div>
 
                           <svg

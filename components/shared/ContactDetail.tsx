@@ -11,13 +11,21 @@ import {useState} from 'react'
 import { Textarea } from '../ui/textarea'
 import { createConversationSchemaType } from '@/utility/validation/conversation'
 import { toast } from 'sonner'
-import { createConversationApi, updateAiMemoryApi } from '@/utility/api/conversation'
+import { createConversationApi, getAiMemoryByContactId, getWorkspaceConversationApi, updateAiMemoryApi } from '@/utility/api/conversation'
 import { createReminderPreferenceType } from '@/utility/validation/contact'
-import { createReminderPreferenceApi, deleteReminderPreferenceApi } from '@/utility/api/contact'
+import { createReminderPreferenceApi, deleteReminderPreferenceApi, getReminderPreferenceApi } from '@/utility/api/contact'
 import ConversationModal from './ConversationModal'
 import { EmptyOutline } from './NotFound';
 
-const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conversation, aiMemory}: {data: any, contactId: string, workspaceId: string, reminderPreference: any, conversation: any, aiMemory: any}) => {
+interface reminderPreference {
+  contactId: string;
+  id:string;
+  reminderCadence: string;
+  remindersEnabled: boolean;
+  timezone: string;
+}
+
+const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conversation, aiMemory}: {data: any, contactId: string, workspaceId: string, reminderPreference: reminderPreference, conversation: any, aiMemory: any}) => {
 
   const summary = getTextPreview(
     aiMemory?.relationshipSummary ? aiMemory?.relationshipSummary : data?.relationshipSummary,
@@ -44,6 +52,9 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
   const [source, setSource] = useState('GMAIL')
   const [showMore, setShowMore] = useState(false)
 
+  const [reminderData, setReminderData] = useState<reminderPreference | any>(reminderPreference)
+  const [conversationData, setConversationData] = useState<any>(conversation)
+  const [aiMemoryData, setAiMemoryData] = useState<any>(aiMemory)
   
   const SOURCE: {label: string, icon: LucideIcon, id: number}[] = [
   {
@@ -114,12 +125,17 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
       toast.success(`Conversation from "${data.source}" created successfully!`);
       setPasteModal(false)
 
-    } catch(error: any) {
-      console.error(error);
-  
+    } catch(error: any) {  
       toast.error(
         error?.message || "Something went wrong. Please try again."
       );
+
+      const refreshed = await getWorkspaceConversationApi(contactId)
+
+      if(refreshed?.data) {
+        setConversationData(refreshed?.data)
+      }
+
     } finally {
       setLoading(false)
     }
@@ -132,14 +148,17 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
     setCreatingPreference(true);
 
     try {
-      await createReminderPreferenceApi(
+      const res = await createReminderPreferenceApi(
         contactId,
         workspaceId,
          data
       );
   
+
       toast.success(`Contact preference ${data.reminderCadence} " created successfully!`);
       setOpenPreferenceModal(false)
+      setReminderData(res)
+
 
     } catch(error: any) {
       console.error(error);
@@ -147,6 +166,9 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
       toast.error(
         error?.message || "Something went wrong. Please try again."
       );
+
+     
+
     } finally {
       setCreatingPreference(false)
     }
@@ -157,6 +179,8 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
    
      setDeleting(true)
 
+    setReminderData((data: reminderPreference) => data.id !== preferenceId)
+
      try {
 
       await deleteReminderPreferenceApi(
@@ -165,12 +189,22 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
         workspaceId
       );
   
-      toast.success(`Contact preference ${data.reminderCadence} " created successfully!`);
+      toast.success(`Contact preference deleted successfully!`);
+      setReminderModal(false)
 
     } catch(error: any) {  
       toast.error(
         error?.message || "Something went wrong. Please try again."
       );
+
+      const refreshed = await getReminderPreferenceApi(contactId)
+
+      console.log(refreshed?.data)
+
+      if (refreshed?.data) {
+        setReminderData(refreshed.data)
+      }
+
     } finally {
       setCreatingPreference(false)
     } 
@@ -196,6 +230,13 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
       toast.error(
         error?.message || "Something went wrong. Please try again."
       );
+
+      const refreshed = await getAiMemoryByContactId(contactId)
+
+      if(refreshed?.data) {
+       setAiMemoryData(refreshed.data)
+      }
+
     } finally {
       setUpdating(false)
     }
@@ -277,7 +318,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
                            <p className="text-sm text-gray-700 font-medium">Paste Conversation</p>
                            </div>
    
-                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => !reminderPreference?.remindersEnabled ? setOpenPreferenceModal(true) : setReminderModal(true)}>
+                           <div className=' flex items-center justify-center gap-2 border text-center px-2 py-2 rounded-md cursor-pointer' onClick={() => !reminderData?.remindersEnabled ? setOpenPreferenceModal(true) : setReminderModal(true)}>
                            <Plus className='text-gray-500 size-4'/>
                            <p className="text-sm text-gray-700 font-medium">Add Reminder</p>
                            </div>
@@ -310,7 +351,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
               <div className='flex flex-col bg-white p-4 rounded-md break-all border max-w-120 w-full'>
                  <div className='flex flex-col gap-2'>
                    <p className='text-lg font-semibold'>Relationship Summary</p>
-                   <p className='text-gray-500 font-medium text-sm'>{aiMemory?.whoIsThisPerson ? aiMemory?.whoIsThisPerson : `This is ${data?.name}`}</p>
+                   <p className='text-gray-500 font-medium text-sm'>{aiMemoryData?.whoIsThisPerson ? aiMemoryData?.whoIsThisPerson : `This is ${data?.name}`}</p>
                    <div>
                 {!showMore ? (
                   <>
@@ -354,7 +395,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
    
                           <div className='flex flex-col gap-1'>
                           <p className='text-sm font-bold'>Last Promise</p>
-                          <p className='text-gray-500 text-sm font-medium'>{aiMemory?.lastPromise?.trim() || 'No Promise found'}</p>
+                          <p className='text-gray-500 text-sm font-medium'>{aiMemoryData?.lastPromise?.trim() || 'No Promise found'}</p>
                           </div>
                        </div>       
                  </div>
@@ -365,7 +406,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
               <div className='flex flex-col bg-white rounded-md break-all border  max-w-120 w-full'>
                  <div className='flex flex-col gap-2 px-4 pt-4'>
                    <p className='text-lg font-semibold'>Recommended Next Step</p>
-                   <p className='text-gray-900 text-[1rem] font-mediu leading-8'>{aiMemory?.nextAction || 'Next step not Provided'}</p>
+                   <p className='text-gray-900 text-[1rem] font-mediu leading-8'>{aiMemoryData?.nextAction || 'Next step not Provided'}</p>
                  </div>
    
                  <div className="flex flex-col gap-4 w-full min-h-10 rounded-md mt-5 border-t py-2 px-4">
@@ -413,7 +454,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
    
                     <div className='flex items-center justify-between w-full'>
                     <p className='text-gray-500 font-medium text-sm'>Next Follow-up</p>
-                    <p className="text-xs text-green-500 font-medium">{reminderPreference?.reminderCadence || 'Unknown'}</p>
+                    <p className="text-xs text-green-500 font-medium">{reminderData?.reminderCadence || 'Unknown'}</p>
                     </div>
    
                     <div className='flex items-center justify-between w-full'>
@@ -446,14 +487,14 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
    
                  <div className='flex flex-col justify-center rounded-md px-1'>
                    
-                   {conversation?.length ? conversation?.slice(0, 5).map((converse: any) => (
+                   {conversationData?.length ? conversationData?.slice(0, 5).map((converse: any) => (
                     <div className='py-4 border-b' key={converse?.id}>
                     <div className='flex items-center justify-between'>
                     <p className="text-xs text-gray-500 font-medium">{formatNotificationDate(converse?.createdAt)}</p>
                     <p className="text-xs text-gray-500 font-medium">{converse?.source}</p>
    
                     <div className='flex items-center gap-2'>
-                    <div className='rounded-md px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-100' onClick={() => {handleUpdateAiMemory(converse?.summary)}}>
+                    <div className='rounded-md px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-100 cursor-pointer' onClick={() => {handleUpdateAiMemory(converse?.summary)}}>
                      Update Ai Memory
                      </div>
    
@@ -482,9 +523,9 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
                   />
                   </div>}
                      
-                     { conversation?.length && <Button className='w-full py-5 cursor-pointer rounded-md my-2'>
+                     {/* { conversation?.length && <Button className='w-full py-5 cursor-pointer rounded-md my-2'>
                       <p>View All</p>
-                     </Button>} 
+                     </Button>}  */}
                  </div>
                </Card>
    
@@ -700,7 +741,7 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
             <DialogHeader>
               <div className='w-full flex flex-col gap-2 justify-center items-center bg-white/50 p-2 rounded-md'>
                 <Calendar className='size-10 text-primary'/>
-                 <DialogTitle className='text-[1rem]'>{reminderPreference?.reminderCadence}</DialogTitle>
+                 <DialogTitle className='text-[1rem]'>{reminderData?.reminderCadence}</DialogTitle>
                  <p className='text-muted-foreground text-xs'>7:AM</p>
               </div>
           </DialogHeader>
@@ -758,9 +799,9 @@ const ContactDetail = ({data, contactId, workspaceId, reminderPreference, conver
 
                 <div className='flex items-center justify-between gap-2 w-full'>
 
-                <Button className='px-2 py-1 rounded-sm text-[0.85rem] text-destructive font-medium cursor-pointer w-full ring-1 ring-destructive bg-red-100 hover:bg-destructive hover:text-white' size={'lg'} variant={'ghost'} onClick={() => handleDeletePreference(reminderPreference.id)}>
+                <Button className='px-2 py-1 rounded-sm text-[0.85rem] text-destructive font-medium cursor-pointer w-full ring-1 ring-destructive bg-red-100 hover:bg-destructive hover:text-white' size={'lg'} variant={'ghost'} onClick={() => handleDeletePreference(reminderData.id)}>
                   <Trash className='text-destructive'/>
-               Delete Reminder
+               {deleting ? 'Deleting' : 'Delete Reminder'}
                 </Button>
                 </div>
 
