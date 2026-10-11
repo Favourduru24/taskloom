@@ -11,6 +11,8 @@ import { getWorkspaceTasksApi } from "@/utility/api/task"
 import { getWorkspaceMemberApi } from "@/utility/api/workspace"
 import { Copy,Plus, UserPlus } from "lucide-react"
 import Image from "next/image"
+import { Suspense } from "react"
+import TaskCardSkeleton from "./components/TaskCardSkeleton"
 
 type WorkspaceRole = 'MEMBER' | 'ADMIN' | 'OWNER'; 
 type WorkspaceMemberStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING';
@@ -149,13 +151,9 @@ const Task = async ({params, searchParams}: {params: Promise<{ workspaceId: stri
 
                   
 
-           <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] mt-6">
-           <TaskList
-            initialTasks={data}
-            workspaceId={workspaceId}
-            error={error}
-          />
-           </div>
+            <Suspense fallback={<TaskCardSkeleton/>}>
+            <TaskCardSkeleton/>
+            </Suspense>
 
        </div>
     </div>
