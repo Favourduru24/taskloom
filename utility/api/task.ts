@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { createTaskSchemaType, updateTaskSchemaType } from "../validation/task"
 import { TaskProps } from "@/app/(dashboard)/workspace/[workspaceId]/task/[taskId]/page"
 
-export async function createTaskApi(formData: createTaskSchemaType, priority: string, workspaceId: string, collaboratorIds: string[], imageUrl: string) {
+export async function createTaskApi(formData: createTaskSchemaType, priority: string, workspaceId: string, collaboratorIds: string[], imageUrl: string, idempotencyKey: string) {
    const cookieStore = await cookies()
    
    const accessToken = cookieStore.get('accessToken')?.value
@@ -20,7 +20,8 @@ export async function createTaskApi(formData: createTaskSchemaType, priority: st
        method: 'POST',
        headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
+        "Authorization": `Bearer ${accessToken}`,
+        'Idempotency-Key': idempotencyKey
        },
        body: JSON.stringify({title, description, endDate, category, workspaceId, priority, collaboratorIds, imageUrl}),
       }) 

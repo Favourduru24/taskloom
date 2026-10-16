@@ -152,7 +152,13 @@ const Task = async ({params, searchParams}: {params: Promise<{ workspaceId: stri
                   
 
             <Suspense fallback={<TaskCardSkeleton/>}>
-            <TaskCardSkeleton/>
+            <div className="grid gap-x-4 gap-y-6 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] mt-6">
+           <TaskList
+            initialTasks={data}
+            workspaceId={workspaceId}
+            error={error}
+          />
+           </div>
             </Suspense>
 
        </div>

@@ -3,6 +3,12 @@ import { twMerge } from "tailwind-merge"
 import qs from "query-string"
 import { toast } from "sonner";
 
+type RetryOptions = {
+  maxAttempts?: number;
+  baseDelayMs?: number;
+  maxDelayMs?: number;
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -115,8 +121,82 @@ export const buildReminderUrl = (message: string, contactNumber: string) =>  {
   )}`;
 }
 
-// Credits: JavaScript Mastery 
-// #ai vs #AI
+function getStatus(error: any): number | undefined {
+  return error?.response?.status ?? error?.status;
+}
 
-// w3schools.com JavaScript Mastery
-// #meme #memes #softwareengineer #memestiktok #programmingmemes #webdev #codingmemes #programmer #java #python #javascript #memecoding #computers #nestjs #developer #nerd #programmerhumor #chatgpt #programminghumor #codinglife #stackoverflow #devhumor #dev #tech #sociallpost
+function getRetryAfter(error: any): number | undefined {
+  
+  const value = error?.response?.headers?.['retry-after'];
+
+  console.log('Retry-After header value:', value);
+
+  if (value == null) return undefined;
+
+  // Retry-After may contain seconds or an HTTP date.
+  const seconds = Number(value);
+
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return seconds * 1000;
+  }
+
+  const date = Date.parse(value);
+
+  return Number.isNaN(date)
+    ? undefined
+    : Math.max(0, date - Date.now());
+}
+
+function isRetryable(error: any): boolean {
+  const status = getStatus(error);
+
+  // Network errors and timeouts without an HTTP response.
+  if (!status) return true;
+
+  // Temporary server errors and rate limiting.
+  return status === 429 || status >= 500;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function retryApiRequest<T>(
+  operation: () => Promise<T>,
+  options: RetryOptions = {},
+): Promise<T> {
+  const {
+    maxAttempts = 3,
+    baseDelayMs = 500,
+    maxDelayMs = 5000,
+  } = options;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await operation();
+    } catch (error: any) {
+      if (!isRetryable(error) || attempt === maxAttempts) {
+        throw error;
+      }
+
+      const retryAfter = getRetryAfter(error);
+
+      // Exponential backoff with jitter.
+      const exponentialDelay = Math.min(
+        baseDelayMs * 2 ** (attempt - 1),
+        maxDelayMs,
+      );
+
+      const jitter = Math.random() * exponentialDelay * 0.25;
+
+      const delay =
+        retryAfter !== undefined
+          ? retryAfter
+          : exponentialDelay + jitter;
+
+      await sleep(delay);
+    }
+  }
+
+  throw new Error('Request failed after all retry attempts.');
+}

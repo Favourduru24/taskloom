@@ -7,13 +7,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuRadio
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { InputGroup, InputGroupTextarea } from '@/components/ui/input-group'
-import { getAvatar } from '@/lib/utils'
+import { getAvatar, retryApiRequest } from '@/lib/utils'
 import { createTaskSchema, createTaskSchemaType } from '@/utility/validation/task'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowDown, Image as Media, Link2Icon, X, Plus, Rocket, Trash, Copy} from 'lucide-react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import {
@@ -52,6 +52,8 @@ const CreateTask = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [uploadingMedia, setIsUploadingMedia] = useState(false)
+
+  const idempotencyKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!workspaceId) return;
@@ -162,18 +164,36 @@ const CreateTask = () => {
         imageUrl = uploadedUrls.filter(Boolean);
         setIsUploadingMedia(false);
       }
+
+
+
+      if (!idempotencyKeyRef.current) {
+        idempotencyKeyRef.current = crypto.randomUUID();
+      }
+
+      // if (!idempotencyKeyRef.current) {
+      //   idempotencyKeyRef.current = crypto.randomUUID();
+      // }
+      
+      const idempotencyKey = idempotencyKeyRef.current;
   
-      await createTaskApi(
+
+      await retryApiRequest(() => createTaskApi(
         data,
         priority,
         workspaceId,
         collaboratorIds,
-        imageUrl[0] ?? null
-      );
+        imageUrl[0] ?? null,
+        idempotencyKey
+      ))
+  
+     // Clear only after the server confirms success.
+     idempotencyKeyRef.current = null;
+
   
       toast.success(`Task "${data.title}" created successfully!`);
   
-      router.push(`/workspace/${workspaceId}/task`);
+      // router.push(`/workspace/${workspaceId}/task`);
     } catch (error: any) {
       console.error(error);
   
